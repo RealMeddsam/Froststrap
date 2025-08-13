@@ -10,10 +10,9 @@
            mc:Ignorable="d"
            d:DataContext="{d:DesignInstance Type=models:CommunityViewModel}"
            d:DesignHeight="600" d:DesignWidth="800"
-           Title="Community"
-           Scrollable="True">
+           Title="Community">
 
-    <TabControl Margin="16" Padding="0,8,0,0">
+    <TabControl Margin="0,16,16,16" Padding="0,8,0,0">
         <TabItem Header="Publish">
             <StackPanel Margin="8,8,8,0" VerticalAlignment="Top" DataContext="{Binding}" >
                 <Grid>
