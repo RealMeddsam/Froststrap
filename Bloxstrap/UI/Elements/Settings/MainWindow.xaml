@@ -22,15 +22,12 @@
              Closing="WpfUiWindow_Closing"
              Closed="WpfUiWindow_Closed">
 
-    <Grid>
+    <Grid Background="{DynamicResource WindowBackgroundGradient}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid.Background>
-            <DynamicResource ResourceKey="WindowBackgroundGradient" />
-        </Grid.Background>
 
         <Grid x:Name="ImageBackgroundLayer" Grid.RowSpan="3" Panel.ZIndex="-1" Visibility="{Binding IsImageMode, Converter={StaticResource BooleanToVisibilityConverter}}" IsHitTestVisible="False">
             <Image x:Name="AnimatedGifBackground" Visibility="Collapsed" IsHitTestVisible="False" />
@@ -63,7 +60,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <ui:NavigationCompact x:Name="RootNavigation" Grid.Row="1" Grid.Column="0" Margin="0,0,12,0" Frame="{Binding ElementName=RootFrame}" IsExpanded="{Binding IsSidebarExpanded, Mode=TwoWay}" SelectedPageIndex="0">
+            <ui:NavigationCompact x:Name="RootNavigation" Grid.Row="1" Grid.Column="0" Margin="0,0,12,0" Frame="{Binding ElementName=RootFrame}" IsExpanded="{Binding IsSidebarExpanded, Mode=TwoWay}" MaxWidth="230" SelectedPageIndex="0">
                 <ui:NavigationCompact.Items>
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Integrations_Title}" PageType="{x:Type pages:IntegrationsPage}" Icon="Add28" Tag="integrations" FontWeight="Medium" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Behaviour_Title}" PageType="{x:Type pages:BehaviourPage}" Icon="PlaySettings20" Tag="bootstrapper" FontWeight="Medium" />

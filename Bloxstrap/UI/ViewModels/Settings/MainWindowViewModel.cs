@@ -40,8 +40,10 @@ namespace Bloxstrap.UI.ViewModels.Settings
         {
             var wpfBackdrop = value switch
             {
-                UIBackgroundType.Mica => BackgroundType.Mica,
                 UIBackgroundType.None => BackgroundType.None,
+                UIBackgroundType.Mica => BackgroundType.Mica,
+                UIBackgroundType.Acrylic => BackgroundType.Acrylic,
+                UIBackgroundType.Aero => BackgroundType.Aero,
                 _ => BackgroundType.None
             };
 
@@ -49,12 +51,20 @@ namespace Bloxstrap.UI.ViewModels.Settings
             {
                 if (window is UiWindow uiWindow)
                 {
-                    uiWindow.AllowsTransparency = false;
-                    uiWindow.WindowStyle = WindowStyle.SingleBorderWindow;
+                    bool isTransparentBackdrop = (wpfBackdrop == BackgroundType.Acrylic || wpfBackdrop == BackgroundType.Aero);
+
+                    uiWindow.AllowsTransparency = isTransparentBackdrop;
+
+                    uiWindow.WindowStyle = isTransparentBackdrop
+                        ? WindowStyle.None
+                        : WindowStyle.SingleBorderWindow;
+
                     uiWindow.WindowBackdropType = wpfBackdrop;
                 }
             }
         }
+
+
 
         public bool IsSidebarExpanded
         {

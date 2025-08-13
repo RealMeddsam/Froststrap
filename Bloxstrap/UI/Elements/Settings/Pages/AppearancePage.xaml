@@ -162,13 +162,13 @@
             </Grid>
         </ui:CardExpander>
 
-        <controls:OptionControl Header="Window Backdrop" Description="Select the window backdrop effect. Note: you must use dark/light theme, Mica only works on windows 11">
+        <controls:OptionControl Header="Window Backdrop" Description="Select the window backdrop effect. Note: you must use dark theme, Mica only works on windows 11">
             <ComboBox
-        Width="200"
-        Margin="5,0,0,0"
-        Padding="10,5,10,5"
-        ItemsSource="{Binding BackdropOptions}"
-        SelectedItem="{Binding SelectedBackdrop, Mode=TwoWay}" />
+                Width="200"
+                Margin="5,0,0,0"
+                Padding="10,5,10,5"
+                ItemsSource="{Binding BackdropOptions}"
+                SelectedItem="{Binding SelectedBackdrop, Mode=TwoWay}" />
         </controls:OptionControl>
 
         <controls:OptionControl
