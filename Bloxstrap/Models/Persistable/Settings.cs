@@ -10,6 +10,7 @@ namespace Bloxstrap.Models.Persistable
         public bool ShowServerDetails { get; set; } = true;
         public bool ShowGameHistoryMenu { get; set; } = true;
         public bool PlaytimeCounter { get; set; } = true;
+        public TrayDoubleClickAction DoubleClickAction { get; set; } = TrayDoubleClickAction.ServerInfo;
         public bool UseDisableAppPatch { get; set; } = false;
         public bool BlockRobloxRecording { get; set; } = false;
         public bool BlockRobloxScreenshots { get; set; } = false;

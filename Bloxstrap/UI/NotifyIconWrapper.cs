@@ -1,6 +1,8 @@
 ﻿using Bloxstrap.Integrations;
 using Bloxstrap.UI.Elements.About;
 using Bloxstrap.UI.Elements.ContextMenu;
+using System.Windows;
+using Wpf.Ui.Controls;
 
 namespace Bloxstrap.UI
 {
@@ -34,6 +36,86 @@ namespace Bloxstrap.UI
             };
 
             _notifyIcon.MouseClick += MouseClickEventHandler;
+
+            _notifyIcon.MouseDoubleClick += (s, e) =>
+            {
+                if (e.Button != System.Windows.Forms.MouseButtons.Left)
+                    return;
+
+                switch (App.Settings.Prop.DoubleClickAction)
+                {
+                    case TrayDoubleClickAction.None:
+                        break;
+
+                    case TrayDoubleClickAction.DebugMenu:
+                        var debugMenu = new DebugMenu();
+                        debugMenu.Show();
+                        break;
+
+                    case TrayDoubleClickAction.GameHistory:
+                        if (!App.Settings.Prop.ShowGameHistoryMenu)
+                        {
+                            Frontend.ShowMessageBox(
+                                "Enable 'Game History' in settings to use this feature.",
+                                MessageBoxImage.Information
+                            );
+                            return;
+                        }
+
+                        _menuContainer!.Dispatcher.Invoke(() =>
+                             _menuContainer.GameHistoryMenuItem.RaiseEvent(
+                                 new RoutedEventArgs(MenuItem.ClickEvent)));
+                        break;
+
+                    case TrayDoubleClickAction.ServerInfo:
+                        if (!App.Settings.Prop.ShowServerDetails)
+                        {
+                            Frontend.ShowMessageBox(
+                                "Enable 'Query Server Location' in settings to use this feature.",
+                                MessageBoxImage.Information
+                            );
+                            return;
+                        }
+
+                        if (_activityWatcher is not null && _activityWatcher.InGame)
+                        {
+                            _menuContainer!.ShowServerInformationWindow();
+                        }
+                        else
+                        {
+                            Frontend.ShowMessageBox(
+                                "Join a game first to view server information.",
+                                MessageBoxImage.Information
+                            );
+                        }
+                        break;
+
+                    case TrayDoubleClickAction.LogsMenu:
+                        if (App.FastFlags.GetPreset("Players.LogLevel") != "trace")
+                        {
+                            Frontend.ShowMessageBox(
+                                "Enable 'Logs Menu' to use the logs menu.",
+                                MessageBoxImage.Information
+                            );
+                            return;
+                        }
+
+                        if (_activityWatcher is not null && _activityWatcher.InGame)
+                        {
+                            _menuContainer!.Dispatcher.Invoke(() =>
+                                _menuContainer.LogsMenuItem.RaiseEvent(
+                                    new RoutedEventArgs(MenuItem.ClickEvent)));
+                        }
+                        else
+                        {
+                            Frontend.ShowMessageBox(
+                                "Join a game first to view logs.",
+                                MessageBoxImage.Information
+                            );
+                        }
+                        break;
+                }
+            };
 
             if (_activityWatcher is not null && App.Settings.Prop.ShowServerDetails)
                 _activityWatcher.OnGameJoin += OnGameJoin;

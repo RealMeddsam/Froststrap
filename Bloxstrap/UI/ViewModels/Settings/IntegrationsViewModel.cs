@@ -119,6 +119,22 @@ namespace Bloxstrap.UI.ViewModels.Settings
             }
         }
 
+        public ObservableCollection<TrayDoubleClickAction> TrayDoubleClickActions { get; } =
+            new ObservableCollection<TrayDoubleClickAction>(Enum.GetValues(typeof(TrayDoubleClickAction)).Cast<TrayDoubleClickAction>());
+
+        public TrayDoubleClickAction SelectedDoubleClickAction
+        {
+            get => App.Settings.Prop.DoubleClickAction;
+            set
+            {
+                if (App.Settings.Prop.DoubleClickAction != value)
+                {
+                    App.Settings.Prop.DoubleClickAction = value;
+                    OnPropertyChanged(nameof(SelectedDoubleClickAction));
+                }
+            }
+        }
+
         public bool DiscordActivityEnabled
         {
             get => App.Settings.Prop.UseDiscordRichPresence;

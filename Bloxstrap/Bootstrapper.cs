@@ -320,10 +320,30 @@ namespace Bloxstrap
 
                 StartRoblox();
 
+                try
+                {
+                    if (App.Settings.Prop.SelectedRobloxIcon != RobloxIcon.Default)
+                    {
+                        SetStatus("Changing Topbar Roblox Icon...");
+                        await Task.Delay(1000);
+
+                        var robloxProcess = Process.GetProcessById(_appPid);
+
+                        if (!robloxProcess.HasExited)
+                        {
+                            SetRobloxWindowIcon(robloxProcess, App.Settings.Prop.SelectedRobloxIcon);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine("Bootstrapper", $"Failed to set Roblox icon after crash handler: {ex}");
+                }
+
                 if (App.Settings.Prop.AutoCloseCrashHandler)
                 {
                     SetStatus("Closing Roblox Crash Handler...");
-                    await Task.Delay(15000);
+                    await Task.Delay(7500);
 
                     try
                     {
@@ -346,26 +366,6 @@ namespace Bloxstrap
                     {
                         App.Logger.WriteLine("Bootstrapper::StartRoblox", $"Error killing RobloxCrashHandler: {ex.Message}");
                     }
-                }
-
-                try
-                {
-                    if (App.Settings.Prop.SelectedRobloxIcon != RobloxIcon.Default)
-                    {
-                        SetStatus("Changing Topbar Roblox Icon...");
-                        await Task.Delay(1000);
-
-                        var robloxProcess = Process.GetProcessById(_appPid);
-
-                        if (!robloxProcess.HasExited)
-                        {
-                            SetRobloxWindowIcon(robloxProcess, App.Settings.Prop.SelectedRobloxIcon);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    App.Logger.WriteLine("Bootstrapper", $"Failed to set Roblox icon after crash handler: {ex}");
                 }
             }
 

@@ -55,6 +55,17 @@
             <ui:ToggleSwitch IsChecked="{Binding ShowGameHistoryEnabled, Mode=TwoWay}" />
         </controls:OptionControl>
 
+        <controls:OptionControl
+            Header="Double Click Action"
+            Description="Allows you to open a specific window when double click Froststrap in system tray">
+            <ComboBox
+                Width="200"
+                Margin="5,0,0,0"
+                Padding="10,5,10,5"
+                ItemsSource="{Binding TrayDoubleClickActions, Mode=OneTime}"
+                SelectedItem="{Binding SelectedDoubleClickAction, Mode=TwoWay}" />
+        </controls:OptionControl>
+
         <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False">
             <ui:CardExpander.Header>
                 <Grid>
