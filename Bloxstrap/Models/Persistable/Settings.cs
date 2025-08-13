@@ -5,62 +5,7 @@ namespace Bloxstrap.Models.Persistable
 {
     public class Settings
     {
-        // Will sort it out later
-        // bloxstrap configuration
-        public BootstrapperStyle BootstrapperStyle { get; set; } = BootstrapperStyle.CustomFluentDialog;
-        public BootstrapperIcon BootstrapperIcon { get; set; } = BootstrapperIcon.IconBloxstrap;
-        public UIBackgroundType SelectedBackdrop { get; set; } = UIBackgroundType.Mica;
-        public string BootstrapperTitle { get; set; } = App.ProjectName;
-        public string BootstrapperIconCustomLocation { get; set; } = "";
-        public Theme Theme { get; set; } = Theme.Default;
-        public List<GradientStopData> CustomGradientStops { get; set; } = new()
-        {
-            new GradientStopData { Offset = 0.0, Color = "#4D5560" },
-            new GradientStopData { Offset = 0.5, Color = "#383F47" },
-            new GradientStopData { Offset = 1.0, Color = "#252A30" }
-        };
-        public Point GradientStartPoint { get; set; } = new Point(1, 1);
-        public Point GradientEndPoint { get; set; } = new Point(0, 0);
-        public string ImageBackgroundPath { get; set; } = string.Empty;
-        public CustomBackgroundMode BackgroundMode { get; set; } = CustomBackgroundMode.Gradient;
-        public BackgroundImageStretchMode BackgroundImageStretch { get; set; } = BackgroundImageStretchMode.Fill;
-        public double BlackOverlayOpacity { get; set; } = 0.2;
-        public string UserId { get; set; } = string.Empty;
-        public CleanerOptions CleanerOptions { get; set; } = CleanerOptions.Never;
-        public List<string> CleanerDirectories { get; set; } = new List<string>();
-        public bool IsNavigationSidebarExpanded { get; set; } = true;
-        public bool CheckForUpdates { get; set; } = true;
-        public bool ConfirmLaunches { get; set; } = true;
-        public bool AutoCloseCrashHandler { get; set; } = false;
-        public string Locale { get; set; } = "nil";
-        public bool ForceRobloxLanguage { get; set; } = false;
-        public bool UseFastFlagManager { get; set; } = true;
-        public CopyFormatMode SelectedCopyFormat { get; set; } = CopyFormatMode.Format1;
-        public bool CtrlCJsonFormat { get; set; } = false;
-        public bool ShowPresetColumn { get; set; } = false;
-        public bool ShowFlagCount { get; set; } = true;
-        public bool ShowAddWithID { get; set; } = false;
-        public bool WPFSoftwareRender { get; set; } = false;
-        public bool DisableAnimations { get; set; } = false;
-        public bool DisableHardwareAcceleration { get; set; } = false;
-        public ProcessPriorityOption SelectedProcessPriority { get; set; } = ProcessPriorityOption.Normal;
-        public string? CustomFontPath { get; set; } = null;
-        public bool EnableAnalytics { get; set; } = false;
-        public bool DebugDisableVersionPackageCleanup { get; set; } = false;
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public bool DeveloperMode { get; set; } = false;
-        public bool BackgroundUpdatesEnabled { get; set; } = false;
-        public WebEnvironment WebEnvironment { get; set; } = WebEnvironment.Production;
-        public bool UpdateRoblox { get; set; } = true;
-        public bool MultiInstanceLaunching { get; set; } = false;
-        public string Channel { get; set; } = RobloxInterfaces.Deployment.DefaultChannel;
-        public ChannelChangeMode ChannelChangeMode { get; set; } = ChannelChangeMode.Ignore;
-        public string ChannelHash { get; set; } = "";
-        public string DownloadingStringFormat { get; set; } = Strings.Bootstrapper_Status_Downloading + " {0} - {1}MB / {2}MB";
-        public string? SelectedCustomTheme { get; set; } = null;
-        public string GameShortcutsJson { get; set; } = "[]";
-
-        // integration configuration
+        // Integration Page
         public bool EnableActivityTracking { get; set; } = true;
         public bool ShowServerDetails { get; set; } = true;
         public bool ShowGameHistoryMenu { get; set; } = true;
@@ -75,17 +20,81 @@ namespace Bloxstrap.Models.Persistable
         public bool ShowAccountOnRichPresence { get; set; } = false;
         public ObservableCollection<CustomIntegration> CustomIntegrations { get; set; } = new();
 
-        // mod preset configuration
+        // Bootstrapper Page
+        public bool ConfirmLaunches { get; set; } = true;
+        public bool AutoCloseCrashHandler { get; set; } = false;
+        public string Locale { get; set; } = "nil";
+        public bool ForceRobloxLanguage { get; set; } = false;
+        public CleanerOptions CleanerOptions { get; set; } = CleanerOptions.Never;
+        public List<string> CleanerDirectories { get; set; } = new List<string>();
+        public bool BackgroundUpdatesEnabled { get; set; } = false;
+        public bool MultiInstanceLaunching { get; set; } = false;
         public RobloxIcon SelectedRobloxIcon { get; set; } = RobloxIcon.Default;
-        public string? IconPath { get; set; } = null;
+        public ProcessPriorityOption SelectedProcessPriority { get; set; } = ProcessPriorityOption.Normal;
 
-        // save directory
+        // Mods Page
         public string ShiftlockCursorSelectedPath { get; set; } = "";
         public string ArrowCursorSelectedPath { get; set; } = "";
         public string ArrowFarCursorSelectedPath { get; set; } = "";
         public string IBeamCursorSelectedPath { get; set; } = "";
 
-        // clicker game configuration
+        // FastFlag Editor/Settings Related
+        public bool UseFastFlagManager { get; set; } = true;
+        public CopyFormatMode SelectedCopyFormat { get; set; } = CopyFormatMode.Format1;
+        public bool CtrlCJsonFormat { get; set; } = false;
+        public bool ShowPresetColumn { get; set; } = false;
+        public bool ShowFlagCount { get; set; } = true;
+        public bool ShowAddWithID { get; set; } = false;
+
+        // Appearance Page
+        public BootstrapperStyle BootstrapperStyle { get; set; } = BootstrapperStyle.CustomFluentDialog;
+        public BootstrapperIcon BootstrapperIcon { get; set; } = BootstrapperIcon.IconBloxstrap;
+        public UIBackgroundType SelectedBackdrop { get; set; } = UIBackgroundType.Mica;
+        public string? SelectedCustomTheme { get; set; } = null;
+        public string BootstrapperTitle { get; set; } = App.ProjectName;
+        public string BootstrapperIconCustomLocation { get; set; } = "";
+        public string DownloadingStringFormat { get; set; } = Strings.Bootstrapper_Status_Downloading + " {0} - {1}MB / {2}MB";
+        public Theme Theme { get; set; } = Theme.Default;
+        public List<GradientStopData> CustomGradientStops { get; set; } = new()
+        {
+            new GradientStopData { Offset = 0.0, Color = "#4D5560" },
+            new GradientStopData { Offset = 0.5, Color = "#383F47" },
+            new GradientStopData { Offset = 1.0, Color = "#252A30" }
+        };
+        public Point GradientStartPoint { get; set; } = new Point(1, 1);
+        public Point GradientEndPoint { get; set; } = new Point(0, 0);
+        public string ImageBackgroundPath { get; set; } = string.Empty;
+        public CustomBackgroundMode BackgroundMode { get; set; } = CustomBackgroundMode.Gradient;
+        public BackgroundImageStretchMode BackgroundImageStretch { get; set; } = BackgroundImageStretchMode.Fill;
+        public double BlackOverlayOpacity { get; set; } = 0.2;
+        public string? CustomFontPath { get; set; } = null;
+
+        // No pc tweaks since it checks registry values directly
+
+        // Shortcuts Page
+        public string GameShortcutsJson { get; set; } = "[]";
+
+        // Community Page
+        public string UserId { get; set; } = string.Empty;
+
+        // Settings Page
+        public bool CheckForUpdates { get; set; } = true;
+        public bool WPFSoftwareRender { get; set; } = false;
+        public bool DisableAnimations { get; set; } = false;
+        public bool UpdateRoblox { get; set; } = true;
+        public string Channel { get; set; } = RobloxInterfaces.Deployment.DefaultChannel;
+        public ChannelChangeMode ChannelChangeMode { get; set; } = ChannelChangeMode.Ignore;
+        public string ChannelHash { get; set; } = "";
+
+        // Misc Stuff
+        public bool IsNavigationSidebarExpanded { get; set; } = true;
+        public bool EnableAnalytics { get; set; } = false;
+        public bool DebugDisableVersionPackageCleanup { get; set; } = false;
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool DeveloperMode { get; set; } = false;
+        public WebEnvironment WebEnvironment { get; set; } = WebEnvironment.Production;
+
+        // Clicker Game Configuration
         public string Points { get; set; } = "0";
         public string PointsPerClick { get; set; } = "1";
         public bool AutoClickerEnabled { get; set; } = false;
@@ -98,7 +107,7 @@ namespace Bloxstrap.Models.Persistable
         public string TotalPointsEarned { get; set; } = "0";
         public long TotalPlaytimeTicks { get; set; } = 0;
 
-        // Clicker game prices
+        // Clicker Game Prices
         public string DoubleClickPowerPrice { get; set; } = "50";
         public string AutoClickerPrice { get; set; } = "50";
         public string BonusMultiplierPrice { get; set; } = "250";
