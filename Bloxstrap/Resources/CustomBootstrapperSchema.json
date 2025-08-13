@@ -353,10 +353,10 @@
 		},
 		"Backdrop": {
 			"Values": [
-				"Aero",
 				"Mica",
-				"None",
-				"Acrylic"
+				"Aero",
+				"Acrylic",
+				"None"
 			]
 		},
 		"Theme": {

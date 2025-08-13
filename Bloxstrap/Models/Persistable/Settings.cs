@@ -28,6 +28,7 @@ namespace Bloxstrap.Models.Persistable
         public string UserId { get; set; } = string.Empty;
         public CleanerOptions CleanerOptions { get; set; } = CleanerOptions.Never;
         public List<string> CleanerDirectories { get; set; } = new List<string>();
+        public bool IsNavigationSidebarExpanded { get; set; } = true;
         public bool CheckForUpdates { get; set; } = true;
         public bool ConfirmLaunches { get; set; } = true;
         public bool AutoCloseCrashHandler { get; set; } = false;

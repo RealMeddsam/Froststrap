@@ -378,32 +378,36 @@ namespace Bloxstrap.UI.Elements.Bootstrapper
             dialog.ElementGrid.Effect = dialog.Effect;
             dialog.Effect = null;
 
-            // theme handling
             var theme = ParseXmlAttribute<Theme>(xmlElement, "Theme", Theme.Default);
             if (theme == Theme.Default)
                 theme = App.Settings.Prop.Theme;
 
             var finalTheme = theme.GetFinal();
-            Wpf.Ui.Appearance.ThemeType wpfUiTheme = finalTheme == Theme.Light
-                ? Wpf.Ui.Appearance.ThemeType.Light
-                : Wpf.Ui.Appearance.ThemeType.Dark;
+            Wpf.Ui.Appearance.ThemeType wpfUiTheme;
+            if (finalTheme == Theme.Light)
+                wpfUiTheme = Wpf.Ui.Appearance.ThemeType.Light;
+            else
+                wpfUiTheme = Wpf.Ui.Appearance.ThemeType.Dark;
 
             dialog.Resources.MergedDictionaries.Clear();
             dialog.Resources.MergedDictionaries.Add(new ThemesDictionary() { Theme = wpfUiTheme });
             dialog.DefaultBorderThemeOverwrite = wpfUiTheme;
 
-            dialog.WindowCornerPreference = ParseXmlAttribute<Wpf.Ui.Appearance.WindowCornerPreference>(
-                xmlElement, "WindowCornerPreference", Wpf.Ui.Appearance.WindowCornerPreference.Round);
+            dialog.WindowCornerPreference = ParseXmlAttribute<Wpf.Ui.Appearance.WindowCornerPreference>(xmlElement, "WindowCornerPreference", Wpf.Ui.Appearance.WindowCornerPreference.Round);
 
+            // disable default window border if border is modified
             if (xmlElement.Attribute("BorderBrush") != null || xmlElement.Attribute("BorderThickness") != null)
                 dialog.DefaultBorderEnabled = false;
 
-            dialog.ElementGrid.Margin = dialog.Margin;
-            dialog.Margin = new Thickness(0);
-            dialog.Padding = new Thickness(0);
 
-            string? title = xmlElement.Attribute("Title")?.Value ?? "Bloxstrap";
-            dialog.Title = title;
+            // set the margin & padding on the element grid
+            dialog.ElementGrid.Margin = dialog.Margin;
+            // TODO: put elementgrid inside a border?
+
+            dialog.Margin = new Thickness(0, 0, 0, 0);
+            dialog.Padding = new Thickness(0, 0, 0, 0);
+
+            string? title = xmlElement.Attribute("Title")?.Value?.ToString() ?? "Bloxstrap";
 
             bool ignoreTitleBarInset = ParseXmlAttribute<bool>(xmlElement, "IgnoreTitleBarInset", false);
             if (ignoreTitleBarInset)
