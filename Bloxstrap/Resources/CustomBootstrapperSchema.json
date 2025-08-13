@@ -46,7 +46,8 @@
 				"Theme": "Theme",
 				"Title": "string",
 				"IgnoreTitleBarInset": "bool",
-				"WindowCornerPreference": "WindowCornerPreference"
+				"WindowCornerPreference": "WindowCornerPreference",
+				"Backdrop": "Backdrop"
 			}
 		},
 		"TitleBar": {
@@ -348,6 +349,14 @@
 				"Center",
 				"Bottom",
 				"Stretch"
+			]
+		},
+		"Backdrop": {
+			"Values": [
+				"Aero",
+				"Mica",
+				"None",
+				"Acrylic"
 			]
 		},
 		"Theme": {
