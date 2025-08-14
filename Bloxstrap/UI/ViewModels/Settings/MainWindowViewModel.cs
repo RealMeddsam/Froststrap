@@ -84,7 +84,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         private void CloseWindow() => RequestCloseWindowEvent?.Invoke(this, EventArgs.Empty);
 
-        private void SaveSettings()
+        public void SaveSettings()
         {
             const string LOG_IDENT = "MainWindowViewModel::SaveSettings";
 

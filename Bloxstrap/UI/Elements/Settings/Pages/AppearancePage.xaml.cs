@@ -1,6 +1,5 @@
 ﻿using Bloxstrap.UI.ViewModels.Settings;
 using Microsoft.Win32;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -14,6 +13,44 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             InitializeComponent();
             (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Appearance");
         }
+
+        private bool _isWindowsBackdropInitialized = false;
+
+        private void WindowsBackdropChangeSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_isWindowsBackdropInitialized)
+            {
+                _isWindowsBackdropInitialized = true;
+                return;
+            }
+
+            if (e.AddedItems.Count == 0)
+                return;
+
+            var result = Frontend.ShowMessageBox(
+                "You need to restart the app for the changes to apply. Do you want to restart now?",
+                MessageBoxImage.Information,
+                MessageBoxButton.YesNo
+            );
+
+            if (result == MessageBoxResult.Yes)
+            {
+                if (Window.GetWindow(this) is MainWindow mainWindow &&
+                    mainWindow.DataContext is MainWindowViewModel mainWindowViewModel)
+                {
+                    mainWindowViewModel.SaveSettings();
+                }
+
+                var startInfo = new ProcessStartInfo(Environment.ProcessPath!)
+                {
+                    Arguments = "-menu"
+                };
+
+                Process.Start(startInfo);
+                Application.Current.Shutdown();
+            }
+        }
+
 
         public void CustomThemeSelection(object sender, SelectionChangedEventArgs e)
         {
