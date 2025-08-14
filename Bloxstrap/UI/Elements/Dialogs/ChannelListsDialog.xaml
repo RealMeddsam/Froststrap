@@ -10,7 +10,8 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="Available Channels"
     Width="700"
-    MinHeight="450"
+    MinHeight="350"
+    Height="400"
     MaxHeight="700"
     Background="{ui:ThemeResource ApplicationBackgroundBrush}"
     ExtendsContentIntoTitleBar="True"
@@ -42,7 +43,7 @@
 
         <TextBlock
             Grid.Row="1"
-            Text="All of the available Roblox Channels you can currently use"
+            Text="Check the large majority of the current available channels to use"
             FontSize="12"
             FontWeight="Medium"
             Foreground="{DynamicResource TextFillColorSecondaryBrush}"

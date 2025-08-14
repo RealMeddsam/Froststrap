@@ -94,7 +94,6 @@
                         <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_ChannelChanger_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
                     </StackPanel>
                     <ui:TextBox Grid.Column="1" Grid.Row="0" Margin="8,0,8,0" Padding="10,5,10,5" Width="200" Text="{Binding ViewChannel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
-                    <Button Grid.Row="1" Grid.Column="1" Margin="0,4,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Content="Available Channels" Click="OpenChannelListDialog_Click" />
                 </Grid>
             </ui:CardExpander.Header>
 
@@ -129,7 +128,9 @@
                     <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Center" Text="{x:Static resources:Strings.Common_VersionGuid}" />
                     <TextBlock Grid.Row="1" Grid.Column="1" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ChannelDeployInfo.VersionGuid, Mode=OneWay}" />
 
-                    <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Margin="0,16,0,0" Orientation="Horizontal">
+                    <Button Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Content="Available Channels" Click="OpenChannelListDialog_Click" />
+
+                    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,16,0,0" Orientation="Horizontal">
                         <StackPanel.Style>
                             <Style TargetType="StackPanel">
                                 <Setter Property="Visibility" Value="Collapsed" />
