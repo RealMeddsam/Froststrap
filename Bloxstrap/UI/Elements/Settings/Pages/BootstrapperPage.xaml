@@ -93,7 +93,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Bootstrapper_CleanUp_Title}" />
+                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Bootstrapper_CleanUp_Title}" FontWeight="Medium" />
                         <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Bootstrapper_CleanUp_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
                     </StackPanel>
                 </Grid>

@@ -49,7 +49,7 @@
         </controls:OptionControl>
 
         <controls:OptionControl 
-            Header="Show Game History Menu"
+            Header="Game History Menu"
             Description="Display the game you've played in your session and allows you to join them back."
             IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
             <ui:ToggleSwitch IsChecked="{Binding ShowGameHistoryEnabled, Mode=TwoWay}" />
@@ -72,15 +72,14 @@
             </ComboBox>
         </controls:OptionControl>
 
-        <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False">
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
             <ui:CardExpander.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Integrations_BlockCardExpander_Title}" />
+                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Integrations_BlockCardExpander_Title}" FontWeight="Medium" />
                         <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Integrations_BlockCardExpander_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
                     </StackPanel>
                 </Grid>

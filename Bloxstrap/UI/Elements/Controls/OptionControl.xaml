@@ -10,16 +10,18 @@
              mc:Ignorable="d" 
              x:Name="Control"
              d:DesignHeight="450" d:DesignWidth="800">
-    <ui:CardControl Margin="0,8,0,0" Content="{Binding InnerContent, RelativeSource={RelativeSource AncestorType=UserControl}}">
-        <ui:CardControl.Header>
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" FontSize="14" Text="{Binding Header, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="Medium" />
-                    <TextBlock Grid.Column="1" Margin="4,0,0,0">
+
+    <ui:Card Margin="0,8,0,0" Padding="14">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="14" FontWeight="Medium" Text="{Binding Header, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <TextBlock Margin="4,0,0,0">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
@@ -52,7 +54,8 @@
                             </ui:SymbolIcon>
                         </Hyperlink>
                     </TextBlock>
-                </Grid>
+                </StackPanel>
+
                 <local:MarkdownTextBlock Margin="0,2,0,0" FontSize="12" MarkdownText="{Binding Description, RelativeSource={RelativeSource AncestorType=UserControl}}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}">
                     <local:MarkdownTextBlock.Style>
                         <Style TargetType="local:MarkdownTextBlock">
@@ -65,6 +68,8 @@
                     </local:MarkdownTextBlock.Style>
                 </local:MarkdownTextBlock>
             </StackPanel>
-        </ui:CardControl.Header>
-    </ui:CardControl>
+
+            <ContentPresenter Grid.Column="1" Content="{Binding InnerContent, RelativeSource={RelativeSource AncestorType=UserControl}}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="1,0,0,0"/>
+        </Grid>
+    </ui:Card>
 </UserControl>
