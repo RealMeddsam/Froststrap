@@ -72,7 +72,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         public ICommand OpenCompatSettingsCommand => new RelayCommand(OpenCompatSettings);
 
-        public ModPresetTask OldDeathSoundTask { get; } = new("OldDeathSound", @"content\sounds\ouch.ogg", "Sounds.OldDeath.ogg");
+        public ModPresetTask OldDeathSoundTask { get; } = new("OldDeathSound", @"content\sounds\oof.ogg", "Sounds.OldDeath.ogg");
 
         public ModPresetTask OldAvatarBackgroundTask { get; } = new("OldAvatarBackground", @"ExtraContent\places\Mobile.rbxl", "OldAvatarBackground.rbxl");
 
@@ -160,11 +160,11 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         public Visibility ChooseCustomDeathSoundVisibility =>
             GetVisibility(Path.Combine(Paths.Modifications, "Content", "sounds"),
-                          new[] { "ouch.ogg" }, checkExist: false);
+                          new[] { "oof.ogg" }, checkExist: false);
 
         public Visibility DeleteCustomDeathSoundVisibility =>
             GetVisibility(Path.Combine(Paths.Modifications, "Content", "sounds"),
-                          new[] { "ouch.ogg" }, checkExist: true);
+                          new[] { "oof.ogg" }, checkExist: true);
 
         private void AddCustomFile(string[] targetFiles, string targetDir, string dialogTitle, string filter, string failureText, Action postAction = null!)
         {
@@ -285,7 +285,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public void AddCustomDeathSound()
         {
             AddCustomFile(
-                new[] { "ouch.ogg" },
+                new[] { "oof.ogg" },
                 Path.Combine(Paths.Modifications, "Content", "sounds"),
                 "Select a Custom Death Sound",
                 "OGG Audio (*.ogg)|*.ogg",
@@ -300,7 +300,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public void RemoveCustomDeathSound()
         {
             RemoveCustomFile(
-                new[] { "ouch.ogg" },
+                new[] { "oof.ogg" },
                 Path.Combine(Paths.Modifications, "Content", "sounds"),
                 "No custom death sound found to remove.",
                 () =>
