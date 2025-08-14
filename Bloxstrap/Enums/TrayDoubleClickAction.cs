@@ -2,10 +2,15 @@
 {
     public enum TrayDoubleClickAction
     {
+        [EnumName(StaticName = "Server Information")]
         ServerInfo,
+        [EnumName(StaticName = "Game History")]
         GameHistory,
+        [EnumName(StaticName = "Logs Menu")]
         LogsMenu,
+        [EnumName(StaticName = "Debug Menu")]
         DebugMenu,
+        [EnumName(StaticName = "None")]
         None
     }
 }

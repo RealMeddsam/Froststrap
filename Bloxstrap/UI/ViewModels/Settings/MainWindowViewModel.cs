@@ -130,8 +130,5 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
             Application.Current.Shutdown();
         }
-
-        public ObservableCollection<GradientStopData> GradientStops { get; } =
-            new(App.Settings.Prop.CustomGradientStops);
     }
 }

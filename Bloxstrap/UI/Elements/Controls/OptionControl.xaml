@@ -10,7 +10,7 @@
              mc:Ignorable="d" 
              x:Name="Control"
              d:DesignHeight="450" d:DesignWidth="800">
-    <ui:CardControl Margin="0,8,0,0" Content="{Binding InnerContent, ElementName=Control}">
+    <ui:CardControl Margin="0,8,0,0" Content="{Binding InnerContent, RelativeSource={RelativeSource AncestorType=UserControl}}">
         <ui:CardControl.Header>
             <StackPanel>
                 <Grid>
@@ -18,18 +18,18 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" FontSize="14" Text="{Binding Header, ElementName=Control}" FontWeight="Medium" />
+                    <TextBlock Grid.Column="0" FontSize="14" Text="{Binding Header, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="Medium" />
                     <TextBlock Grid.Column="1" Margin="4,0,0,0">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding HelpLink, ElementName=Control}" Value="{x:Null}">
+                                    <DataTrigger Binding="{Binding HelpLink, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="{x:Null}">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBlock.Style>
-                        <Hyperlink TextDecorations="None" ToolTip="{x:Static resources:Strings.Menu_MoreInfo}" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="{Binding HelpLink, ElementName=Control}">
+                        <Hyperlink TextDecorations="None" ToolTip="{x:Static resources:Strings.Menu_MoreInfo}" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="{Binding HelpLink, RelativeSource={RelativeSource AncestorType=UserControl}}">
                             <ui:SymbolIcon Symbol="QuestionCircle48" Margin="0,1,0,0">
                                 <ui:SymbolIcon.Style>
                                     <Style TargetType="ui:SymbolIcon" BasedOn="{StaticResource {x:Type ui:SymbolIcon}}">
@@ -53,11 +53,11 @@
                         </Hyperlink>
                     </TextBlock>
                 </Grid>
-                <local:MarkdownTextBlock Margin="0,2,0,0" FontSize="12" MarkdownText="{Binding Description, ElementName=Control}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}">
+                <local:MarkdownTextBlock Margin="0,2,0,0" FontSize="12" MarkdownText="{Binding Description, RelativeSource={RelativeSource AncestorType=UserControl}}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}">
                     <local:MarkdownTextBlock.Style>
                         <Style TargetType="local:MarkdownTextBlock">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Description, ElementName=Control}" Value="{x:Null}">
+                                <DataTrigger Binding="{Binding Description, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="{x:Null}">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
