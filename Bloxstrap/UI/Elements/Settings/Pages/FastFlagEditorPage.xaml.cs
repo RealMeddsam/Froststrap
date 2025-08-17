@@ -1199,6 +1199,90 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             }
         }
 
+        private void Editor_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                if (files.All(f => f.EndsWith(".json", StringComparison.OrdinalIgnoreCase) ||
+                                   f.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)))
+                {
+                    DragOverlay.Visibility = Visibility.Visible;
+                    e.Effects = DragDropEffects.Copy;
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            DragOverlay.Visibility = Visibility.Collapsed;
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void Editor_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                if (files.All(f => f.EndsWith(".json", StringComparison.OrdinalIgnoreCase) ||
+                                   f.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)))
+                {
+                    e.Effects = DragDropEffects.Copy;
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void Editor_DragLeave(object sender, DragEventArgs e)
+        {
+            DragOverlay.Visibility = Visibility.Collapsed;
+            e.Handled = true;
+        }
+
+        private void Editor_Drop(object sender, DragEventArgs e)
+        {
+            DragOverlay.Visibility = Visibility.Collapsed;
+
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+                return;
+
+            var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            foreach (var file in files)
+            {
+                if (!file.EndsWith(".json", StringComparison.OrdinalIgnoreCase) &&
+                    !file.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                {
+                    Frontend.ShowMessageBox(
+                        $"Invalid file type: {Path.GetFileName(file)}\nOnly .json and .txt are supported.",
+                        MessageBoxImage.Error
+                    );
+                    continue;
+                }
+
+                try
+                {
+                    string content = File.ReadAllText(file);
+                    ImportJSON(content);
+                }
+                catch (Exception ex)
+                {
+                    Frontend.ShowMessageBox(
+                        $"Failed to import \"{Path.GetFileName(file)}\": {ex.Message}",
+                        MessageBoxImage.Error
+                    );
+                }
+            }
+
+            e.Handled = true;
+        }
+
         private void Page_Loaded(object sender, RoutedEventArgs e) => ReloadList();
 
         private void DataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)

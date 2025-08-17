@@ -16,7 +16,7 @@
     mc:Ignorable="d">
 
 
-    <Grid Margin="0,0,14,14" Focusable="True">
+    <Grid x:Name="DropZone" Margin="0,0,14,14" Focusable="True" AllowDrop="True" DragEnter="Editor_DragEnter" DragLeave="Editor_DragLeave" Drop="Editor_Drop" DragOver="Editor_DragOver">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -227,5 +227,12 @@
                 </TextBlock.Style>
             </TextBlock>
         </Grid>
+
+        <Border x:Name="DragOverlay" Background="#80000000" Visibility="Collapsed" CornerRadius="4" Grid.RowSpan="5" BorderBrush="DodgerBlue" BorderThickness="3" Margin="0,0,0,-9" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="📂 Drop your JSON or TXT here" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <TextBlock Text="Only .json and .txt files are supported" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="14" Margin="0,8,0,0" HorizontalAlignment="Center" TextAlignment="Center"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </ui:UiPage>
