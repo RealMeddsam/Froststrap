@@ -152,7 +152,7 @@
             <StackPanel>
                 <ui:Button
                     Command="{Binding AddCustomDeathSoundCommand}"
-                    Content="Choose Sound"
+                    Content="Choose Sound..."
                     Icon="DocumentAdd16"
                     Visibility="{Binding ChooseCustomDeathSoundVisibility, Mode=OneWay}" />
                 <ui:Button
@@ -201,7 +201,7 @@
                     <StackPanel>
                         <ui:Button
                         Command="{Binding AddCustomShiftlockModCommand}"
-                        Content="Choose"
+                        Content="Choose Custom Shiftlock"
                         Icon="DocumentAdd16"
                         Visibility="{Binding ChooseCustomShiftlockVisibility, Mode=OneWay}" />
                         <ui:Button
