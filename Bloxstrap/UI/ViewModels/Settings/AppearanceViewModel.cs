@@ -221,11 +221,11 @@ namespace Bloxstrap.UI.ViewModels.Settings
                         _hasInitializedCustomGradient = true;
 
                         var defaultStops = new List<GradientStopData>
-                {
-                    new GradientStopData { Offset = 0.0, Color = "#4D5560" },
-                    new GradientStopData { Offset = 0.5, Color = "#383F47" },
-                    new GradientStopData { Offset = 1.0, Color = "#252A30" },
-                };
+                        {
+                            new GradientStopData { Offset = 0.0, Color = "#4D5560" },
+                            new GradientStopData { Offset = 0.5, Color = "#383F47" },
+                            new GradientStopData { Offset = 1.0, Color = "#252A30" },
+                        };
 
                         App.Settings.Prop.CustomGradientStops = defaultStops;
 
@@ -265,11 +265,11 @@ namespace Bloxstrap.UI.ViewModels.Settings
             GradientStops.Clear();
 
             var defaultStops = new List<GradientStopData>
-    {
-        new GradientStopData { Offset = 0.0, Color = "#4D5560" },
-        new GradientStopData { Offset = 0.5, Color = "#383F47" },
-        new GradientStopData { Offset = 1.0, Color = "#252A30" },
-    };
+            {
+                new GradientStopData { Offset = 0.0, Color = "#4D5560" },
+                new GradientStopData { Offset = 0.5, Color = "#383F47" },
+                new GradientStopData { Offset = 1.0, Color = "#252A30" },
+            };
 
             foreach (var stop in defaultStops)
             {

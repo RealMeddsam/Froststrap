@@ -84,6 +84,7 @@ namespace Bloxstrap.Models.Persistable
         public bool WPFSoftwareRender { get; set; } = false;
         public bool DisableAnimations { get; set; } = false;
         public bool UpdateRoblox { get; set; } = true;
+        public SaveAndLaunch SaveAndLaunchMode { get; set; } = SaveAndLaunch.RobloxPlayer;
         public string Channel { get; set; } = RobloxInterfaces.Deployment.DefaultChannel;
         public ChannelChangeMode ChannelChangeMode { get; set; } = ChannelChangeMode.Ignore;
         public string ChannelHash { get; set; } = "";
