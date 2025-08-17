@@ -2412,4 +2412,7 @@ You can no longer use Bloxshade with Froststrap.</value>
   <data name="CustomTheme.Editor.Errors.PreviewFailed" xml:space="preserve">
     <value>Failed to preview theme: {0}</value>
   </data>
+  <data name="CustomTheme.Errors.InvalidBackdrop" xml:space="preserve">
+    <value>Tried to use invalid WindowBackdropType: {0}</value>
+  </data>
 </root>

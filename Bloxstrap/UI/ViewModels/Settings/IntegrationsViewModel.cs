@@ -73,6 +73,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 if (!value)
                 {
                     ShowServerDetailsEnabled = false;
+                    PlayerLogsEnabled = false;
                     ShowGameHistoryEnabled = false;
                     PlaytimeCounterEnabled = false;
                     DisableAppPatchEnabled = false;
@@ -80,6 +81,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
                     DiscordActivityJoinEnabled = false;
 
                     OnPropertyChanged(nameof(ShowServerDetailsEnabled));
+                    OnPropertyChanged(nameof(PlayerLogsEnabled));
                     OnPropertyChanged(nameof(ShowGameHistoryEnabled));
                     OnPropertyChanged(nameof(PlaytimeCounterEnabled));
                     OnPropertyChanged(nameof(DisableAppPatchEnabled));

@@ -1538,6 +1538,15 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tried to use invalid WindowBackdropType: {0}.
+        /// </summary>
+        public static string CustomTheme_Errors_InvalidBackdrop {
+            get {
+                return ResourceManager.GetString("CustomTheme.Errors.InvalidBackdrop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Theme XML root is not {0}.
         /// </summary>
         public static string CustomTheme_Errors_InvalidRoot {
