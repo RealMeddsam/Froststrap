@@ -19,6 +19,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         public EventHandler? RequestSaveNoticeEvent;
         public EventHandler? RequestCloseWindowEvent;
+        public event EventHandler? SettingsSaved;
 
         public bool TestModeEnabled
         {
@@ -117,9 +118,13 @@ namespace Bloxstrap.UI.ViewModels.Settings
             CloseWindow();
         }
 
-        private void RestartApp()
+        private async void RestartApp()
         {
             SaveSettings();
+
+            SettingsSaved?.Invoke(this, EventArgs.Empty);
+
+            await Task.Delay(750);
 
             var startInfo = new ProcessStartInfo(Environment.ProcessPath!)
             {

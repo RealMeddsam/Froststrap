@@ -46,6 +46,7 @@ namespace Bloxstrap.Models.Persistable
         public bool ShowPresetColumn { get; set; } = false;
         public bool ShowFlagCount { get; set; } = true;
         public bool ShowAddWithID { get; set; } = false;
+        public bool AutomaticallyRemovedAltManually { get; set; } = true;
 
         // Appearance Page
         public BootstrapperStyle BootstrapperStyle { get; set; } = BootstrapperStyle.CustomFluentDialog;

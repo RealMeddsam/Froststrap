@@ -542,9 +542,17 @@ namespace Bloxstrap
 
             var preferVulkan = GetValue("FFlagDebugGraphicsPreferVulkan")?.ToLower() == "true";
 
-            if (preferVulkan)
+            if (App.Settings.Prop.AutomaticallyRemovedAltManually)
             {
-                SetPreset("Rendering.ManualFullscreen", null);
+                if (preferVulkan)
+                {
+                    SetPreset("Rendering.ManualFullscreen", null);
+                }
+                else
+                {
+                    if (GetPreset("Rendering.ManualFullscreen") != "False")
+                        SetPreset("Rendering.ManualFullscreen", "False");
+                }
             }
             else
             {

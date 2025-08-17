@@ -34,10 +34,9 @@
         </Grid>
 
         <ui:TitleBar Grid.Row="0" Grid.ColumnSpan="2" Padding="8" Title="Advanced Settings" Icon="pack://application:,,,/Bloxstrap.ico" ShowMinimize="False" ShowMaximize="False" CanMaximize="False" KeyboardNavigation.TabNavigation="None" />
-        <StackPanel Margin="0,30,0,0" >
+        <StackPanel Margin="5,30,5,10" >
 
             <controls:OptionControl
-                    Margin="5,0,5,0"
                     Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_CopyFormat_Title}" 
                     Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_CopyFormat_Description}"
                     HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#copy-format" >
@@ -54,14 +53,18 @@
             </controls:OptionControl>
 
             <controls:OptionControl
-                Margin="5,0,5,0"
                 Header="Ctrl+C Json Format" 
                 Description="Copies selected flags as JSON using the chosen Copy Format when pressing Ctrl+C.">
                 <ui:ToggleSwitch IsChecked="{Binding ShowCtrlCJsonFormatSetting, Mode=TwoWay}" />
             </controls:OptionControl>
 
             <controls:OptionControl
-                    Margin="5,0,5,0"
+                Header="Vulkan Fix" 
+                Description="Automatically removes alt manually fflag which causes crashes for vulkan for some ppl">
+                <ui:ToggleSwitch IsChecked="{Binding AutomaticallyRemovedAltManually, Mode=TwoWay}" />
+            </controls:OptionControl>
+
+            <controls:OptionControl
                     Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_PresetColumn_Title}" 
                     Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_PresetColumn_Description}"
                     HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#preset-column" >
@@ -69,7 +72,6 @@
             </controls:OptionControl>
 
             <controls:OptionControl
-                    Margin="5,0,5,0"
                     Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_ToggleFlagCount_Title}" 
                     Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_ToggleFlagCount_Description}"
                     HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#flag-count" >
@@ -77,7 +79,6 @@
             </controls:OptionControl>
 
             <controls:OptionControl
-                Margin="5,0,5,10"
                 Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_AddWithID_Title}" 
                 Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_AddWithID_Description}"
                 HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#add-with-id" >

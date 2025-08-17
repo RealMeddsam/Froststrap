@@ -80,6 +80,19 @@ namespace Bloxstrap.UI.ViewModels.Dialogs
             }
         }
 
+        public bool AutomaticallyRemovedAltManually
+        {
+            get => App.Settings.Prop.AutomaticallyRemovedAltManually;
+            set
+            {
+                if (App.Settings.Prop.AutomaticallyRemovedAltManually != value)
+                {
+                    App.Settings.Prop.AutomaticallyRemovedAltManually = value;
+                    OnPropertyChanged(nameof(AutomaticallyRemovedAltManually));
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
