@@ -193,7 +193,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 var imageBytes = await http.GetByteArrayAsync(url);
 
                 string hash = ComputeHash(imageBytes);
-                string iconDir = Paths.ShortcutIcons;
+                string iconDir = Paths.Cache;
                 Directory.CreateDirectory(iconDir);
 
                 string icoPath = Path.Combine(iconDir, $"{hash}.ico");
@@ -326,8 +326,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
                     .Select(x => Path.GetFullPath(x.IconPath))
                     .ToArray();
 
-                string[] allIcons = Directory.Exists(Paths.ShortcutIcons)
-                    ? Directory.GetFiles(Paths.ShortcutIcons, "*.ico")
+                string[] allIcons = Directory.Exists(Paths.Cache)
+                    ? Directory.GetFiles(Paths.Cache, "*.ico")
                     : Array.Empty<string>();
 
                 foreach (var icon in allIcons)

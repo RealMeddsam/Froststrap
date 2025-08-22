@@ -12,15 +12,8 @@ namespace Bloxstrap.UI.ViewModels.Dialogs
 
         private readonly Dictionary<string, ClientVersion> _channelInfoCache = new();
 
-        private static readonly string CacheFilePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Froststrap",
-            "channelCache.json");
-
-        private static readonly string CacheMetaFilePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Froststrap",
-            "channelCacheMeta.json");
+        private static readonly string CacheFilePath = Path.Combine(Paths.Cache, "channelCache.json");
+        private static readonly string CacheMetaFilePath = Path.Combine(Paths.Cache, "channelCacheMeta.json");
 
         private const int CacheExpiryHours = 24;
 

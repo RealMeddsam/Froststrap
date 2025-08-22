@@ -18,6 +18,7 @@
 
         public static string Base { get; private set; } = "";
         public static string Downloads { get; private set; } = "";
+        public static string Cache { get; private set; } = "";
 
         public static string SavedFlagProfiles { get; private set; } = "";
         public static string Logs { get; private set; } = "";
@@ -29,10 +30,7 @@
         public static string RobloxLogs { get; private set; } = "";
         public static string RobloxCache { get; private set; } = "";
         public static string CustomCursors { get; private set; } = "";
-
         public static string Application { get; private set; } = "";
-        public static string ShortcutIcons => Path.Combine(LocalAppData, App.ProjectName, "ShortcutIcons");
-        public static string FastFlagCache { get; private set; } = "";
 
         public static string CustomFont => Path.Combine(Modifications, "content", "fonts", "CustomFont.ttf");
 
@@ -52,13 +50,9 @@
             Roblox = Path.Combine(Base, "Roblox");
             CustomThemes = Path.Combine(Base, "CustomThemes");
             CustomCursors = Path.Combine(Base, "CustomCursorsSets");
-            FastFlagCache = Path.Combine(Base, "FastFlagCache");
+            Cache = Path.Combine(Base, "Cache");
 
             Application = Path.Combine(Base, $"{App.ProjectName}.exe");
-
-            // Ensure ShortcutIcons directory exists
-            Directory.CreateDirectory(ShortcutIcons);
-            Directory.CreateDirectory(FastFlagCache);
         }
 
     }

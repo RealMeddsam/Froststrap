@@ -306,7 +306,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
         }
 
-        private static readonly string CacheFolder = Paths.FastFlagCache;
+        private static readonly string CacheFolder = Paths.Cache;
         private static readonly TimeSpan CacheExpiry = TimeSpan.FromDays(1);
 
         private static readonly string[] JsonUrls = new[]
