@@ -214,7 +214,7 @@
         <ui:CardControl Margin="0,8,0,0">
             <ui:CardControl.Header>
                 <StackPanel>
-                    <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Channel_ChangeAction_Title}" />
+                    <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Channel_ChangeAction_Title}" FontWeight="Medium" />
                     <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Channel_ChangeAction_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
                 </StackPanel>
             </ui:CardControl.Header>

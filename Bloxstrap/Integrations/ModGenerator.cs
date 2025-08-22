@@ -247,7 +247,6 @@ namespace Bloxstrap.Integrations
                         }
 
                         Color applyColor;
-
                         if (gradient != null && gradient.Count > 0)
                         {
                             float t = (float)x / (original.Width - 1);
@@ -261,19 +260,20 @@ namespace Bloxstrap.Integrations
                         dstPtr[idx] = applyColor.B;
                         dstPtr[idx + 1] = applyColor.G;
                         dstPtr[idx + 2] = applyColor.R;
-                        dstPtr[idx + 3] = a;
+                        dstPtr[idx + 3] = applyColor.A;
                     }
                 }
             }
 
             original.UnlockBits(srcData);
             recolored.UnlockBits(dstData);
-
             return recolored;
         }
 
         private static Color InterpolateGradient(List<GradientStop> gradient, float t)
         {
+            t = Math.Clamp(t, 0f, 1f);
+
             GradientStop left = gradient[0];
             GradientStop right = gradient[^1];
 
@@ -288,13 +288,14 @@ namespace Bloxstrap.Integrations
             }
 
             float span = right.Stop - left.Stop;
-            float localT = span > 0 ? (t - left.Stop) / span : 0f;
+            float localT = span > 0f ? (t - left.Stop) / span : 0f;
 
-            int r = (int)(left.Color.R + (right.Color.R - left.Color.R) * localT);
-            int g = (int)(left.Color.G + (right.Color.G - left.Color.G) * localT);
-            int b = (int)(left.Color.B + (right.Color.B - left.Color.B) * localT);
+            int r = Math.Clamp((int)(left.Color.R + (right.Color.R - left.Color.R) * localT), 0, 255);
+            int g = Math.Clamp((int)(left.Color.G + (right.Color.G - left.Color.G) * localT), 0, 255);
+            int b = Math.Clamp((int)(left.Color.B + (right.Color.B - left.Color.B) * localT), 0, 255);
+            int a = Math.Clamp((int)(left.Color.A + (right.Color.A - left.Color.A) * localT), 0, 255);
 
-            return Color.FromArgb(r, g, b);
+            return Color.FromArgb(a, r, g, b);
         }
 
         private static void ReplaceFileWithRetry(string originalPath, string tempPath)

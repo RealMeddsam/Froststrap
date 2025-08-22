@@ -3537,7 +3537,7 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reverts the Roblox topbar icon to older roblox icons. Note: This might change the taskbar icon sometimes..
+        ///   Looks up a localized string similar to Reverts the Roblox Taskbar/Topbar icon to older roblox icons. Note: This might not work if Roblox takes over 7 seconds to launch..
         /// </summary>
         public static string Menu_Behaviour_OldRobloxIcon_Description {
             get {
@@ -3546,7 +3546,7 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Old Roblox Icons.
+        ///   Looks up a localized string similar to Taskbar Icon.
         /// </summary>
         public static string Menu_Behaviour_OldRobloxIcon_Title {
             get {

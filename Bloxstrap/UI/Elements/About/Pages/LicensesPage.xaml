@@ -66,6 +66,22 @@
                 Grid.Row="0"
                 Grid.Column="2"
                 Margin="0,8,8,0"
+                VerticalAlignment="Top"
+                Command="models:GlobalViewModel.OpenWebpageCommand"
+                CommandParameter="https://github.com/klikos-modloader/klikos-modloader/blob/main/LICENSE">
+                <StackPanel>
+                    <TextBlock FontSize="14" Text="Kliko Modloader - MIT" />
+                    <TextBlock
+                        Margin="0,2,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="{x:Static resources:Strings.Menu_About_Licenses_MIT}" />
+                </StackPanel>
+            </ui:CardAction>
+            <ui:CardAction
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="0,8,8,0"
                 Command="models:GlobalViewModel.OpenWebpageCommand"
                 CommandParameter="https://github.com/lepoco/wpfui/blob/main/LICENSE">
                 <StackPanel>
@@ -79,7 +95,7 @@
             </ui:CardAction>
             <ui:CardAction
                 Grid.Row="1"
-                Grid.Column="0"
+                Grid.Column="1"
                 Margin="0,8,8,0"
                 Command="models:GlobalViewModel.OpenWebpageCommand"
                 CommandParameter="https://github.com/securifybv/ShellLink/blob/master/LICENSE.txt">
@@ -95,7 +111,7 @@
 
             <ui:CardAction
                 Grid.Row="1"
-                Grid.Column="1"
+                Grid.Column="2"
                 Margin="0,8,8,0"
                 Command="models:GlobalViewModel.OpenWebpageCommand"
                 CommandParameter="https://github.com/Lachee/discord-rpc-csharp/blob/master/LICENSE">
@@ -109,8 +125,8 @@
                 </StackPanel>
             </ui:CardAction>
             <ui:CardAction
-                Grid.Row="1"
-                Grid.Column="2"
+                Grid.Row="2"
+                Grid.Column="0"
                 Margin="0,8,8,0"
                 VerticalAlignment="Top"
                 Command="models:GlobalViewModel.OpenWebpageCommand"
@@ -127,7 +143,7 @@
 
             <ui:CardAction
                 Grid.Row="2"
-                Grid.Column="0"
+                Grid.Column="1"
                 Margin="0,8,8,0"
                 Command="models:GlobalViewModel.OpenWebpageCommand"
                 CommandParameter="https://github.com/icsharpcode/SharpZipLib/blob/master/LICENSE.txt">
@@ -142,7 +158,7 @@
             </ui:CardAction>
             <ui:CardAction
                 Grid.Row="2"
-                Grid.Column="1"
+                Grid.Column="2"
                 Margin="0,8,8,0"
                 Command="models:GlobalViewModel.OpenWebpageCommand"
                 CommandParameter="https://github.com/xoofx/markdig/blob/master/license.txt">
@@ -156,8 +172,8 @@
                 </StackPanel>
             </ui:CardAction>
             <ui:CardAction
-                Grid.Row="2"
-                Grid.Column="2"
+                Grid.Row="3"
+                Grid.Column="0"
                 Margin="0,8,8,0"
                 VerticalAlignment="Top"
                 Command="models:GlobalViewModel.OpenWebpageCommand"
@@ -173,7 +189,7 @@
             </ui:CardAction>
             <ui:CardAction
                 Grid.Row="3"
-                Grid.Column="0"
+                Grid.Column="1"
                 Margin="0,8,8,0"
                 Command="models:GlobalViewModel.OpenWebpageCommand"
                 CommandParameter="https://github.com/sharpdx/SharpDX/blob/master/LICENSE">
@@ -188,7 +204,7 @@
             </ui:CardAction>
             <ui:CardAction
                 Grid.Row="3"
-                Grid.Column="1"
+                Grid.Column="2"
                 Margin="0,8,8,0"
                 Command="models:GlobalViewModel.OpenWebpageCommand"
                 CommandParameter="https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md">
@@ -202,8 +218,8 @@
                 </StackPanel>
             </ui:CardAction>
             <ui:CardAction
-                Grid.Row="3"
-                Grid.Column="2"
+                Grid.Row="4"
+                Grid.Column="1"
                 Margin="0,8,8,0"
                 VerticalAlignment="Top"
                 Command="models:GlobalViewModel.OpenWebpageCommand"
