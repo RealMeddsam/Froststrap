@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
+using static Bloxstrap.UI.Elements.Settings.Pages.ModsPage;
 
 namespace Bloxstrap.UI.ViewModels.Settings
 {
@@ -309,6 +310,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
                     OnPropertyChanged(nameof(DeleteCustomDeathSoundVisibility));
                 });
         }
+
+        public ObservableCollection<GradientStopViewModel> GradientStops { get; set; } = new();
 
 
         #region Custom Cursor Set Related Code
