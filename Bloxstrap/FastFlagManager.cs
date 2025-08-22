@@ -1,5 +1,4 @@
 ﻿using Bloxstrap.Enums.FlagPresets;
-using System.Security.Policy;
 using System.Windows;
 
 namespace Bloxstrap
@@ -21,7 +20,6 @@ namespace Bloxstrap
             // Activity Watcher
             { "Players.LogLevel", "FStringDebugLuaLogLevel" },
             { "Players.LogPattern", "FStringDebugLuaLogPattern" },
-            { "Instances.WndCheck", "FLogWndProcessCheck" },
             { "Flog.Network", "FLogNetwork" },
 
             // Preset Flags

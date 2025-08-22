@@ -34,8 +34,11 @@ namespace Bloxstrap.UI.ViewModels.Settings
             get => App.Settings.Prop.MultiInstanceLaunching;
             set
             {
-                App.Settings.Prop.MultiInstanceLaunching = value;
-                App.FastFlags.SetPreset("Instances.WndCheck", value ? "0" : null);
+                if (App.Settings.Prop.MultiInstanceLaunching != value)
+                {
+                    App.Settings.Prop.MultiInstanceLaunching = value;
+                    OnPropertyChanged(nameof(MultiInstances));
+                }
             }
         }
 
