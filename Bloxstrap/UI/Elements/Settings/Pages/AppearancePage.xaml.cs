@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Bloxstrap.UI.Elements.Settings.Pages
 {
@@ -103,7 +104,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             }
         }
 
-        private void OnGradientOffsetChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void OnGradientSliderReleased(object sender, MouseButtonEventArgs e)
         {
             if (DataContext is AppearanceViewModel vm)
             {

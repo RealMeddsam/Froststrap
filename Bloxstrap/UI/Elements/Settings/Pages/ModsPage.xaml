@@ -401,7 +401,6 @@
                             </ui:CardExpander>
                         </StackPanel>
                     </ui:CardExpander>
-
                 </StackPanel>
             </TabItem>
 

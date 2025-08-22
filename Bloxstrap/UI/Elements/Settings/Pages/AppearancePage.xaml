@@ -72,7 +72,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Text="Offset:" VerticalAlignment="Center" Margin="4,0,4,0" Grid.Column="0"/>
-                                    <Slider Minimum="0" Maximum="1" Value="{Binding Offset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="0.01" IsSnapToTickEnabled="True" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="2" Margin="4,6" ValueChanged="OnGradientOffsetChanged" Grid.Column="1"/>
+                                    <Slider Minimum="0" Maximum="1" Value="{Binding Offset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PreviewMouseLeftButtonUp="OnGradientSliderReleased" TickFrequency="0.01" IsSnapToTickEnabled="True" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="2" Margin="4,8,4,8" Grid.Column="1"/>
                                     <TextBlock Text="{Binding Offset, StringFormat=F2}" VerticalAlignment="Center" Margin="8,0,8,0" Width="30" Grid.Column="2"/>
                                     <TextBox Text="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="130" Margin="0,0,8,0" VerticalAlignment="Center" TextChanged="OnGradientColorHexChanged" Grid.Column="3" MinWidth="100"/>
                                     <Button Content="Color" Width="75" Margin="0,0,4,0" Tag="{Binding}" Click="OnChangeGradientColor_Click" Grid.Column="4"/>
@@ -155,7 +155,7 @@
 
                     <StackPanel Margin="0,10,0,0">
                         <TextBlock Text="Black Overlay Opacity" Margin="0,0,0,4" FontWeight="Medium" />
-                        <Slider Minimum="0" Maximum="1" Value="{Binding BlackOverlayOpacity, Mode=TwoWay}" TickFrequency="0.05" IsSnapToTickEnabled="True" />
+                        <Slider Minimum="0" Maximum="1" Value="{Binding BlackOverlayOpacity, Mode=TwoWay}" TickFrequency="0.01" IsSnapToTickEnabled="True" />
                         <TextBlock Text="{Binding BlackOverlayOpacity, StringFormat=P0}" HorizontalAlignment="Right" Margin="0,4,0,0" />
                     </StackPanel>
                 </StackPanel>
