@@ -343,7 +343,7 @@ namespace Bloxstrap
                 if (App.Settings.Prop.AutoCloseCrashHandler)
                 {
                     SetStatus("Closing Roblox Crash Handler...");
-                    await Task.Delay(7500);
+                    await Task.Delay(1500);
 
                     try
                     {
@@ -719,21 +719,21 @@ namespace Bloxstrap
             if (icon == RobloxIcon.Default)
                 return;
 
-            if (!process.WaitForInputIdle(5000))
+            if (!process.WaitForInputIdle(3000))
             {
                 App.Logger.WriteLine(LOG_IDENT, "WaitForInputIdle timed out, window might not be ready.");
             }
 
             IntPtr hwnd = IntPtr.Zero;
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 75; i++)
             {
                 hwnd = process.MainWindowHandle;
 
                 if (hwnd != IntPtr.Zero && IsWindowVisible(hwnd))
                     break;
 
-                Thread.Sleep(300);
+                Thread.Sleep(100);
             }
 
             if (hwnd == IntPtr.Zero || !IsWindowVisible(hwnd))
