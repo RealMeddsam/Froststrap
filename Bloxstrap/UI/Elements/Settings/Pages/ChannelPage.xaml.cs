@@ -50,22 +50,24 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 FileName = "FroststrapSettings.json"
             };
 
-            if (dialog.ShowDialog() == true)
-            {
-                try
-                {
-                    string json = JsonSerializer.Serialize(App.Settings, new JsonSerializerOptions
-                    {
-                        WriteIndented = true
-                    });
+            if (dialog.ShowDialog() != true)
+                return;
 
-                    File.WriteAllText(dialog.FileName, json);
-                    Frontend.ShowMessageBox("Settings exported successfully.", MessageBoxImage.Information);
-                }
-                catch (Exception ex)
+            try
+            {
+                string source = Path.Combine(Paths.Base, "Settings.json");
+                if (!File.Exists(source))
                 {
-                    Frontend.ShowMessageBox($"Failed to export settings: {ex.Message}", MessageBoxImage.Error);
+                    Frontend.ShowMessageBox("No settings file found to export.", MessageBoxImage.Warning);
+                    return;
                 }
+
+                File.Copy(source, dialog.FileName, overwrite: true);
+                Frontend.ShowMessageBox($"Settings exported successfully to:\n{dialog.FileName}", MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Failed to export settings: {ex.Message}", MessageBoxImage.Error);
             }
         }
 
@@ -76,31 +78,22 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 Filter = "JSON Files (*.json)|*.json"
             };
 
-            if (dialog.ShowDialog() == true)
+            if (dialog.ShowDialog() != true)
+                return;
+
+            try
             {
-                try
-                {
-                    string json = File.ReadAllText(dialog.FileName);
-                    var imported = JsonSerializer.Deserialize<Models.Persistable.Settings>(json);
+                string target = Path.Combine(Paths.Base, "Settings.json");
 
-                    if (imported is not null)
-                    {
-                        App.Settings.Prop = imported;
-                        App.Settings.Save();
+                File.Copy(dialog.FileName, target, overwrite: true);
 
-                        Frontend.ShowMessageBox("Settings imported successfully. Restarting the app...", MessageBoxImage.Information);
-                        System.Windows.Forms.Application.Restart();
-                        Application.Current.Shutdown();
-                    }
-                    else
-                    {
-                        Frontend.ShowMessageBox("The selected file is not a valid settings file.", MessageBoxImage.Warning);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Frontend.ShowMessageBox($"Failed to import settings: {ex.Message}", MessageBoxImage.Error);
-                }
+                Frontend.ShowMessageBox("Settings imported successfully. Restarting the app...", MessageBoxImage.Information);
+                System.Windows.Forms.Application.Restart();
+                Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox($"Failed to import settings: {ex.Message}", MessageBoxImage.Error);
             }
         }
 
