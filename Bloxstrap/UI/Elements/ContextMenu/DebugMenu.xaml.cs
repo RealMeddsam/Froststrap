@@ -47,15 +47,22 @@ namespace Bloxstrap.UI.Elements.ContextMenu
 
             try
             {
-                var contents = File.ReadAllLines(filePath);
                 LogListBox.Items.Clear();
-                foreach (var line in contents) LogListBox.Items.Add(line);
+                using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var reader = new StreamReader(stream);
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (line != null)
+                        LogListBox.Items.Add(line);
+                }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 LogListBox.Items.Clear();
                 LogListBox.Items.Add($"Failed to read log file:\n{ex.Message}");
             }
+
             UpdateButtonStates();
         }
 
@@ -118,13 +125,18 @@ namespace Bloxstrap.UI.Elements.ContextMenu
             string filter = SearchBox.Text.Trim();
             try
             {
-                var allLines = File.ReadAllLines(filePath);
                 LogListBox.Items.Clear();
-                foreach (var line in allLines)
-                    if (line.Contains(filter, System.StringComparison.OrdinalIgnoreCase))
+                using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var reader = new StreamReader(stream);
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (line != null && line.Contains(filter, StringComparison.OrdinalIgnoreCase))
                         LogListBox.Items.Add(line);
+                }
             }
             catch { }
+
             UpdateButtonStates();
         }
 
