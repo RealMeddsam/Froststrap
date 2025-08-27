@@ -46,6 +46,7 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 - Multi-instance launching support
 
 ### Mods
+- Generate Mods using custom gradient colors easily
 - Quick use Custom Cursors and Custom Shiftlocks easily
 - Have multiple Custom Cursor Sets ready for use with the click of a button
 - Easily add custom death sounds
