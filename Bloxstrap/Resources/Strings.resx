@@ -1596,7 +1596,7 @@ Some text might not be translated to preferred language.</value>
     <value>Note: This setting blocks some data collection by Tencent and the Chinese government, but not all.</value>
   </data>
   <data name="Menu.FastFlags.Presets.Tencent.Title" xml:space="preserve">
-    <value>Block Tencent</value>
+    <value>Disable China Integrations</value>
   </data>
   <data name="Menu.FastFlags.Presets.VNG.Description" xml:space="preserve">
     <value>Note: This setting blocks some data collection by VNG and the Vietnamese government, but not all.</value>
@@ -1726,6 +1726,9 @@ Some text might not be translated to preferred language.</value>
   </data>
   <data name="Common.Default" xml:space="preserve">
     <value>Default</value>
+  </data>
+  <data name="Common.Disabled" xml:space="preserve">
+    <value>Disabled</value>
   </data>
   <data name="Common.Automatic" xml:space="preserve">
     <value>Automatic</value>

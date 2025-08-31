@@ -507,7 +507,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public void BrowseImage()
         {
             var openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image files (*.png;*.jpg;*.jpeg;*.gif)|*.png;*.jpg;*.jpeg;*.gif|All files (*.*)|*.*";
+            openFileDialog.Filter = "Image files (*.png;*.jpg;*.jpeg;*.gif)|*.png;*.jpg;*.jpeg;*.gif";
             if (openFileDialog.ShowDialog() == true)
             {
                 string appDataFolder = Path.Combine(

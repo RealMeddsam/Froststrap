@@ -17,9 +17,11 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
         private FastFlagsViewModel _viewModel;
         private List<FrameworkElement> _optionControls = new();
         private List<CardExpander> _cardExpanders;
+        private List<FrameworkElement> _miscControls = new();
 
         private List<FrameworkElement> _recommendedOptions = new();
         private List<FrameworkElement> _experimentalOptions = new();
+        private List<FrameworkElement> _miscOptions = new();
         private List<FrameworkElement> _debugOptions = new();
 
         // too lazy to add to enums so im doing it here
@@ -44,6 +46,20 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlags Settings");
         }
 
+        private readonly HashSet<string> _alwaysHiddenOptions = new()
+        {
+            "ManagerEnabled",
+            "Reset",
+            "RecommendedSeperator",
+            "ExperimentalSeperator",
+            "MiscSeperator",
+            "DebugSeperator",
+            "JsonInputTextBox",
+            "ConvertButton",
+            "EasterEggNumber"
+        };
+
+
         #region FFlag Options
 
         private void FastFlagsPage_Loaded(object sender, RoutedEventArgs e)
@@ -59,6 +75,10 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     _optionControls.Add(option);
             }
 
+            _miscControls = FindVisualChildren<FrameworkElement>(this)
+                .Where(ctrl => _alwaysHiddenOptions.Contains(ctrl.Name))
+                .ToList();
+
             _cardExpanders = new List<CardExpander>
             {
                 SystemExpander,
@@ -70,8 +90,8 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 SystemExperimentalExpander,
                 RenderingAdvancedExpander,
                 NetworkExpander,
+                AnimationExpander,
                 MiscExpander,
-                SkyExpander,
             };
 
             _recommendedOptions = new List<FrameworkElement>
@@ -118,12 +138,11 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             {
                 BypassVulkan,
                 MemoryProbing,
+                CpuBG,
                 LightCulling,
                 NewFrameRateSystem,
                 PreRender,
-                RainbowSky,
-                BlackSky,
-                WhiteSky,
+                CFrame,
                 LowPolyMeshes,
                 FrameCreationBufferPercentage,
                 StartingGraphicsLevel,
@@ -139,6 +158,13 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 BufferArray,
                 PhysicSenderRate,
                 MTU,
+            };
+
+            _miscOptions = new List<FrameworkElement>
+            {
+                IK,
+                DisableDynamicHeadAnimation,
+                AnimationSmoothing,
                 UnthemedInstances,
                 RedFont,
                 Pseudolocalization,
@@ -189,6 +215,13 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
             bool anyVisible = false;
 
+            foreach (var misc in _miscControls)
+            {
+                if (misc != null)
+                    misc.Visibility = isSearching ? Visibility.Collapsed : Visibility.Visible;
+            }
+
+            // Filter OptionControls based on search
             foreach (var option in _optionControls)
             {
                 string? header = option.GetType().GetProperty("Header")?.GetValue(option)?.ToString();
@@ -220,20 +253,14 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     anyVisible = true;
             }
 
-            if (isSearching)
-            {
-                if (ManagerEnabled != null)
-                    ManagerEnabled.Visibility = Visibility.Collapsed;
-                if (Reset != null)
-                    Reset.Visibility = Visibility.Collapsed;
-            }
-
             // Show/hide category headers based on visible options
             RecommendedTextBlock.Visibility = _recommendedOptions.Exists(opt => opt.Visibility == Visibility.Visible)
                 ? Visibility.Visible : Visibility.Collapsed;
             ExperimentalTextBlock.Visibility = _experimentalOptions.Exists(opt => opt.Visibility == Visibility.Visible)
                 ? Visibility.Visible : Visibility.Collapsed;
             DebugTextBlock.Visibility = _debugOptions.Exists(opt => opt.Visibility == Visibility.Visible)
+                ? Visibility.Visible : Visibility.Collapsed;
+            MiscTextBlock.Visibility = _miscOptions.Exists(opt => opt.Visibility == Visibility.Visible)
                 ? Visibility.Visible : Visibility.Collapsed;
 
             // Show/hide and expand/collapse card expanders based on visible options

@@ -10,7 +10,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
             foreach (var entry in RobloxIconEx.Selections)
                 RobloxIcons.Add(new RobloxIconEntry { IconType = (RobloxIcon)entry });
-
         }
 
         public ObservableCollection<ProcessPriorityOption> ProcessPriorityOptions { get; } =
@@ -32,14 +31,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public bool MultiInstances
         {
             get => App.Settings.Prop.MultiInstanceLaunching;
-            set
-            {
-                if (App.Settings.Prop.MultiInstanceLaunching != value)
-                {
-                    App.Settings.Prop.MultiInstanceLaunching = value;
-                    OnPropertyChanged(nameof(MultiInstances));
-                }
-            }
+            set => App.Settings.Prop.MultiInstanceLaunching = value;
         }
 
         public bool BackgroundUpdates

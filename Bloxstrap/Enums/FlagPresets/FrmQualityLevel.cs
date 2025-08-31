@@ -2,7 +2,7 @@
 {
     public enum QualityLevel
     {
-        [EnumName(FromTranslation = "Disabled")]
+        [EnumName(FromTranslation = "Common.Disabled")]
         Disabled,
 
         [EnumName(StaticName = "Level 1")]
@@ -35,7 +35,7 @@
         [EnumName(StaticName = "Level 10")]
         Level10,
 
-        [EnumName(FromTranslation = "Level 11")]
+        [EnumName(StaticName = "Level 11")]
         Level11,
 
         [EnumName(StaticName = "Level 12")]

@@ -601,6 +601,15 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disabled.
+        /// </summary>
+        public static string Common_Disabled {
+            get {
+                return ResourceManager.GetString("Common.Disabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Discord Rich Presence.
         /// </summary>
         public static string Common_DiscordRichPresence {
@@ -5431,7 +5440,7 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Block Tencent.
+        ///   Looks up a localized string similar to Disable China Integrations.
         /// </summary>
         public static string Menu_FastFlags_Presets_Tencent_Title {
             get {

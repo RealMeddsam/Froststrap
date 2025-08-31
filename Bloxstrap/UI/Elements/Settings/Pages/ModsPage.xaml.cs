@@ -377,14 +377,33 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     if (def.W <= 0 || def.H <= 0) continue;
                     var rect = new Rectangle(def.X, def.Y, def.W, def.H);
 
-                    if (customRoblox != null && string.Equals(def.Name, "roblox", StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(def.Name, "roblox", StringComparison.OrdinalIgnoreCase))
                     {
-                        using (var g = Graphics.FromImage(output))
+                        if (customRoblox != null)
                         {
-                            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                            g.CompositingMode = CompositingMode.SourceOver;
-                            g.DrawImage(customRoblox, rect);
+                            using (var g = Graphics.FromImage(output))
+                            {
+                                g.CompositingMode = CompositingMode.SourceCopy;
+                                using (var clearBrush = new SolidBrush(Color.FromArgb(0, 0, 0, 0)))
+                                {
+                                    g.FillRectangle(clearBrush, rect);
+                                }
+
+                                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                g.CompositingMode = CompositingMode.SourceOver;
+                                g.DrawImage(customRoblox, rect);
+                            }
                         }
+                        else
+                        {
+                            using (var croppedOriginal = sheetBmp.Clone(rect, sheetBmp.PixelFormat))
+                            using (var g = Graphics.FromImage(output))
+                            {
+                                g.CompositingMode = CompositingMode.SourceOver;
+                                g.DrawImage(croppedOriginal, rect);
+                            }
+                        }
+
                         continue;
                     }
 

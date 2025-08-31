@@ -2,7 +2,7 @@
 {
     public enum TextureSkipping
     {
-        [EnumName(FromTranslation = "Disabled")]
+        [EnumName(StaticName = "No Skip")]
         Noskip,
 
         [EnumName(StaticName = "1x")]

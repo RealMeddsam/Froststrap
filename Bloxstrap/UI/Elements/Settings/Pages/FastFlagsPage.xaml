@@ -49,7 +49,7 @@
             </TextBlock>
         </Grid>
 
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
             <TextBlock Text="{x:Static resources:Strings.Common_SearchBy}" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <ComboBox
                 Width="140"
@@ -90,6 +90,8 @@
             Header="{x:Static resources:Strings.Menu_FastFlags_Reset_Title}">
             <ui:ToggleSwitch IsChecked="{Binding ResetConfiguration, Mode=TwoWay}" />
         </controls:OptionControl>
+
+        <Separator x:Name="RecommendedSeperator" Margin="0,10,0,0"/>
 
         <TextBlock x:Name="RecommendedTextBlock" Text="{x:Static resources:Strings.Common_Recommended}" FontSize="20" FontWeight="Bold" Margin="0,10,0,0" />
 
@@ -262,7 +264,6 @@
 
                     </StackPanel>
                 </ui:CardExpander>
-
 
                 <controls:OptionControl 
                         x:Name="MSAA"
@@ -522,7 +523,7 @@
                     Header="{x:Static resources:Strings.Menu_FastFlags_Presets_WebView2Telemetry_Title}">
                     <ui:ToggleSwitch IsChecked="{Binding DisableWebview2Telemetry, Mode=TwoWay}" />
                 </controls:OptionControl>
-                
+
                 <controls:OptionControl
                     x:Name="VoiceChatTelemetry"
                     Description="{x:Static resources:Strings.Menu_FastFlags_Presets_DisableVoiceChatTelemetry_Description}"
@@ -546,6 +547,8 @@
 
             </StackPanel>
         </ui:CardExpander>
+
+        <Separator x:Name="ExperimentalSeperator" Margin="0,10,0,0"/>
 
         <TextBlock x:Name="ExperimentalTextBlock" Text="{x:Static resources:Strings.Common_Experimental}" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
 
@@ -589,6 +592,12 @@
                     <ui:ToggleSwitch IsChecked="{Binding MemoryProbing, Mode=TwoWay}" />
                 </controls:OptionControl>
 
+                <controls:OptionControl 
+                    x:Name="CpuBG"
+                    Header="Reduce CPU Background Usage" 
+                    Description="Reduces the CPU Usage of Roblox when its in the background">
+                    <ui:ToggleSwitch IsChecked="{Binding CpuBG, Mode=TwoWay}" />
+                </controls:OptionControl>
 
                 <controls:OptionControl 
                     x:Name="LightCulling"
@@ -617,50 +626,6 @@
             </ui:CardExpander.Header>
 
             <StackPanel>
-
-
-
-
-                <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False" x:Name="SkyExpander" >
-                    <ui:CardExpander.Header>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_FastFlags_Presets_SkyColor_Title}" FontWeight="Medium" />
-                                <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_FastFlags_Presets_SkyColor_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
-                            </StackPanel>
-                        </Grid>
-                    </ui:CardExpander.Header>
-                    <StackPanel>
-
-                        <controls:OptionControl 
-                            x:Name="WhiteSky"
-                            Header="{x:Static resources:Strings.Menu_FastFlags_Presets_WhiteSky_Title}" 
-                            Description="{x:Static resources:Strings.Menu_FastFlags_Presets_WhiteSky_Description}">
-                            <ui:ToggleSwitch IsChecked="{Binding WhiteSky, Mode=TwoWay}" />
-                        </controls:OptionControl>
-
-                        <controls:OptionControl 
-                            x:Name="BlackSky"
-                            Header="{x:Static resources:Strings.Menu_FastFlags_Presets_BlackSky_Title}" 
-                            Description="{x:Static resources:Strings.Menu_FastFlags_Presets_BlackSky_Description}">
-                            <ui:ToggleSwitch IsChecked="{Binding BlackSky, Mode=TwoWay}" />
-                        </controls:OptionControl>
-
-                        <controls:OptionControl 
-                            x:Name="RainbowSky"
-                            Header="{x:Static resources:Strings.Menu_FastFlags_Presets_RainbowSky_Title}" 
-                            Description="{x:Static resources:Strings.Menu_FastFlags_Presets_RainbowSky_Description}">
-                            <ui:ToggleSwitch IsChecked="{Binding RainbowSky, Mode=TwoWay}" />
-                        </controls:OptionControl>
-
-
-                    </StackPanel>
-                </ui:CardExpander>
-
                 <controls:OptionControl 
                     x:Name="NewFrameRateSystem"
                     Header="{x:Static resources:Strings.Menu_FastFlags_Presets_NewFPSSystem_Title}" 
@@ -673,6 +638,13 @@
                     Header="PreRender" 
                     Description="Moves the PreRender task off the main thread to improve frame rate. Note: This setting can be highly unstable and can cause significant input delay and fullscreen crashes.">
                     <ui:ToggleSwitch IsChecked="{Binding Prerender, Mode=TwoWay}" />
+                </controls:OptionControl>
+
+                <controls:OptionControl 
+                    x:Name="CFrame"
+                    Header="CFrame" 
+                    Description="CFrame is a data type that represents an object’s position and orientation in 3D, combining coordinates with rotation for precise placement.">
+                    <ui:ToggleSwitch IsChecked="{Binding CFrame, Mode=TwoWay}" />
                 </controls:OptionControl>
 
                 <controls:OptionControl
@@ -818,7 +790,7 @@
                     Header="Increase Cache Size">
                     <ui:ToggleSwitch IsChecked="{Binding IncreaseCache, Mode=TwoWay}" />
                 </controls:OptionControl>
-                
+
                 <controls:OptionControl 
                     x:Name="BufferArray"
                     Header="{x:Static resources:Strings.Menu_FastFlags_Presets_BufferArray_Title}" 
@@ -840,10 +812,60 @@
                     Description="{x:Static resources:Strings.Menu_FastFlags_Presets_MTU_Description}">
                     <ui:TextBox Width="200" Margin="5,0,0,0" Padding="10,5,10,5" PreviewTextInput="ValidateUInt32" Text="{Binding MtuSize, Mode=TwoWay}" />
                 </controls:OptionControl>
-                
-                
+
+
             </StackPanel>
         </ui:CardExpander>
+
+        <Separator x:Name="MiscSeperator" Margin="0,10,0,0"/>
+
+        <TextBlock x:Name="MiscTextBlock" Text="{x:Static resources:Strings.Common_Miscellaneous}" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
+
+        <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False" x:Name="AnimationExpander" >
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock FontSize="14" Text="Animation" FontWeight="Medium" />
+                        <TextBlock Margin="0,2,0,0" FontSize="12" Text="Configure animation related features" Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
+                    </StackPanel>
+                </Grid>
+            </ui:CardExpander.Header>
+            <StackPanel>
+                
+                <controls:OptionControl 
+                    x:Name="IK"
+                    Header="Inverse Kinematics" 
+                    Description="Inverse Kinematics (IK) lets animators move a character realistically by adjusting one part to automatically position connected joints, streamlining complex animations." >
+                    <ui:ToggleSwitch IsChecked="{Binding IK, Mode=TwoWay}" />
+                </controls:OptionControl>
+
+                <controls:OptionControl 
+                    x:Name="DisableDynamicHeadAnimation"
+                    Header="Disable Dynamic Head Animation" 
+                    Description="This disables the face animation on Dynamic Heads." >
+                    <ui:ToggleSwitch IsChecked="{Binding DisableDynamicHeadAnimation, Mode=TwoWay}" />
+                </controls:OptionControl>
+                
+                
+                <controls:OptionControl 
+                        x:Name="AnimationSmoothing"
+                        Header="Animation Smoothing"
+                        Description="Determines the smoothing strategy for remote animation playback, allowing for adjustments to the animation's interpolation and timing.">
+                    <ComboBox Margin="5,0,0,0" Padding="10,5,10,5" Width="200" ItemsSource="{Binding AnimationSmoothings.Keys, Mode=OneTime}" Text="{Binding SelectedAnimationSmoothing, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=., Converter={StaticResource EnumNameConverter}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </controls:OptionControl>
+            </StackPanel>
+        </ui:CardExpander>
+
 
         <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False" x:Name="MiscExpander" >
             <ui:CardExpander.Header>
@@ -898,6 +920,9 @@
             </StackPanel>
         </ui:CardExpander>
 
+
+        <Separator x:Name="DebugSeperator" Margin="0,10,0,0"/>
+
         <TextBlock x:Name="DebugTextBlock" Text="{x:Static resources:Strings.Common_Debug}" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
 
         <StackPanel>
@@ -925,11 +950,12 @@
 
             <StackPanel Margin="0,8,0,0">
                 <ui:TextBox x:Name="JsonInputTextBox" MinHeight="75" MaxHeight="75" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" PlaceholderText="Paste JSON here..." />
-                <Button Content="Change into FlagState Format" Margin="0,6,0,0" Click="OnConvertToFlagStateFormat_Click" />
+                <Button x:Name="ConvertButton" Content="Change into FlagState Format" Margin="0,6,0,0" Click="OnConvertToFlagStateFormat_Click" />
             </StackPanel>
 
         </StackPanel>
         <TextBlock Text="7"
+               x:Name="EasterEggNumber"
                FontSize="12"
                Opacity="0.3"
                HorizontalAlignment="Right"

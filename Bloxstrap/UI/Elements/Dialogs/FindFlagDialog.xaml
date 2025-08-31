@@ -140,16 +140,7 @@
 
             </StackPanel>
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                <ui:Button x:Name="ExportButton"
-                           Content="Export JSON"
-                           Click="ExportButton_Click"
-                           Width="120"
-                           Margin="0,0,15,0" />
-                <TextBlock x:Name="FlagCountTextBlock"
-                           VerticalAlignment="Center"
-                           FontWeight="SemiBold" />
-            </StackPanel>
+            <TextBlock x:Name="FlagCountTextBlock" HorizontalAlignment="Right" Grid.Column="1" VerticalAlignment="Center" FontWeight="SemiBold" />
         </Grid>
 
         <!-- Results DataGrid -->

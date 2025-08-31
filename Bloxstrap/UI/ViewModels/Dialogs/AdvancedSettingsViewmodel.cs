@@ -93,6 +93,19 @@ namespace Bloxstrap.UI.ViewModels.Dialogs
             }
         }
 
+        public bool FFlagWarningSystem
+        {
+            get => App.Settings.Prop.FFlagWarningSystem;
+            set
+            {
+                if (App.Settings.Prop.FFlagWarningSystem != value)
+                {
+                    App.Settings.Prop.FFlagWarningSystem = value;
+                    OnPropertyChanged(nameof(FFlagWarningSystem));
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

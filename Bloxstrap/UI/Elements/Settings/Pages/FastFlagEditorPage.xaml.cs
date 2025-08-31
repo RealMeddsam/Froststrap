@@ -1082,6 +1082,9 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         public bool ConfirmBannableFlags(IEnumerable<(string Name, double? Value)> flagsWithValues)
         {
+            if (!App.Settings.Prop.FFlagWarningSystem)
+                return true;
+
             var bannableFlags = flagsWithValues
                 .Where(f => BannableFastFlagWarning.IsBannable(f.Name, f.Value))
                 .Select(f => f.Name)
@@ -1119,7 +1122,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 new BannableFlagRule { FlagName = "DFFlagAnimatorDrawSkeletonAll" },
                 new BannableFlagRule { FlagName = "DFFlagAnimatorDrawSkeletonAttachments" },
                 new BannableFlagRule { FlagName = "DFFlagAnimatorDrawSkeletonText" },
-                new BannableFlagRule { FlagName = "DFFlagAnimatorPostProcessIK" },
                 new BannableFlagRule { FlagName = "DFFlagDebugDrawBroadPhaseAABBs" },
                 new BannableFlagRule { FlagName = "DFFlagDebugDrawBvhNodes" },
                 new BannableFlagRule { FlagName = "DFFlagDebugDrawEnable" },

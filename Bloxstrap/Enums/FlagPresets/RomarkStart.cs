@@ -2,7 +2,7 @@
 {
     public enum RomarkStart
     {
-        [EnumName(FromTranslation = "Disabled")]
+        [EnumName(FromTranslation = "Common.Disabled")]
         Disabled,
 
         [EnumName(StaticName = "1 Bar")]

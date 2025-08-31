@@ -33,14 +33,16 @@ namespace Bloxstrap
 
             // Skys
             { "Graphic.GraySky", "FFlagDebugSkyGray" },
-            { "Graphic.RGBEEEncoding", "FFlagSkyUseRGBEEncoding" },
-            { "Graphic.VertexSmoothing", "FIntVertexSmoothingGroupTolerance" },
 
             // Low Poly Meshes
             { "Rendering.LowPolyMeshes1", "DFIntCSGLevelOfDetailSwitchingDistance" },
             { "Rendering.LowPolyMeshes2", "DFIntCSGLevelOfDetailSwitchingDistanceL12" },
             { "Rendering.LowPolyMeshes3", "DFIntCSGLevelOfDetailSwitchingDistanceL23" },
             { "Rendering.LowPolyMeshes4", "DFIntCSGLevelOfDetailSwitchingDistanceL34" },
+
+            // CFrame
+            { "Rendering.CFrame", "FFlagOptimizeCFrameUpdates4" },
+            { "Rendering.CFrameIC", "FFlagOptimizeCFrameUpdatesIC4" },
 
             // Frm Quality Level
             { "Rendering.FrmQuality", "DFIntDebugFRMQualityLevelOverride" },
@@ -59,17 +61,19 @@ namespace Bloxstrap
             { "Network.Phyics2", "DFIntDataSenderRate" },
 
             // Payload Limit
-            { "Network.Payload1", "DFIntRccMaxPayloadSnd" },
+            { "Network.Payload1", "DFFlagMaxDataPayloadSizePreciseCh" },
             { "Network.Payload2", "DFIntCliMaxPayloadRcv" },
             { "Network.Payload3", "DFIntCliMaxPayloadSnd" },
-            { "Network.Payload4", "DFIntRccMaxPayloadRcv" },
-            { "Network.Payload5", "DFIntCliTcMaxPayloadRcv" },
-            { "Network.Payload6", "DFIntRccTcMaxPayloadRcv" },
-            { "Network.Payload7", "DFIntCliTcMaxPayloadSnd" },
-            { "Network.Payload8", "DFIntRccTcMaxPayloadSnd" },
-            { "Network.Payload9", "DFIntMaxDataPayloadSize" },
-            { "Network.Payload10", "DFIntMaxUREPayloadSingleLimit" },
-            { "Network.Payload11", "DFIntTotalRepPayloadLimit" },
+            { "Network.Payload4", "DFIntCliTcMaxPayloadRcv" },
+            { "Network.Payload5", "DFIntCliTcMaxPayloadSnd" },
+            { "Network.Payload6", "DFIntHeapProfilerMaxPayloadData" },
+            { "Network.Payload7", "DFIntMaxDataPayloadSize" },
+            { "Network.Payload8", "DFIntMaxProflingDataPayloadSize" },
+            { "Network.Payload9", "DFIntMaxUREPayloadSingleLimit" },
+            { "Network.Payload10", "DFIntRccMaxPayloadRcv" },
+            { "Network.Payload11", "DFIntRccTcMaxPayloadRcv" },
+            { "Network.Payload12", "DFIntRccTcMaxPayloadSnd" },
+            { "Network.Payload13", "DFIntTotalRepPayloadLimit" },
 
             // Disable Ads
             { "UI.DisableAds1", "FFlagAdServiceEnabled" },
@@ -127,54 +131,66 @@ namespace Bloxstrap
             { "System.CpuThreads", "DFIntRuntimeConcurrency"},
 
             // Telemetry
-            { "Telemetry.Urlv2", "DFStringTelemetryV2Url" },
-            { "Telemetry.Protocol", "FFlagEnableTelemetryProtocol" },
-            { "Telemetry.Service", "FFlagEnableTelemetryService1" },
-            { "Telemetry.Enabled2", "FFlagOpenTelemetryEnabled2" },
-            { "Telemetry.RobloxTelemetry", "FLogRobloxTelemetry" },
-            { "Telemetry.MemoryTracking", "FFlagDisableMemoryTracking" },
-            { "Telemetry.Reliability", "DFStringRobloxTelemetryReliabilityCountAllowList" },
-            { "Telemetry.Physic", "FFlagSimStepPhysicsEnableTelemetry" },
-            { "Telemetry.Tickrate", "FIntProfileTelemetryTickRateMs" },
-            { "Telemetry.Schedule", "FIntOpenTelemetryScheduleDelayMillis" },
-            { "Telemetry.AltHttp", "DFStringAltHttpPointsReporterUrl" },
-            { "Telemetry.Http", "DFStringHttpPointsReporterUrl" },
+            { "Telemetry.Telemetry1", "DFFlagAddPlaySessionIdTelemetry" },
+            { "Telemetry.Telemetry2", "DFIntPerformanceTelemetryGlobalThrottleHundredthsPercent" },
+            { "Telemetry.Telemetry3", "DFIntTelemetryProfilerHundredthsPercentage" },
+            { "Telemetry.Telemetry4", "DFIntTelemetryRateLimiterBurstSizeHundredths" },
+            { "Telemetry.Telemetry5", "DFIntTelemetryRateLimiterRegenRateHundredths" },
+            { "Telemetry.Telemetry6", "DFStringAltHttpPointsReporterUrl" },
+            { "Telemetry.Telemetry7", "DFStringTelemetryV2Url" },
+            { "Telemetry.Telemetry8", "FFlagEnableTelemetryProtocol" },
+            { "Telemetry.Telemetry9", "FFlagEnableTelemetryService1" },
+            { "Telemetry.Telemetry10", "FFlagEnableTelemetryServicePlaySessionInfo" },
+            { "Telemetry.Telemetry11", "FFlagOpenTelemetryEnabled2" },
+            { "Telemetry.Telemetry12", "FFlagRobloxTelemetryAddDeviceRAM" },
+            { "Telemetry.Telemetry13", "FFlagRobloxTelemetryAddOsVersionAsTag" },
+            { "Telemetry.Telemetry14", "FFlagRobloxTelemetryAddOTAVersionAsTag" },
+            { "Telemetry.Telemetry15", "FStringOpenTelemetryOtlpEndpoint" },
 
             // Voicechat Telemetry
-            { "Telemetry.Voicechat3", "DFFlagVoiceChatPossibleDuplicateSubscriptionsTelemetry" },
-            { "Telemetry.Voicechat4", "DFIntVoiceChatTaskStatsTelemetryThrottleHundrethsPercent" },
-            { "Telemetry.Voicechat5", "FFlagEnableLuaVoiceChatAnalyticsV2" },
-            { "Telemetry.Voicechat6", "FFlagLuaVoiceChatAnalyticsBanMessage" },
-            { "Telemetry.Voicechat7", "FFlagLuaVoiceChatAnalyticsUseCounterV2" },
-            { "Telemetry.Voicechat8", "FFlagLuaVoiceChatAnalyticsUseEventsV2" },
-            { "Telemetry.Voicechat9", "FFlagLuaVoiceChatAnalyticsUsePointsV2" },
-            { "Telemetry.Voicechat10", "FFlagVoiceChatCullingEnableMutedSubsTelemetry" },
-            { "Telemetry.Voicechat11", "FFlagVoiceChatCullingEnableStaleSubsTelemetry" },
-            { "Telemetry.Voicechat15", "FFlagVoiceChatDontSendTelemetryForPubIceTrickle" },
-            { "Telemetry.Voicechat16", "FFlagVoiceChatPeerConnectionTelemetryDetails" },
-            { "Telemetry.Voicechat17", "FFlagVoiceChatRobloxAudioDeviceUpdateRecordedBufferTelemetryEnabled" },
-            { "Telemetry.Voicechat18", "FFlagVoiceChatSubscriptionsDroppedTelemetry" },
-            { "Telemetry.Voicechat19", "FIntLuaVoiceChatAnalyticsPointsThrottle" },
+            { "Telemetry.Voicechat1", "DFIntVoiceChatTaskStatsTelemetryThrottleHundrethsPercent" },
+            { "Telemetry.Voicechat2", "FFlagEnableLuaVoiceChatAnalyticsV2" },
+            { "Telemetry.Voicechat3", "FFlagLuaVoiceChatAnalyticsBanMessage" },
+            { "Telemetry.Voicechat4", "FFlagLuaVoiceChatAnalyticsUseCounterV2" },
+            { "Telemetry.Voicechat5", "FFlagLuaVoiceChatAnalyticsUseEventsV2" },
+            { "Telemetry.Voicechat6", "FFlagVoiceChatCullingEnableStaleSubsTelemetry" },
+            { "Telemetry.Voicechat7", "FFlagVoiceChatCustomAudioDeviceEnableNeedMorePlayoutTelemetry3" },
+            { "Telemetry.Voicechat8", "FFlagVoiceChatRobloxAudioDeviceUpdateRecordedBufferTelemetryEnabled" },
+            { "Telemetry.Voicechat9", "FIntVoiceChatPerfSensitiveTelemetryIntervalSeconds" },
 
             // Webview2 telemetry
             { "Telemetry.Webview1", "DFFlagWindowsWebViewTelemetryEnabled" },
             { "Telemetry.Webview2", "DFIntWindowsWebViewTelemetryThrottleHundredthsPercent" },
 
             // Block Tencent
-            { "Telemetry.Tencent1", "FStringTencentAuthPath" },
-            { "Telemetry.Tencent2", "FLogTencentAuthPath" },
-            { "Telemetry.Tencent4", "FStringExperienceGuidelinesExplainedPageUrl" },
-            { "Telemetry.Tencent5", "DFFlagPolicyServiceReportIsNotSubjectToChinaPolicies" },
-            { "Telemetry.Tencent7", "DFIntPolicyServiceReportDetailIsNotSubjectToChinaPoliciesHundredthsPercentage" },
+            { "Telemetry.Tencent1", "DFFlagPolicyServiceReportDetailIsNotSubjectToChinaPolicies" },
+            { "Telemetry.Tencent2", "DFFlagPolicyServiceReportIsNotSubjectToChinaPolicies" },
+            { "Telemetry.Tencent3", "DFIntLuobuDevPublishAnalyticsHundredthsPercentage" },
+            { "Telemetry.Tencent4", "DFIntPolicyServiceReportDetailIsNotSubjectToChinaPoliciesHundredthsPercentage" },
+            { "Telemetry.Tencent5", "DFIntSendJoinTimeDeltasToDiagLuobu_HundredthsPercentage" },
+            { "Telemetry.Tencent6", "DFIntSendJoinTimeStatsHundPrecLuobuOverride" },
+            { "Telemetry.Tencent7", "FFlagConvertXiaomiSdk33VoiceRecord" },
+            { "Telemetry.Tencent8", "FFlagEnableLuobuInGameUpsell" },
+            { "Telemetry.Tencent9", "FFlagLuobuLuaAuthEnabled" },
+            { "Telemetry.Tencent10", "FFlagPolicyServiceReportFailureForLuobu" },
+            { "Telemetry.Tencent11", "FLogDevPublishChinaRequirementsLink" },
+            { "Telemetry.Tencent12", "FLogTencentAuthPath" },
+            { "Telemetry.Tencent13", "FStringDevPublishChinaRequirementsLink" },
+            { "Telemetry.Tencent14", "FStringFeature_LuobuLuaAuthEnabled" },
+            { "Telemetry.Tencent15", "FStringTencentAuthPath" },
 
             // Block VNG (Vietnamese goverment)
             { "Telemetry.VNG1", "FFlagLuaAppHomeVngAppUpsell" },
-            { "Telemetry.VNG2", "FFlagVngLogoutGlobalAppSessionsOnConversion" },
-            { "Telemetry.VNG3", "FFlagVngTOSRevisedEnabled" },
-            { "Telemetry.VNG4", "FStringVNGWebshopUrl" },
+            { "Telemetry.VNG2", "FFlagUseUpdatedVNGAgreementsWorkflow" },
+            { "Telemetry.VNG3", "FFlagVngLogoutGlobalAppSessionsOnConversion" },
+            { "Telemetry.VNG4", "FFlagVngTOSRevisedEnabled" },
+            { "Telemetry.VNG5", "FStringVNGWebshopUrl" },
 
             // Minimal Rendering
             { "Rendering.MinimalRendering", "FFlagDebugRenderingSetDeterministic"},
+
+            // Reduce Cpu Usage when in bg
+            { "Rendering.CpuBG", "DFFlagReduceCPUWhenBG"},
 
             // Remove Sky/Clouds
             { "Rendering.NoFrmBloom", "FFlagRenderNoLowFrmBloom"},
@@ -199,6 +215,20 @@ namespace Bloxstrap
 
             // Cpu cores
             { "System.CpuCoreMinThreadCount", "FIntTaskSchedulerAsyncTasksMinimumThreadCount"},
+
+            // Animation Smoothing
+            { "Rendering.AnimationSmoothing", "FStringRemoteAnimationSmoothingStrategy"},
+
+            // Disable Dynamic Head Animation
+            { "Rendering.DisableDynamicHeadAnimation1", "DFIntAnimationLodFacsDistanceMin"},
+            { "Rendering.DisableDynamicHeadAnimation2", "DFIntAnimationLodFacsDistanceMax"},
+            { "Rendering.DisableDynamicHeadAnimation3", "DFIntAnimationLodFacsVisibilityDenominator"},
+
+            // Inverse Kinematic
+            { "Rendering.IK1", "DFFlagEnableControlRigIkTargets" },
+            { "Rendering.IK2", "DFFlagAnimatorPostProcessIK" },
+            { "Rendering.IK3", "FFlagAnimationLodIkEnabled" },
+            { "Rendering.IK4", "DFFlagIkControlDeepProfile" },
 
             // New Fps System
             { "Rendering.NewFpsSystem", "FFlagEnableFPSAndFrameTime"},
@@ -227,6 +257,7 @@ namespace Bloxstrap
             { "Rendering.Lighting.ShadowMap", "FFlagDebugForceFutureIsBrightPhase2" },
             { "Rendering.Lighting.Future", "FFlagDebugForceFutureIsBrightPhase3" },
             { "Rendering.Lighting.Unified", "FFlagRenderUnifiedLighting16"},
+            { "Rendering.Lighting.UnifiedNew", "FFlagRenderUnifiedLightingNew"},
 
             // Texture quality
             { "Rendering.TerrainTextureQuality", "FIntTerrainArraySliceSize" },
@@ -263,6 +294,11 @@ namespace Bloxstrap
 
             // MTU Size
             { "Network.Mtusize","DFIntConnectionMTUSize" },
+
+            // SSAO
+            { "Rendering.SSAO1","FFlagDebugSSAOForce" },
+            { "Rendering.SSAO2","FIntSSAOMipLevels" },
+            { "Rendering.SSAO3","FIntSSAO" },
 
             // Dynamic Render Resolution
             { "Rendering.Dynamic.Resolution","DFIntDebugDynamicRenderKiloPixels"},
@@ -327,7 +363,6 @@ namespace Bloxstrap
         public static IReadOnlyDictionary<MSAAMode, string?> MSAAModes => new Dictionary<MSAAMode, string?>
         {
             { MSAAMode.Default, null },
-            { MSAAMode.x0, "0" },
             { MSAAMode.x1, "1" },
             { MSAAMode.x2, "2" },
             { MSAAMode.x4, "4" },
@@ -347,6 +382,25 @@ namespace Bloxstrap
             { TextureSkipping.Skip8x, "8" },
             { TextureSkipping.Skip9x, "9" },
             { TextureSkipping.Skip10x, "10" },
+        };
+
+        public static IReadOnlyDictionary<AnimationSmoothing, string?> AnimationSmoothings => new Dictionary<AnimationSmoothing, string?>
+        {
+            { AnimationSmoothing.Default, null },
+            { AnimationSmoothing.Back, "Back" },
+            { AnimationSmoothing.Sine, "Sine" },
+            { AnimationSmoothing.Quad , "Quad" },
+            { AnimationSmoothing.Cubic, "Cubic" },
+            { AnimationSmoothing.Quint, "Quint" },
+            { AnimationSmoothing.Quart, "Quart" },
+            { AnimationSmoothing.Linear, "Linear" },
+            { AnimationSmoothing.Bounce, "Bounce" },
+            { AnimationSmoothing.Elastic, "Elastic" },
+            { AnimationSmoothing.Constant, "Constant" },
+            { AnimationSmoothing.Circular, "Circular" },
+            { AnimationSmoothing.Polynomia, "Polynomia" },
+            { AnimationSmoothing.Exponential, "Exponential" },
+            { AnimationSmoothing.Extrapolation, "Extrapolation" },
         };
         public static IReadOnlyDictionary<TextureQuality, string?> TextureQualityLevels => new Dictionary<TextureQuality, string?>
         {

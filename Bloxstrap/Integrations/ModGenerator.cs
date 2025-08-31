@@ -217,29 +217,39 @@ namespace Bloxstrap.Integrations
         private static Bitmap ApplyMask(Bitmap original, Color? solidColor, List<GradientStop>? gradient)
         {
             if (original.Width == 0 || original.Height == 0)
-                return original;
+                return new Bitmap(original);
 
             var recolored = new Bitmap(original.Width, original.Height, PixelFormat.Format32bppArgb);
+            var rect = new Rectangle(0, 0, original.Width, original.Height);
+            BitmapData srcData = original.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            BitmapData dstData = recolored.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
 
-            using (var g = Graphics.FromImage(recolored))
+            unsafe
             {
-                g.CompositingMode = CompositingMode.SourceOver;
-                g.CompositingQuality = CompositingQuality.HighQuality;
-                g.SmoothingMode = SmoothingMode.HighQuality;
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                byte* srcPtr = (byte*)srcData.Scan0;
+                byte* dstPtr = (byte*)dstData.Scan0;
+                int bytesPerPixel = 4;
 
                 for (int y = 0; y < original.Height; y++)
                 {
                     for (int x = 0; x < original.Width; x++)
                     {
-                        Color baseColor = original.GetPixel(x, y);
-                        if (baseColor.A == 0)
+                        int idx = y * srcData.Stride + x * bytesPerPixel;
+                        byte a = srcPtr[idx + 3];
+
+                        if (a == 0)
+                        {
+                            dstPtr[idx] = 0;
+                            dstPtr[idx + 1] = 0;
+                            dstPtr[idx + 2] = 0;
+                            dstPtr[idx + 3] = 0;
                             continue;
+                        }
 
                         Color overlay;
                         if (gradient != null && gradient.Count > 0)
                         {
-                            float t = (float)x / (original.Width - 1);
+                            float t = (float)x / Math.Max(1, original.Width - 1);
                             overlay = InterpolateGradient(gradient, t);
                         }
                         else
@@ -247,14 +257,16 @@ namespace Bloxstrap.Integrations
                             overlay = solidColor ?? Color.White;
                         }
 
-                        using (var brush = new SolidBrush(Color.FromArgb(baseColor.A, overlay.R, overlay.G, overlay.B)))
-                        {
-                            g.FillRectangle(brush, x, y, 1, 1);
-                        }
+                        dstPtr[idx] = overlay.B;
+                        dstPtr[idx + 1] = overlay.G;
+                        dstPtr[idx + 2] = overlay.R;
+                        dstPtr[idx + 3] = a; // use original alpha directly
                     }
                 }
             }
 
+            original.UnlockBits(srcData);
+            recolored.UnlockBits(dstData);
             return recolored;
         }
 

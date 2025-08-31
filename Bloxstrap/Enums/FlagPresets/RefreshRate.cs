@@ -2,7 +2,7 @@
 {
     public enum RefreshRate
     {
-        [EnumName(FromTranslation = "Default")]
+        [EnumName(FromTranslation = "Common.Default")]
         Default,
 
         [EnumName(StaticName = "60 Hz")]

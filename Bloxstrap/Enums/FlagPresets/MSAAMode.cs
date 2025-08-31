@@ -2,10 +2,8 @@
 {
     public enum MSAAMode
     {
-        [EnumName(FromTranslation = "Common.Automatic")]
+        [EnumName(FromTranslation = "Common.Default")]
         Default,
-        [EnumName(StaticName = "0x")]
-        x0,
         [EnumName(StaticName = "1x")]
         x1,
         [EnumName(StaticName = "2x")]

@@ -2,7 +2,7 @@
 {
     public enum DynamicResolution
     {
-        [EnumName(FromTranslation = "Default")]
+        [EnumName(FromTranslation = "Common.Default")]
         Default,
 
         [EnumName(StaticName = "144p")]
