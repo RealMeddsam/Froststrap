@@ -240,11 +240,36 @@ namespace Bloxstrap.RobloxInterfaces
                 {
                     if (File.Exists(path))
                     {
-                        try { File.Delete(path); }
-                        catch (Exception ex)
+                        if (!overwrite)
                         {
-                            App.Logger.WriteException(LOG_IDENT, ex);
-                            throw;
+                            try
+                            {
+                                var fi = new FileInfo(path);
+                                if (fi.Length > 0)
+                                {
+                                    App.Logger.WriteLine(LOG_IDENT, $"Zip already exists and will be reused: {path}");
+                                    return path;
+                                }
+                                App.Logger.WriteLine(LOG_IDENT, $"Zip exists but is empty: {path}. Will re-download.");
+                                File.Delete(path);
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Logger.WriteException(LOG_IDENT, ex);
+                                try { File.Delete(path); } catch { /* ignore */ }
+                            }
+                        }
+                        else
+                        {
+                            try
+                            {
+                                App.Logger.WriteLine(LOG_IDENT, $"Overwrite requested — deleting existing zip: {path}");
+                                File.Delete(path);
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Logger.WriteException(LOG_IDENT, ex);
+                            }
                         }
                     }
 
@@ -297,7 +322,7 @@ namespace Bloxstrap.RobloxInterfaces
                     }
                 }
 
-                // Download
+                // Download (will skip download if zip already exists and overwrite == false)
                 luaPackagesZip = await DownloadFile(luaPackagesUrl, luaPackagesZip);
                 extraTexturesZip = await DownloadFile(extraTexturesUrl, extraTexturesZip);
                 contentTexturesZip = await DownloadFile(contentTexturesUrl, contentTexturesZip);
@@ -307,12 +332,8 @@ namespace Bloxstrap.RobloxInterfaces
                 SafeExtract(extraTexturesZip, extraTexturesDir);
                 SafeExtract(contentTexturesZip, contentTexturesDir);
 
-                // Cleanup zips
-                File.Delete(luaPackagesZip);
-                File.Delete(extraTexturesZip);
-                File.Delete(contentTexturesZip);
+                App.Logger.WriteLine(LOG_IDENT, $"Downloaded/extracted completed for version {versionHash}. Zip files were not deleted.");
 
-                // Return dirs + version info
                 return (luaPackagesDir, extraTexturesDir, contentTexturesDir, versionHash, version);
             }
             catch (Exception ex)
