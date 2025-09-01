@@ -39,16 +39,21 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private async void ModGenerator_Click(object sender, RoutedEventArgs e)
         {
+            const string LOG_IDENT = "UI::ModGenerator";
+            var overallSw = System.Diagnostics.Stopwatch.StartNew();
+
             GenerateModButton.IsEnabled = false;
             AddStopButton.IsEnabled = false;
 
             DownloadStatusText.Text = "Starting mod generation...";
+            App.Logger?.WriteLine(LOG_IDENT, "Mod generation started.");
 
             try
             {
                 var (luaPackagesDir, extraTexturesDir, contentTexturesDir, versionHash, version) =
                     await Deployment.DownloadForModGenerator();
 
+                App.Logger?.WriteLine(LOG_IDENT, $"DownloadForModGenerator returned. Version: {version} ({versionHash})");
                 DownloadStatusText.Text = "Download complete!\nCleaning up unnecessary files...";
 
                 var assembly = Assembly.GetExecutingAssembly();
@@ -59,6 +64,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     string json = await reader.ReadToEndAsync();
                     mappings = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json)!;
                 }
+                App.Logger?.WriteLine(LOG_IDENT, $"Loaded mappings.json with {mappings.Count} top-level entries.");
 
                 string froststrapTemp = Path.Combine(Path.GetTempPath(), "Froststrap");
                 var preservePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -71,19 +77,23 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     string fullPath = Path.Combine(froststrapTemp, Path.Combine(entry));
                     preservePaths.Add(fullPath);
                 }
+                App.Logger?.WriteLine(LOG_IDENT, $"Preserve paths prepared. Count: {preservePaths.Count}");
 
                 string foundationImagesDir = Path.Combine(froststrapTemp, @"ExtraContent\LuaPackages\Packages\_Index\FoundationImages\FoundationImages");
                 string? getImageSetDataPath = Directory.EnumerateFiles(foundationImagesDir, "GetImageSetData.lua", SearchOption.AllDirectories).FirstOrDefault();
 
                 if (getImageSetDataPath != null)
                 {
-                    string renamedPath = Path.Combine(Path.GetDirectoryName(getImageSetDataPath)!, "GetImageSetData.lua");
-                    if (!File.Exists(renamedPath))
-                    {
-                        File.Move(getImageSetDataPath, renamedPath);
-                    }
-                    preservePaths.Add(renamedPath);
+                    App.Logger?.WriteLine(LOG_IDENT, $"Found GetImageSetData.lua at {getImageSetDataPath}; preserving without renaming.");
+                    preservePaths.Add(getImageSetDataPath);
                 }
+                else
+                {
+                    App.Logger?.WriteLine(LOG_IDENT, $"No GetImageSetData.lua found under {foundationImagesDir}");
+                }
+
+                long deletedFileCount = 0;
+                long deletedDirCount = 0;
 
                 void DeleteExcept(string dir)
                 {
@@ -91,7 +101,15 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     {
                         if (!preservePaths.Contains(file))
                         {
-                            File.Delete(file);
+                            try
+                            {
+                                File.Delete(file);
+                                deletedFileCount++;
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Logger?.WriteException(LOG_IDENT, ex);
+                            }
                         }
                     }
 
@@ -99,18 +117,31 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     {
                         if (!preservePaths.Contains(subDir))
                         {
-                            DeleteExcept(subDir);
-                            if (Directory.Exists(subDir) && !Directory.EnumerateFileSystemEntries(subDir).Any())
+                            try
                             {
-                                Directory.Delete(subDir);
+                                DeleteExcept(subDir);
+                                if (Directory.Exists(subDir) && !Directory.EnumerateFileSystemEntries(subDir).Any())
+                                {
+                                    Directory.Delete(subDir);
+                                    deletedDirCount++;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Logger?.WriteException(LOG_IDENT, ex);
                             }
                         }
                     }
                 }
 
-                DeleteExcept(luaPackagesDir);
-                DeleteExcept(extraTexturesDir);
-                DeleteExcept(contentTexturesDir);
+                App.Logger?.WriteLine(LOG_IDENT, $"Beginning cleanup in: {luaPackagesDir}, {extraTexturesDir}, {contentTexturesDir}");
+
+                if (Directory.Exists(luaPackagesDir)) DeleteExcept(luaPackagesDir);
+                if (Directory.Exists(extraTexturesDir)) DeleteExcept(extraTexturesDir);
+                if (Directory.Exists(contentTexturesDir)) DeleteExcept(contentTexturesDir);
+
+                App.Logger?.WriteLine(LOG_IDENT, $"Cleanup complete. Files deleted: {deletedFileCount}, Directories deleted: {deletedDirCount}");
+                DownloadStatusText.Text = "Recoloring images...";
 
                 Color? solidColor = null;
                 List<ModGenerator.GradientStop>? gradient = null;
@@ -118,46 +149,80 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 if (ViewModel.GradientStops.Count == 1)
                 {
                     solidColor = ViewModel.GradientStops[0].Color;
+                    App.Logger?.WriteLine(LOG_IDENT, $"Using solid color for recolor: {solidColor}");
                 }
                 else
                 {
                     gradient = ViewModel.GradientStops.Select(s => new ModGenerator.GradientStop(s.Offset, s.Color)).ToList();
+                    App.Logger?.WriteLine(LOG_IDENT, $"Using gradient with {gradient.Count} stops for recolor.");
                 }
 
-                DownloadStatusText.Text = "Recoloring images...";
+                var recolorSw = System.Diagnostics.Stopwatch.StartNew();
+                App.Logger?.WriteLine(LOG_IDENT, "Starting RecolorAllPngs...");
                 ModGenerator.RecolorAllPngs(froststrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath);
+                recolorSw.Stop();
+                App.Logger?.WriteLine(LOG_IDENT, $"RecolorAllPngs finished in {recolorSw.ElapsedMilliseconds} ms.");
 
                 string infoPath = Path.Combine(froststrapTemp, "info.json");
+
+                object colorInfo;
+                if (solidColor.HasValue)
+                {
+                    colorInfo = new
+                    {
+                        SolidColor = $"#{solidColor.Value.R:X2}{solidColor.Value.G:X2}{solidColor.Value.B:X2}{solidColor.Value.A:X2}"
+                    };
+                }
+                else if (gradient != null)
+                {
+                    colorInfo = gradient.Select(g => new
+                    {
+                        Stop = g.Stop,
+                        Color = $"#{g.Color.R:X2}{g.Color.G:X2}{g.Color.B:X2}{g.Color.A:X2}"
+                    }).ToArray();
+                }
+                else
+                {
+                    colorInfo = null!;
+                }
+
                 var infoData = new
                 {
                     FroststrapVersion = App.Version,
                     CreatedUsing = "Froststrap",
                     RobloxVersion = version,
-                    RobloxVersionHash = versionHash
+                    RobloxVersionHash = versionHash,
+                    ColorsUsed = colorInfo
                 };
 
                 string infoJson = JsonSerializer.Serialize(infoData, new JsonSerializerOptions { WriteIndented = true });
                 await File.WriteAllTextAsync(infoPath, infoJson);
 
-                App.Logger.WriteLine("UI::ModGenerator", $"info.json created at {infoPath}");
-
                 if (IncludeModificationsCheckBox.IsChecked == true)
                 {
+                    App.Logger?.WriteLine(LOG_IDENT, "IncludeModifications is checked. Copying files to Modifications folder.");
                     if (!Directory.Exists(Paths.Modifications))
                         Directory.CreateDirectory(Paths.Modifications);
 
+                    int copiedFiles = 0;
                     foreach (var dir in new[] { froststrapTemp })
                     {
                         foreach (var file in Directory.GetFiles(dir, "*", SearchOption.AllDirectories))
                         {
+                            // Skip zip files
+                            if (Path.GetExtension(file).Equals(".zip", StringComparison.OrdinalIgnoreCase))
+                                continue;
+
                             string relativePath = Path.GetRelativePath(dir, file);
                             string destPath = Path.Combine(Paths.Modifications, relativePath);
                             Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
                             File.Copy(file, destPath, overwrite: true);
+                            copiedFiles++;
                         }
                     }
 
                     DownloadStatusText.Text = $"Mod files copied to {Paths.Modifications}";
+                    App.Logger?.WriteLine(LOG_IDENT, $"Copied {copiedFiles} files to {Paths.Modifications}");
                 }
                 else
                 {
@@ -170,19 +235,26 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
                     if (saveDialog.ShowDialog() == true)
                     {
+                        App.Logger?.WriteLine(LOG_IDENT, $"Zipping result to {saveDialog.FileName}");
                         ModGenerator.ZipResult(froststrapTemp, saveDialog.FileName);
                         DownloadStatusText.Text = $"Mod generated successfully! Saved to: {saveDialog.FileName}";
+                        App.Logger?.WriteLine(LOG_IDENT, $"Mod zip created at {saveDialog.FileName}");
                     }
                     else
                     {
                         DownloadStatusText.Text = "Save cancelled by user.";
+                        App.Logger?.WriteLine(LOG_IDENT, "User cancelled save dialog.");
                     }
                 }
+
+                overallSw.Stop();
+                App.Logger?.WriteLine(LOG_IDENT, $"Mod generation completed successfully in {overallSw.ElapsedMilliseconds} ms.");
             }
             catch (Exception ex)
             {
                 DownloadStatusText.Text = $"Error: {ex.Message}";
-                App.Logger.WriteException("UI::ModGenerator", ex);
+                App.Logger?.WriteException("UI::ModGenerator", ex);
+                App.Logger?.WriteLine("UI::ModGenerator", $"Mod generation failed: {ex.Message}");
             }
             finally
             {
