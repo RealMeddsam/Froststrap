@@ -16,12 +16,11 @@ jobs:
         with:
           submodules: true
 
-      # 2. Publish single-file EXE
+      # 2. Publish single-file EXE (main project only)
       - name: Publish single-file EXE
         run: |
-          dotnet publish Froststrap.sln `
+          dotnet publish Bloxstrap\Bloxstrap.csproj `
             --configuration Release `
-            /p:PublishProfile=Publish-x64 `
             /p:PublishSingleFile=true `
             /p:IncludeAllContentForSelfExtract=true `
             /p:RuntimeIdentifier=win-x64 `
@@ -30,7 +29,7 @@ jobs:
       # 3. Package the EXE
       - name: Package EXE
         run: |
-          powershell Compress-Archive -Path "${{ github.workspace }}\publish\Froststrap.exe" -DestinationPath Froststrap.zip
+          powershell Compress-Archive -Path "${{ github.workspace }}\publish\Bloxstrap.exe" -DestinationPath Froststrap.zip
 
       # 4. Upload unsigned artifact
       - name: Upload unsigned artifact
