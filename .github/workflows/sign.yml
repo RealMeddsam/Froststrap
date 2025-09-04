@@ -10,9 +10,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
+      # 1. Checkout repo including submodules
+      - name: Checkout code with submodules
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
+      # 2. Publish single-file EXE
       - name: Publish single-file EXE
         run: |
           dotnet publish Froststrap.sln `
@@ -23,10 +27,12 @@ jobs:
             /p:RuntimeIdentifier=win-x64 `
             --output "${{ github.workspace }}\publish"
 
+      # 3. Package the EXE
       - name: Package EXE
         run: |
-          powershell Compress-Archive -Path "${{ github.workspace }}\publish\Bloxstrap.exe" -DestinationPath Froststrap.zip
+          powershell Compress-Archive -Path "${{ github.workspace }}\publish\Froststrap.exe" -DestinationPath Froststrap.zip
 
+      # 4. Upload unsigned artifact
       - name: Upload unsigned artifact
         id: upload-unsigned
         uses: actions/upload-artifact@v4
@@ -34,6 +40,7 @@ jobs:
           name: froststrap-unsigned
           path: Froststrap.zip
 
+      # 5. Submit signing request to SignPath
       - name: Request SignPath signing
         uses: signpath/github-action-submit-signing-request@v1
         with:
