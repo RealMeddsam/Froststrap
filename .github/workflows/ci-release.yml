@@ -9,29 +9,36 @@ jobs:
       artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
 
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '6.0.x'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Build
-      run: dotnet build -c Release --no-restore
+      - name: Build
+        run: dotnet build -c Release --no-restore
 
-    - name: Publish
-      run: dotnet publish -p:PublishSingleFile=true -p:CommitHash=${{ github.sha }} -p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} -r win-x64 -c Release --self-contained false .\Bloxstrap\Bloxstrap.csproj
+      - name: Publish single-file self-contained EXE
+        run: dotnet publish .\Bloxstrap\Bloxstrap.csproj `
+          -c Release `
+          -r win-x64 `
+          /p:PublishSingleFile=true `
+          /p:SelfContained=true `
+          /p:CommitHash=${{ github.sha }} `
+          /p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} `
+          --output .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish
 
-    - name: Upload Artifact
-      id: upload-artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Froststrap (Release) (${{ github.sha }})
-        path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\*
+      - name: Upload Artifact
+        id: upload-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Froststrap (Release) (${{ github.sha }})
+          path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\*
 
   release:
     needs: build
@@ -53,7 +60,7 @@ jobs:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
           project-slug: 'Froststrap'
-          signing-policy-slug: 'release-signing'
+          signing-policy-slug: 'test-signing'
           artifact-configuration-slug: 'Initial version'
           github-artifact-id: '${{ needs.build.outputs.artifact-id }}'
           wait-for-completion: true
