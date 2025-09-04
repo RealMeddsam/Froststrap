@@ -44,7 +44,7 @@ jobs:
         with:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
-          project-slug: 'froststrap'
+          project-slug: 'Froststrap'
           signing-policy-slug: 'test-signing'
           artifact-configuration-slug: 'github-ci'
           github-artifact-id: '${{ needs.build.outputs.artifact-id }}'
@@ -72,7 +72,7 @@ jobs:
         with:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
-          project-slug: 'froststrap'
+          project-slug: 'Froststrap'
           signing-policy-slug: 'test-signing'
           artifact-configuration-slug: 'github-ci'
           github-artifact-id: '${{ needs.build.outputs.artifact-id }}'
