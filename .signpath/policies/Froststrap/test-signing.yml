@@ -1,0 +1,11 @@
+github-policies:
+  runners:
+    allowed_groups:
+      - 'GitHub Actions'
+  build:
+    disallow_reruns: true
+  branch_rulesets:
+    - condition:
+        rules: []
+        allow_bypass_actors: false
+        enforced_from: EARLIEST
