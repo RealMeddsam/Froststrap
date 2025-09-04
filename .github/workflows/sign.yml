@@ -15,7 +15,7 @@ jobs:
 
       - name: Publish single-file EXE
         run: |
-          dotnet publish Bloxstrap.sln `
+          dotnet publish Froststrap.sln `
             --configuration Release `
             /p:PublishProfile=Publish-x64 `
             /p:PublishSingleFile=true `
