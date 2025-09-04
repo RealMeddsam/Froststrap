@@ -406,7 +406,25 @@
 
             <TabItem Header="Mod Generator" FontWeight="Medium">
                 <StackPanel Margin="8,12">
+
+
+                    <TextBlock Text="Sprite Sheet Preview" FontSize="14" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <ComboBox x:Name="SpriteSelector" MinWidth="220" Margin="0,0,0,6" SelectionChanged="OnSpriteSelectorChanged" HorizontalAlignment="Left" />
+
+
+                    <Grid>
+                        <Border Background="{DynamicResource NormalDarkAndLightBackground}" Height="80" CornerRadius="16" HorizontalAlignment="Left" VerticalAlignment="Top">
+                            <Image x:Name="SpritePreview" Height="72" Stretch="Uniform"/>
+                        </Border>
+
+                        <Border Background="{DynamicResource NormalDarkAndLightBackground}" Height="415"  CornerRadius="16" HorizontalAlignment="Center">
+                            <Image x:Name="SheetPreview" Height="400" Stretch="Uniform"/>
+                        </Border>
+                    </Grid>
+                    
+                    
                     <TextBlock Text="Gradient Colors" FontSize="14" FontWeight="Bold" Margin="0,0,0,6"/>
+                    
                     <ItemsControl ItemsSource="{Binding GradientStops}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -462,23 +480,6 @@
                     </Grid>
 
                     <TextBlock x:Name="DownloadStatusText" TextWrapping="Wrap" Foreground="{StaticResource TextFillColorSecondaryBrush}" FontWeight="Bold" Margin="0,0,0,32"/>
-
-
-                    <TextBlock Text="Sprite Sheet Preview" FontSize="14" FontWeight="Bold" Margin="0,0,0,6"/>
-                    <ComboBox x:Name="SpriteSelector" MinWidth="220" Margin="0,0,0,6" SelectionChanged="OnSpriteSelectorChanged" HorizontalAlignment="Left" />
-
-
-                    <Grid>
-                        <Border Background="{DynamicResource NormalDarkAndLightBackground}" Height="80" CornerRadius="16" HorizontalAlignment="Left" VerticalAlignment="Top">
-                            <Image x:Name="SpritePreview" Height="72" Stretch="Uniform"/>
-                        </Border>
-
-                        <Border Background="{DynamicResource NormalDarkAndLightBackground}" Height="415"  CornerRadius="16" HorizontalAlignment="Center">
-                            <Image x:Name="SheetPreview" Height="400" Stretch="Uniform"/>
-                        </Border>
-                    </Grid>
-                    
-
 
                 </StackPanel>
             </TabItem>
