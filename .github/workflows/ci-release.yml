@@ -42,14 +42,13 @@ jobs:
       - name: Sign and download artifact
         uses: signpath/github-action-submit-signing-request@v1.1
         with:
-          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
-          organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
-          project-slug: 'Froststrap'
-          signing-policy-slug: 'test-signing'
-          artifact-configuration-slug: 'Initial version'
-          github-artifact-id: '${{ needs.build.outputs.artifact-id }}'
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: 837ad744-6d64-4d44-94ef-65a9a2d09399
+          project-slug: Froststrap
+          signing-policy-slug: test-signing
+          github-artifact-id: ${{ needs.build.outputs.artifact-id }}
           wait-for-completion: true
-          output-artifact-directory: 'release'
+          output-artifact-directory: signed
 
       - name: Rename binaries
         run: mv release/Bloxstrap.exe Bloxstrap-${{ github.ref_name }}.exe
@@ -70,14 +69,13 @@ jobs:
       - name: Sign and download artifact
         uses: signpath/github-action-submit-signing-request@v1.1
         with:
-          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
-          organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
-          project-slug: 'Froststrap'
-          signing-policy-slug: 'test-signing'
-          artifact-configuration-slug: 'Initial version'
-          github-artifact-id: '${{ needs.build.outputs.artifact-id }}'
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: 837ad744-6d64-4d44-94ef-65a9a2d09399
+          project-slug: Froststrap
+          signing-policy-slug: test-signing
+          github-artifact-id: ${{ needs.build.outputs.artifact-id }}
           wait-for-completion: true
-          output-artifact-directory: 'release'
+          output-artifact-directory: signed
 
       - name: Rename binaries
         run: mv release/Bloxstrap.exe Bloxstrap-${{ github.ref_name }}.exe
