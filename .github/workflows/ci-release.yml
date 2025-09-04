@@ -5,6 +5,9 @@ jobs:
   build:
     runs-on: windows-latest
 
+    outputs:
+      artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
+
     steps:
     - uses: actions/checkout@v4
       with:
@@ -24,6 +27,7 @@ jobs:
       run: dotnet publish -p:PublishSingleFile=true -p:CommitHash=${{ github.sha }} -p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} -r win-x64 -c Release --self-contained false .\Bloxstrap\Bloxstrap.csproj
 
     - name: Upload Artifact
+      id: upload-artifact
       uses: actions/upload-artifact@v4
       with:
         name: Froststrap (Release) (${{ github.sha }})
@@ -42,6 +46,18 @@ jobs:
         with:
           name: Froststrap (Release) (${{ github.sha }})
           path: release
+
+      - name: Sign with SignPath
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
+          project-slug: 'Froststrap'
+          signing-policy-slug: 'release-signing'
+          artifact-configuration-slug: 'Initial version'
+          github-artifact-id: '${{ needs.build.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: 'release'
 
       - name: Rename binaries
         run: mv release/Bloxstrap.exe Froststrap-${{ github.ref_name }}.exe
@@ -67,6 +83,18 @@ jobs:
         with:
           name: Froststrap (Release) (${{ github.sha }})
           path: release
+
+      - name: Sign with SignPath (Test)
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
+          project-slug: 'Froststrap'
+          signing-policy-slug: 'test-signing'
+          artifact-configuration-slug: 'Initial version'
+          github-artifact-id: '${{ needs.build.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: 'release'
 
       - name: Rename binaries
         run: mv release/Bloxstrap.exe Froststrap-${{ github.ref_name }}.exe
