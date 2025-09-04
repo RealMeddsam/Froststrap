@@ -23,15 +23,8 @@ jobs:
       - name: Build
         run: dotnet build -c Release --no-restore
 
-      - name: Publish single-file self-contained EXE
-        run: dotnet publish .\Bloxstrap\Bloxstrap.csproj `
-          -c Release `
-          -r win-x64 `
-          /p:PublishSingleFile=true `
-          /p:SelfContained=true `
-          /p:CommitHash=${{ github.sha }} `
-          /p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} `
-          --output .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish
+      - name: Publish single-file EXE
+        run: dotnet publish -p:PublishSingleFile=true -p:SelfContained=false -p:CommitHash=${{ github.sha }} -p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} -r win-x64 -c Release ./Bloxstrap/Bloxstrap.csproj
 
       - name: Upload Artifact
         id: upload-artifact
@@ -55,12 +48,12 @@ jobs:
           path: release
 
       - name: Sign with SignPath
-        uses: signpath/github-action-submit-signing-request@v1
+        uses: signpath/github-action-submit-signing-request@v1.1
         with:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
           project-slug: 'Froststrap'
-          signing-policy-slug: 'test-signing'
+          signing-policy-slug: 'release-signing'
           artifact-configuration-slug: 'Initial version'
           github-artifact-id: '${{ needs.build.outputs.artifact-id }}'
           wait-for-completion: true
@@ -92,7 +85,7 @@ jobs:
           path: release
 
       - name: Sign with SignPath (Test)
-        uses: signpath/github-action-submit-signing-request@v1
+        uses: signpath/github-action-submit-signing-request@v1.1
         with:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
