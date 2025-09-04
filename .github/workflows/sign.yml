@@ -1,0 +1,46 @@
+name: Build & Sign Froststrap
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-sign:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Publish single-file EXE
+        run: |
+          dotnet publish Bloxstrap.sln `
+            --configuration Release `
+            /p:PublishProfile=Publish-x64 `
+            /p:PublishSingleFile=true `
+            /p:IncludeAllContentForSelfExtract=true `
+            /p:RuntimeIdentifier=win-x64 `
+            --output "${{ github.workspace }}\publish"
+
+      - name: Package EXE
+        run: |
+          powershell Compress-Archive -Path "${{ github.workspace }}\publish\Bloxstrap.exe" -DestinationPath Froststrap.zip
+
+      - name: Upload unsigned artifact
+        id: upload-unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: froststrap-unsigned
+          path: Froststrap.zip
+
+      - name: Request SignPath signing
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ''
+          organization-id: 837ad744-6d64-4d44-94ef-65a9a2d09399
+          project-slug: Froststrap
+          signing-policy-slug: test-signing
+          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
