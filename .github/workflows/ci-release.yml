@@ -26,12 +26,16 @@ jobs:
     - name: Publish
       run: dotnet publish -p:PublishSingleFile=true -p:CommitHash=${{ github.sha }} -p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} -r win-x64 -c Release --self-contained false .\Bloxstrap\Bloxstrap.csproj
 
+    - name: Zip publish folder
+      run: |
+        powershell -Command "Compress-Archive -Path 'Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\*' -DestinationPath 'Bloxstrap\bin\Release\net6.0-windows\win-x64\Bloxstrap-${{ github.sha }}.zip'"
+
     - name: Upload Artifact
       id: upload-artifact
       uses: actions/upload-artifact@v4
       with:
         name: Bloxstrap (Release) (${{ github.sha }})
-        path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\*
+        path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\Bloxstrap-${{ github.sha }}.zip
 
   release:
     needs: build
