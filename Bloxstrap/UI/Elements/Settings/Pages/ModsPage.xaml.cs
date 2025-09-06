@@ -576,9 +576,12 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                         int idx = y * srcData.Stride + x * bytesPerPixel;
                         byte a = srcPtr[idx + 3];
 
-                        if (a == 0)
+                        if (a <= 5)
                         {
-                            dstPtr[idx] = 0; dstPtr[idx + 1] = 0; dstPtr[idx + 2] = 0; dstPtr[idx + 3] = 0;
+                            dstPtr[idx] = 0;
+                            dstPtr[idx + 1] = 0;
+                            dstPtr[idx + 2] = 0;
+                            dstPtr[idx + 3] = 0;
                             continue;
                         }
 
@@ -595,9 +598,10 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                             applyColor = solidColor ?? Color.White;
                         }
 
-                        dstPtr[idx] = applyColor.B;
-                        dstPtr[idx + 1] = applyColor.G;
-                        dstPtr[idx + 2] = applyColor.R;
+                        float alphaFactor = a / 255f;
+                        dstPtr[idx] = (byte)(applyColor.B * alphaFactor);
+                        dstPtr[idx + 1] = (byte)(applyColor.G * alphaFactor);
+                        dstPtr[idx + 2] = (byte)(applyColor.R * alphaFactor);
                         dstPtr[idx + 3] = a;
                     }
                 }

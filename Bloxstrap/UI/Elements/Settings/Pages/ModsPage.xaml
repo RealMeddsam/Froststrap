@@ -426,7 +426,6 @@
                         </Border>
 
                         <StackPanel Grid.Column="2" VerticalAlignment="Top" Margin="16,0,0,0">
-                            <!-- Custom Mod Generator Options -->
                             <TextBlock Text="Mod Generation Options" FontSize="13" FontWeight="Bold" Margin="0,8,0,4"/>
 
                             <StackPanel Orientation="Vertical" Margin="0,0,0,12">
