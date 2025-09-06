@@ -38,6 +38,8 @@ namespace Bloxstrap.Integrations
 
             public bool IsBlacklisted(string name)
             {
+                if (name.StartsWith("icons/graphic/lock", StringComparison.OrdinalIgnoreCase))
+                    return false;
                 foreach (var p in Prefixes)
                     if (name.StartsWith(p, StringComparison.OrdinalIgnoreCase))
                         return true;
