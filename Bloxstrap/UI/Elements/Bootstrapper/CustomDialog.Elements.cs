@@ -382,12 +382,7 @@ namespace Bloxstrap.UI.Elements.Bootstrapper
             if (theme == Theme.Default)
                 theme = App.Settings.Prop.Theme;
 
-            var finalTheme = theme.GetFinal();
-            Wpf.Ui.Appearance.ThemeType wpfUiTheme;
-            if (finalTheme == Theme.Light)
-                wpfUiTheme = Wpf.Ui.Appearance.ThemeType.Light;
-            else
-                wpfUiTheme = Wpf.Ui.Appearance.ThemeType.Dark;
+            var wpfUiTheme = theme.GetFinal() == Theme.Light ? Wpf.Ui.Appearance.ThemeType.Light : Wpf.Ui.Appearance.ThemeType.Dark;
 
             dialog.Resources.MergedDictionaries.Clear();
             dialog.Resources.MergedDictionaries.Add(new ThemesDictionary() { Theme = wpfUiTheme });
@@ -408,6 +403,7 @@ namespace Bloxstrap.UI.Elements.Bootstrapper
             dialog.Padding = new Thickness(0, 0, 0, 0);
 
             string? title = xmlElement.Attribute("Title")?.Value?.ToString() ?? "Bloxstrap";
+            dialog.Title = title;
 
             bool ignoreTitleBarInset = ParseXmlAttribute<bool>(xmlElement, "IgnoreTitleBarInset", false);
             if (ignoreTitleBarInset)
@@ -416,14 +412,38 @@ namespace Bloxstrap.UI.Elements.Bootstrapper
                 Grid.SetRowSpan(dialog.ElementGrid, 2);
             }
 
+            try
+            {
+                if (dialog.Background != null && dialog.ElementGrid.Background == null)
+                {
+                    dialog.ElementGrid.Background = dialog.Background;
+                }
+            }
+            catch
+            {
+                // ignore any unexpected brush copy failure
+            }
+
             string windowsbackdrop = xmlElement.Attribute("WindowsBackdrop")?.Value ?? "None";
 
             try
             {
-                if (windowsbackdrop == "Aero" || windowsbackdrop == "Acrylic")
-                    dialog.AllowsTransparency = true;
+                bool needsTransparency = windowsbackdrop == "Aero" || windowsbackdrop == "Acrylic";
 
-                dialog.WindowBackdropType = (Wpf.Ui.Appearance.BackgroundType)Enum.Parse(typeof(Wpf.Ui.Appearance.BackgroundType), windowsbackdrop);
+                if (needsTransparency)
+                {
+                    dialog.AllowsTransparency = true;
+                    dialog.Background = System.Windows.Media.Brushes.Transparent;
+                }
+
+                if (Enum.TryParse(typeof(Wpf.Ui.Appearance.BackgroundType), windowsbackdrop, out var parsed))
+                {
+                    dialog.WindowBackdropType = (Wpf.Ui.Appearance.BackgroundType)parsed!;
+                }
+                else
+                {
+                    throw new CustomThemeException("CustomTheme.Errors.InvalidBackdrop", windowsbackdrop);
+                }
             }
             catch (Exception)
             {
