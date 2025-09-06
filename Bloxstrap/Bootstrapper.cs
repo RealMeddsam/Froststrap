@@ -726,14 +726,15 @@ namespace Bloxstrap
 
             IntPtr hwnd = IntPtr.Zero;
 
-            for (int i = 0; i < 75; i++)
+            // increased the amount of attempt + how long each one takes, hopefully it works everytime now without issues + it stops when it changes it successfully
+            for (int i = 0; i < 800; i++)
             {
                 hwnd = process.MainWindowHandle;
 
                 if (hwnd != IntPtr.Zero && IsWindowVisible(hwnd))
                     break;
 
-                Thread.Sleep(100);
+                Thread.Sleep(25);
             }
 
             if (hwnd == IntPtr.Zero || !IsWindowVisible(hwnd))

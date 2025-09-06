@@ -58,14 +58,15 @@ namespace Bloxstrap.Integrations
 
         public static void RecolorAllPngs(string rootDir, Color? solidColor, List<GradientStop>? gradient = null, string getImageSetDataPath = "", string? customLogoPath = null, float gradientAngleDeg = 0f, bool recolorCursors = false, bool recolorShiftlock = false, bool recolorEmoteWheel = false, IEnumerable<string>? extraSourceDirs = null)
         {
-            if (string.IsNullOrWhiteSpace(rootDir) || !Directory.Exists(rootDir))
-                return;
+            const string LOG_IDENT = "UI::Recolor";
 
-            string logPath = Path.Combine(rootDir, "recolor-log.txt");
-            void Log(string s)
+            if (string.IsNullOrWhiteSpace(rootDir) || !Directory.Exists(rootDir))
             {
-                try { File.AppendAllText(logPath, $"[{DateTime.UtcNow:O}] {s}\n"); } catch { }
+                App.Logger?.WriteLine(LOG_IDENT, $"Invalid rootDir '{rootDir}'");
+                return;
             }
+
+            App.Logger?.WriteLine(LOG_IDENT, "RecolorAllPngs started.");
 
             foreach (var png in Directory.EnumerateFiles(rootDir, "*.png", SearchOption.AllDirectories))
             {
@@ -77,6 +78,8 @@ namespace Bloxstrap.Integrations
 
             if (!string.IsNullOrWhiteSpace(getImageSetDataPath) && File.Exists(getImageSetDataPath))
             {
+                App.Logger?.WriteLine(LOG_IDENT, $"Parsing image set data: {getImageSetDataPath}");
+
                 var spriteData = LuaImageSetParser.Parse(getImageSetDataPath);
                 foreach (var (sheetPath, sprites) in spriteData)
                 {
@@ -87,6 +90,8 @@ namespace Bloxstrap.Integrations
 
             if (!string.IsNullOrEmpty(customLogoPath) && File.Exists(getImageSetDataPath))
             {
+                App.Logger?.WriteLine(LOG_IDENT, $"Applying custom logo: {customLogoPath}");
+
                 var spriteData = LuaImageSetParser.Parse(getImageSetDataPath);
                 foreach (var (sheetPath, sprites) in spriteData)
                 {
@@ -129,7 +134,11 @@ namespace Bloxstrap.Integrations
                         if (modified) sheet.Save(tempPath, ImageFormat.Png);
                     }
 
-                    if (modified) ReplaceFileWithRetry(sheetPath, tempPath);
+                    if (modified)
+                    {
+                        ReplaceFileWithRetry(sheetPath, tempPath);
+                        App.Logger?.WriteLine(LOG_IDENT, $"Replaced logo in {sheetPath}");
+                    }
                 }
             }
 
@@ -166,7 +175,7 @@ namespace Bloxstrap.Integrations
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log($"Error recoloring matched file '{m}': {ex.Message}");
+                                    App.Logger?.WriteLine(LOG_IDENT, $"Error recoloring matched file '{m}': {ex.Message}");
                                 }
                             }
                             continue;
@@ -205,10 +214,12 @@ namespace Bloxstrap.Integrations
 
                                         File.Copy(src, destPath, overwrite: true);
                                         SafeRecolorImage(destPath, solidColor, gradient, gradientAngleDeg);
+
+                                        App.Logger?.WriteLine(LOG_IDENT, $"Copied + recolored '{src}' → '{destPath}'");
                                     }
                                     catch (Exception ex)
                                     {
-                                        Log($"Failed copying/recoloring from extraSourceDirs '{src}': {ex.Message}");
+                                        App.Logger?.WriteLine(LOG_IDENT, $"Failed copying/recoloring from extraSourceDirs '{src}': {ex.Message}");
                                     }
                                 }
                             }
@@ -216,7 +227,7 @@ namespace Bloxstrap.Integrations
                     }
                     catch (Exception ex)
                     {
-                        Log($"Exception while trying to handle '{name}': {ex.Message}");
+                        App.Logger?.WriteLine(LOG_IDENT, $"Exception while trying to handle '{name}': {ex.Message}");
                     }
                 }
             }
@@ -241,7 +252,7 @@ namespace Bloxstrap.Integrations
                     },
                     Path.Combine("content", "textures", "ui", "Emotes", "Large"));
 
-            Log("RecolorAllPngs finished.");
+            App.Logger?.WriteLine(LOG_IDENT, "RecolorAllPngs finished.");
         }
 
         private static Bitmap LoadBitmapIntoMemory(string path)
