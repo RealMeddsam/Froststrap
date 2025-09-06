@@ -56,8 +56,17 @@ namespace Bloxstrap.Integrations
 
         public record GradientStop(float Stop, Color Color);
 
-        public static void RecolorAllPngs(string rootDir, Color? solidColor, List<GradientStop>? gradient = null, string getImageSetDataPath = "", string? customLogoPath = null, float gradientAngleDeg = 0f)
+        public static void RecolorAllPngs(string rootDir, Color? solidColor, List<GradientStop>? gradient = null, string getImageSetDataPath = "", string? customLogoPath = null, float gradientAngleDeg = 0f, bool recolorCursors = false, bool recolorShiftlock = false, bool recolorEmoteWheel = false, IEnumerable<string>? extraSourceDirs = null)
         {
+            if (string.IsNullOrWhiteSpace(rootDir) || !Directory.Exists(rootDir))
+                return;
+
+            string logPath = Path.Combine(rootDir, "recolor-log.txt");
+            void Log(string s)
+            {
+                try { File.AppendAllText(logPath, $"[{DateTime.UtcNow:O}] {s}\n"); } catch { }
+            }
+
             foreach (var png in Directory.EnumerateFiles(rootDir, "*.png", SearchOption.AllDirectories))
             {
                 if (png.Contains(@"\SpriteSheets\", StringComparison.OrdinalIgnoreCase))
@@ -66,15 +75,12 @@ namespace Bloxstrap.Integrations
                 SafeRecolorImage(png, solidColor, gradient, gradientAngleDeg);
             }
 
-            if (File.Exists(getImageSetDataPath))
+            if (!string.IsNullOrWhiteSpace(getImageSetDataPath) && File.Exists(getImageSetDataPath))
             {
                 var spriteData = LuaImageSetParser.Parse(getImageSetDataPath);
-
                 foreach (var (sheetPath, sprites) in spriteData)
                 {
-                    if (!File.Exists(sheetPath))
-                        continue;
-
+                    if (!File.Exists(sheetPath)) continue;
                     SafeRecolorSpriteSheet(sheetPath, sprites, solidColor, gradient, gradientAngleDeg);
                 }
             }
@@ -82,15 +88,12 @@ namespace Bloxstrap.Integrations
             if (!string.IsNullOrEmpty(customLogoPath) && File.Exists(getImageSetDataPath))
             {
                 var spriteData = LuaImageSetParser.Parse(getImageSetDataPath);
-
                 foreach (var (sheetPath, sprites) in spriteData)
                 {
-                    if (!File.Exists(sheetPath))
-                        continue;
+                    if (!File.Exists(sheetPath)) continue;
 
                     bool modified = false;
                     string tempPath = sheetPath + ".logo.tmp";
-
                     using Bitmap customInMemory = LoadBitmapIntoMemory(customLogoPath);
 
                     using (var sheet = new Bitmap(sheetPath))
@@ -104,9 +107,7 @@ namespace Bloxstrap.Integrations
                         {
                             if (!string.Equals(sprite.Name, "icons/logo/block", StringComparison.OrdinalIgnoreCase))
                                 continue;
-
-                            if (sprite.W <= 0 || sprite.H <= 0)
-                                continue;
+                            if (sprite.W <= 0 || sprite.H <= 0) continue;
 
                             Rectangle targetRect = new Rectangle(sprite.X, sprite.Y, sprite.W, sprite.H);
 
@@ -125,18 +126,122 @@ namespace Bloxstrap.Integrations
                             modified = true;
                         }
 
-                        if (modified)
-                        {
-                            sheet.Save(tempPath, ImageFormat.Png);
-                        }
+                        if (modified) sheet.Save(tempPath, ImageFormat.Png);
                     }
 
-                    if (modified)
+                    if (modified) ReplaceFileWithRetry(sheetPath, tempPath);
+                }
+            }
+
+            void TryRecolorFilesByNames(string[] candidateNames, string? relativeDir = null)
+            {
+                foreach (var name in candidateNames)
+                {
+                    try
                     {
-                        ReplaceFileWithRetry(sheetPath, tempPath);
+                        if (!string.IsNullOrWhiteSpace(relativeDir))
+                        {
+                            string expected = Path.Combine(rootDir, relativeDir, name);
+                            if (File.Exists(expected))
+                            {
+                                SafeRecolorImage(expected, solidColor, gradient, gradientAngleDeg);
+                                continue;
+                            }
+                        }
+
+                        var matches = Directory.EnumerateFiles(rootDir, name, SearchOption.AllDirectories).ToList();
+                        if (matches.Count == 0)
+                        {
+                            matches = Directory.EnumerateFiles(rootDir, "*.png", SearchOption.AllDirectories)
+                                .Where(p => p.EndsWith(name, StringComparison.OrdinalIgnoreCase)).ToList();
+                        }
+
+                        if (matches.Count > 0)
+                        {
+                            foreach (var m in matches)
+                            {
+                                try
+                                {
+                                    SafeRecolorImage(m, solidColor, gradient, gradientAngleDeg);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log($"Error recoloring matched file '{m}': {ex.Message}");
+                                }
+                            }
+                            continue;
+                        }
+
+                        if (extraSourceDirs != null)
+                        {
+                            foreach (var srcBase in extraSourceDirs)
+                            {
+                                if (string.IsNullOrWhiteSpace(srcBase) || !Directory.Exists(srcBase)) continue;
+
+                                var srcMatches = Directory.EnumerateFiles(srcBase, name, SearchOption.AllDirectories).ToList();
+                                if (srcMatches.Count == 0)
+                                {
+                                    srcMatches = Directory.EnumerateFiles(srcBase, "*.png", SearchOption.AllDirectories)
+                                        .Where(p => p.EndsWith(name, StringComparison.OrdinalIgnoreCase)).ToList();
+                                }
+
+                                foreach (var src in srcMatches)
+                                {
+                                    try
+                                    {
+                                        string destDir;
+                                        if (!string.IsNullOrWhiteSpace(relativeDir))
+                                        {
+                                            destDir = Path.Combine(rootDir, relativeDir);
+                                        }
+                                        else
+                                        {
+                                            var rel = Path.GetRelativePath(srcBase, Path.GetDirectoryName(src) ?? string.Empty);
+                                            destDir = Path.Combine(rootDir, rel);
+                                        }
+
+                                        Directory.CreateDirectory(destDir);
+                                        string destPath = Path.Combine(destDir, name);
+
+                                        File.Copy(src, destPath, overwrite: true);
+                                        SafeRecolorImage(destPath, solidColor, gradient, gradientAngleDeg);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log($"Failed copying/recoloring from extraSourceDirs '{src}': {ex.Message}");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"Exception while trying to handle '{name}': {ex.Message}");
                     }
                 }
             }
+
+            if (recolorCursors)
+                TryRecolorFilesByNames(
+                    new[] { "IBeamCursor.png", "ArrowCursor.png", "ArrowFarCursor.png" },
+                    Path.Combine("content", "textures", "Cursors", "KeyboardMouse"));
+
+            if (recolorShiftlock)
+                TryRecolorFilesByNames(
+                    new[] { "MouseLockedCursor.png" },
+                    Path.Combine("content", "textures"));
+
+            if (recolorEmoteWheel)
+                TryRecolorFilesByNames(
+                    new[]
+                    {
+                        "SelectedGradient.png", "SelectedGradient@2x.png", "SelectedGradient@3x.png",
+                        "SelectedLine.png", "SelectedLine@2x.png", "SelectedLine@3x.png",
+                        "SegmentedCircle.png", "SegmentedCircle@2x.png", "SegmentedCircle@3x.png"
+                    },
+                    Path.Combine("content", "textures", "ui", "Emotes", "Large"));
+
+            Log("RecolorAllPngs finished.");
         }
 
         private static Bitmap LoadBitmapIntoMemory(string path)

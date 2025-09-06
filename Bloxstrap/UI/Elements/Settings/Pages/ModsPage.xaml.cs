@@ -9,6 +9,7 @@ using System.Drawing.Imaging;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.IO.Compression;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Input;
@@ -43,7 +44,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
         private async void ModGenerator_Click(object sender, RoutedEventArgs e)
         {
             const string LOG_IDENT = "UI::ModGenerator";
-            var overallSw = System.Diagnostics.Stopwatch.StartNew();
+            var overallSw = Stopwatch.StartNew();
 
             GenerateModButton.IsEnabled = false;
             AddStopButton.IsEnabled = false;
@@ -53,11 +54,58 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
             try
             {
-                var (luaPackagesDir, extraTexturesDir, contentTexturesDir, versionHash, version) =
+
+                var (luaPackagesZip, extraTexturesZip, contentTexturesZip, versionHash, version) =
                     await Deployment.DownloadForModGenerator();
 
                 App.Logger?.WriteLine(LOG_IDENT, $"DownloadForModGenerator returned. Version: {version} ({versionHash})");
-                DownloadStatusText.Text = "Download complete!\nCleaning up unnecessary files...";
+
+                string froststrapTemp = Path.Combine(Path.GetTempPath(), "Froststrap");
+
+                string luaPackagesDir = Path.Combine(froststrapTemp, "ExtraContent", "LuaPackages");
+                string extraTexturesDir = Path.Combine(froststrapTemp, "ExtraContent", "textures");
+                string contentTexturesDir = Path.Combine(froststrapTemp, "content", "textures");
+
+                void SafeExtract(string zipPath, string targetDir)
+                {
+                    if (Directory.Exists(targetDir))
+                    {
+                        try { Directory.Delete(targetDir, true); }
+                        catch (Exception ex)
+                        {
+                            App.Logger?.WriteException(LOG_IDENT, ex);
+                            throw;
+                        }
+                    }
+
+                    Directory.CreateDirectory(targetDir);
+
+                    using (var archive = ZipFile.OpenRead(zipPath))
+                    {
+                        foreach (var entry in archive.Entries)
+                        {
+                            if (string.IsNullOrEmpty(entry.FullName) || entry.FullName.EndsWith("/") || entry.FullName.EndsWith("\\"))
+                                continue;
+
+                            string destinationPath = Path.GetFullPath(Path.Combine(targetDir, entry.FullName));
+
+                            if (!destinationPath.StartsWith(Path.GetFullPath(targetDir), StringComparison.OrdinalIgnoreCase))
+                                throw new IOException($"Entry {entry.FullName} is trying to extract outside of {targetDir}");
+
+                            Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
+                            entry.ExtractToFile(destinationPath, overwrite: true);
+                        }
+                    }
+                }
+
+                DownloadStatusText.Text = "Extracting ZIPs...";
+                App.Logger?.WriteLine(LOG_IDENT, "Extracting downloaded ZIPs...");
+
+                SafeExtract(luaPackagesZip, luaPackagesDir);
+                SafeExtract(extraTexturesZip, extraTexturesDir);
+                SafeExtract(contentTexturesZip, contentTexturesDir);
+
+                App.Logger?.WriteLine(LOG_IDENT, "Extraction complete.");
 
                 var assembly = Assembly.GetExecutingAssembly();
                 Dictionary<string, string[]> mappings;
@@ -69,81 +117,14 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 }
                 App.Logger?.WriteLine(LOG_IDENT, $"Loaded mappings.json with {mappings.Count} top-level entries.");
 
-                string froststrapTemp = Path.Combine(Path.GetTempPath(), "Froststrap");
-                var preservePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-                {
-                    Path.Combine(froststrapTemp, @"ExtraContent\LuaPackages\Packages\_Index\FoundationImages\FoundationImages\SpriteSheets")
-                };
-
-                foreach (var entry in mappings.Values)
-                {
-                    string fullPath = Path.Combine(froststrapTemp, Path.Combine(entry));
-                    preservePaths.Add(fullPath);
-                }
-                App.Logger?.WriteLine(LOG_IDENT, $"Preserve paths prepared. Count: {preservePaths.Count}");
-
                 string foundationImagesDir = Path.Combine(froststrapTemp, @"ExtraContent\LuaPackages\Packages\_Index\FoundationImages\FoundationImages");
                 string? getImageSetDataPath = Directory.EnumerateFiles(foundationImagesDir, "GetImageSetData.lua", SearchOption.AllDirectories).FirstOrDefault();
 
                 if (getImageSetDataPath != null)
-                {
-                    App.Logger?.WriteLine(LOG_IDENT, $"Found GetImageSetData.lua at {getImageSetDataPath}; preserving without renaming.");
-                    preservePaths.Add(getImageSetDataPath);
-                }
+                    App.Logger?.WriteLine(LOG_IDENT, $"Found GetImageSetData.lua at {getImageSetDataPath}");
                 else
-                {
                     App.Logger?.WriteLine(LOG_IDENT, $"No GetImageSetData.lua found under {foundationImagesDir}");
-                }
 
-                long deletedFileCount = 0;
-                long deletedDirCount = 0;
-
-                void DeleteExcept(string dir)
-                {
-                    foreach (var file in Directory.GetFiles(dir))
-                    {
-                        if (!preservePaths.Contains(file))
-                        {
-                            try
-                            {
-                                File.Delete(file);
-                                deletedFileCount++;
-                            }
-                            catch (Exception ex)
-                            {
-                                App.Logger?.WriteException(LOG_IDENT, ex);
-                            }
-                        }
-                    }
-
-                    foreach (var subDir in Directory.GetDirectories(dir))
-                    {
-                        if (!preservePaths.Contains(subDir))
-                        {
-                            try
-                            {
-                                DeleteExcept(subDir);
-                                if (Directory.Exists(subDir) && !Directory.EnumerateFileSystemEntries(subDir).Any())
-                                {
-                                    Directory.Delete(subDir);
-                                    deletedDirCount++;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                App.Logger?.WriteException(LOG_IDENT, ex);
-                            }
-                        }
-                    }
-                }
-
-                App.Logger?.WriteLine(LOG_IDENT, $"Beginning cleanup in: {luaPackagesDir}, {extraTexturesDir}, {contentTexturesDir}");
-
-                if (Directory.Exists(luaPackagesDir)) DeleteExcept(luaPackagesDir);
-                if (Directory.Exists(extraTexturesDir)) DeleteExcept(extraTexturesDir);
-                if (Directory.Exists(contentTexturesDir)) DeleteExcept(contentTexturesDir);
-
-                App.Logger?.WriteLine(LOG_IDENT, $"Cleanup complete. Files deleted: {deletedFileCount}, Directories deleted: {deletedDirCount}");
                 DownloadStatusText.Text = "Recoloring images...";
 
                 Color? solidColor = null;
@@ -160,34 +141,88 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     App.Logger?.WriteLine(LOG_IDENT, $"Using gradient with {gradient.Count} stops for recolor.");
                 }
 
-                var recolorSw = System.Diagnostics.Stopwatch.StartNew();
+                bool colorCursors = CursorsCheckBox?.IsChecked == true;
+                bool colorShiftlock = ShiftlockCheckBox?.IsChecked == true;
+                bool colorEmoteWheel = EmoteWheelCheckBox?.IsChecked == true;
+
                 App.Logger?.WriteLine(LOG_IDENT, "Starting RecolorAllPngs...");
-                ModGenerator.RecolorAllPngs(froststrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath, (float)_gradientAngle);
-                recolorSw.Stop();
-                App.Logger?.WriteLine(LOG_IDENT, $"RecolorAllPngs finished in {recolorSw.ElapsedMilliseconds} ms.");
+                ModGenerator.RecolorAllPngs(froststrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath, (float)_gradientAngle, colorCursors, colorShiftlock, colorEmoteWheel);
+                App.Logger?.WriteLine(LOG_IDENT, "RecolorAllPngs finished.");
+
+                DownloadStatusText.Text = "Cleaning up unnecessary files...";
+                var preservePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    Path.Combine(froststrapTemp, @"ExtraContent\LuaPackages\Packages\_Index\FoundationImages\FoundationImages\SpriteSheets")
+                };
+
+                foreach (var entry in mappings.Values)
+                {
+                    string fullPath = Path.Combine(froststrapTemp, Path.Combine(entry));
+                    preservePaths.Add(fullPath);
+                }
+
+                if (getImageSetDataPath != null)
+                    preservePaths.Add(getImageSetDataPath);
+
+                if (colorCursors)
+                {
+                    preservePaths.Add(Path.Combine(froststrapTemp, @"content\textures\Cursors\KeyboardMouse\IBeamCursor.png"));
+                    preservePaths.Add(Path.Combine(froststrapTemp, @"content\textures\Cursors\KeyboardMouse\ArrowCursor.png"));
+                    preservePaths.Add(Path.Combine(froststrapTemp, @"content\textures\Cursors\KeyboardMouse\ArrowFarCursor.png"));
+                }
+
+                if (colorShiftlock)
+                {
+                    preservePaths.Add(Path.Combine(froststrapTemp, @"content\textures\MouseLockedCursor.png"));
+                }
+
+                if (colorEmoteWheel)
+                {
+                    string emotesDir = Path.Combine(froststrapTemp, @"content\textures\ui\Emotes\Large");
+                    preservePaths.Add(Path.Combine(emotesDir, "SelectedGradient.png"));
+                    preservePaths.Add(Path.Combine(emotesDir, "SelectedGradient@2x.png"));
+                    preservePaths.Add(Path.Combine(emotesDir, "SelectedGradient@3x.png"));
+                    preservePaths.Add(Path.Combine(emotesDir, "SelectedLine.png"));
+                    preservePaths.Add(Path.Combine(emotesDir, "SelectedLine@2x.png"));
+                    preservePaths.Add(Path.Combine(emotesDir, "SelectedLine@3x.png"));
+                    preservePaths.Add(Path.Combine(emotesDir, "SegmentedCircle.png"));
+                    preservePaths.Add(Path.Combine(emotesDir, "SegmentedCircle@2x.png"));
+                    preservePaths.Add(Path.Combine(emotesDir, "SegmentedCircle@3x.png"));
+                }
+
+                void DeleteExcept(string dir)
+                {
+                    foreach (var file in Directory.GetFiles(dir))
+                    {
+                        if (!preservePaths.Contains(file))
+                        {
+                            try { File.Delete(file); } catch { /* ignore */ }
+                        }
+                    }
+
+                    foreach (var subDir in Directory.GetDirectories(dir))
+                    {
+                        if (!preservePaths.Contains(subDir))
+                        {
+                            try
+                            {
+                                DeleteExcept(subDir);
+                                if (Directory.Exists(subDir) && !Directory.EnumerateFileSystemEntries(subDir).Any())
+                                    Directory.Delete(subDir);
+                            }
+                            catch { /* ignore */ }
+                        }
+                    }
+                }
+
+                if (Directory.Exists(luaPackagesDir)) DeleteExcept(luaPackagesDir);
+                if (Directory.Exists(extraTexturesDir)) DeleteExcept(extraTexturesDir);
+                if (Directory.Exists(contentTexturesDir)) DeleteExcept(contentTexturesDir);
 
                 string infoPath = Path.Combine(froststrapTemp, "info.json");
-
-                object colorInfo;
-                if (solidColor.HasValue)
-                {
-                    colorInfo = new
-                    {
-                        SolidColor = $"#{solidColor.Value.R:X2}{solidColor.Value.G:X2}{solidColor.Value.B:X2}{solidColor.Value.A:X2}"
-                    };
-                }
-                else if (gradient != null)
-                {
-                    colorInfo = gradient.Select(g => new
-                    {
-                        Stop = g.Stop,
-                        Color = $"#{g.Color.R:X2}{g.Color.G:X2}{g.Color.B:X2}{g.Color.A:X2}"
-                    }).ToArray();
-                }
-                else
-                {
-                    colorInfo = null!;
-                }
+                object colorInfo = solidColor.HasValue
+                    ? new { SolidColor = $"#{solidColor.Value.R:X2}{solidColor.Value.G:X2}{solidColor.Value.B:X2}{solidColor.Value.A:X2}" }
+                    : gradient?.Select(g => new { Stop = g.Stop, Color = $"#{g.Color.R:X2}{g.Color.G:X2}{g.Color.B:X2}{g.Color.A:X2}" }).ToArray()!;
 
                 var infoData = new
                 {
@@ -195,6 +230,13 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     CreatedUsing = "Froststrap",
                     RobloxVersion = version,
                     RobloxVersionHash = versionHash,
+                    OptionsUsed = new
+                    {
+                        ColorCursors = colorCursors,
+                        ColorShiftlock = colorShiftlock,
+                        ColorEmoteWheel = colorEmoteWheel,
+                        GradientAngle = Math.Round(_gradientAngle, 2)
+                    },
                     ColorsUsed = colorInfo
                 };
 
@@ -203,25 +245,20 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
                 if (IncludeModificationsCheckBox.IsChecked == true)
                 {
-                    App.Logger?.WriteLine(LOG_IDENT, "IncludeModifications is checked. Copying files to Modifications folder.");
                     if (!Directory.Exists(Paths.Modifications))
                         Directory.CreateDirectory(Paths.Modifications);
 
                     int copiedFiles = 0;
-                    foreach (var dir in new[] { froststrapTemp })
+                    foreach (var file in Directory.GetFiles(froststrapTemp, "*", SearchOption.AllDirectories))
                     {
-                        foreach (var file in Directory.GetFiles(dir, "*", SearchOption.AllDirectories))
-                        {
-                            // Skip zip files
-                            if (Path.GetExtension(file).Equals(".zip", StringComparison.OrdinalIgnoreCase))
-                                continue;
+                        if (Path.GetExtension(file).Equals(".zip", StringComparison.OrdinalIgnoreCase))
+                            continue;
 
-                            string relativePath = Path.GetRelativePath(dir, file);
-                            string destPath = Path.Combine(Paths.Modifications, relativePath);
-                            Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
-                            File.Copy(file, destPath, overwrite: true);
-                            copiedFiles++;
-                        }
+                        string relativePath = Path.GetRelativePath(froststrapTemp, file);
+                        string destPath = Path.Combine(Paths.Modifications, relativePath);
+                        Directory.CreateDirectory(Path.GetDirectoryName(destPath)!);
+                        File.Copy(file, destPath, overwrite: true);
+                        copiedFiles++;
                     }
 
                     DownloadStatusText.Text = $"Mod files copied to {Paths.Modifications}";
@@ -238,7 +275,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
                     if (saveDialog.ShowDialog() == true)
                     {
-                        App.Logger?.WriteLine(LOG_IDENT, $"Zipping result to {saveDialog.FileName}");
                         ModGenerator.ZipResult(froststrapTemp, saveDialog.FileName);
                         DownloadStatusText.Text = $"Mod generated successfully! Saved to: {saveDialog.FileName}";
                         App.Logger?.WriteLine(LOG_IDENT, $"Mod zip created at {saveDialog.FileName}");
@@ -256,8 +292,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             catch (Exception ex)
             {
                 DownloadStatusText.Text = $"Error: {ex.Message}";
-                App.Logger?.WriteException("UI::ModGenerator", ex);
-                App.Logger?.WriteLine("UI::ModGenerator", $"Mod generation failed: {ex.Message}");
+                App.Logger?.WriteException(LOG_IDENT, ex);
             }
             finally
             {

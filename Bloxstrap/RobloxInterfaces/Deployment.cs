@@ -202,7 +202,7 @@ namespace Bloxstrap.RobloxInterfaces
             return clientVersion;
         }
 
-        public static async Task<(string luaPackagesDir, string extraTexturesDir, string contentTexturesDir, string versionHash, string version)> DownloadForModGenerator(bool overwrite = false)
+        public static async Task<(string luaPackagesZip, string extraTexturesZip, string contentTexturesZip, string versionHash, string version)> DownloadForModGenerator(bool overwrite = false)
         {
             const string LOG_IDENT = "Deployment::DownloadForModGenerator";
 
@@ -230,11 +230,6 @@ namespace Bloxstrap.RobloxInterfaces
                 string luaPackagesZip = Path.Combine(froststrapTemp, $"extracontent-luapackages-{versionHash}.zip");
                 string extraTexturesZip = Path.Combine(froststrapTemp, $"extracontent-textures-{versionHash}.zip");
                 string contentTexturesZip = Path.Combine(froststrapTemp, $"content-textures2-{versionHash}.zip");
-
-                // Extract dirs
-                string luaPackagesDir = Path.Combine(froststrapTemp, "ExtraContent", "LuaPackages");
-                string extraTexturesDir = Path.Combine(froststrapTemp, "ExtraContent", "textures");
-                string contentTexturesDir = Path.Combine(froststrapTemp, "content", "textures");
 
                 async Task<string> DownloadFile(string url, string path)
                 {
@@ -290,51 +285,13 @@ namespace Bloxstrap.RobloxInterfaces
                     return path;
                 }
 
-                void SafeExtract(string zipPath, string targetDir)
-                {
-                    if (Directory.Exists(targetDir))
-                    {
-                        try { Directory.Delete(targetDir, true); }
-                        catch (Exception ex)
-                        {
-                            App.Logger.WriteException(LOG_IDENT, ex);
-                            throw;
-                        }
-                    }
-
-                    Directory.CreateDirectory(targetDir);
-
-                    using (var archive = ZipFile.OpenRead(zipPath))
-                    {
-                        foreach (var entry in archive.Entries)
-                        {
-                            if (string.IsNullOrEmpty(entry.FullName) || entry.FullName.EndsWith("/") || entry.FullName.EndsWith("\\"))
-                                continue;
-
-                            string destinationPath = Path.GetFullPath(Path.Combine(targetDir, entry.FullName));
-
-                            if (!destinationPath.StartsWith(Path.GetFullPath(targetDir), StringComparison.OrdinalIgnoreCase))
-                                throw new IOException($"Entry {entry.FullName} is trying to extract outside of {targetDir}");
-
-                            Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
-                            entry.ExtractToFile(destinationPath, overwrite: true);
-                        }
-                    }
-                }
-
-                // Download (will skip download if zip already exists and overwrite == false)
                 luaPackagesZip = await DownloadFile(luaPackagesUrl, luaPackagesZip);
                 extraTexturesZip = await DownloadFile(extraTexturesUrl, extraTexturesZip);
                 contentTexturesZip = await DownloadFile(contentTexturesUrl, contentTexturesZip);
 
-                // Extract (clean + safe)
-                SafeExtract(luaPackagesZip, luaPackagesDir);
-                SafeExtract(extraTexturesZip, extraTexturesDir);
-                SafeExtract(contentTexturesZip, contentTexturesDir);
+                App.Logger.WriteLine(LOG_IDENT, $"Downloaded completed for version {versionHash}. Zip files were not deleted.");
 
-                App.Logger.WriteLine(LOG_IDENT, $"Downloaded/extracted completed for version {versionHash}. Zip files were not deleted.");
-
-                return (luaPackagesDir, extraTexturesDir, contentTexturesDir, versionHash, version);
+                return (luaPackagesZip, extraTexturesZip, contentTexturesZip, versionHash, version);
             }
             catch (Exception ex)
             {

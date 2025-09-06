@@ -421,11 +421,20 @@
                             <Image x:Name="SpritePreview" Width="72" Height="72" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Border>
 
-                        <Border Grid.Column="1" Background="{DynamicResource NormalDarkAndLightBackground}"  Padding="8" Height="415" CornerRadius="16" Margin="12,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Border Grid.Column="1" Background="{DynamicResource NormalDarkAndLightBackground}"  Padding="8" Height="415" CornerRadius="16" Margin="12,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center">
                             <Image x:Name="SheetPreview" Height="400" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Border>
 
                         <StackPanel Grid.Column="2" VerticalAlignment="Top" Margin="16,0,0,0">
+                            <!-- Custom Mod Generator Options -->
+                            <TextBlock Text="Mod Generation Options" FontSize="13" FontWeight="Bold" Margin="0,8,0,4"/>
+
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <CheckBox x:Name="CursorsCheckBox" Content="Color Cursors" Margin="0,2,0,2"/>
+                                <CheckBox x:Name="ShiftlockCheckBox" Content="Color Shiftlock Cursor" Margin="0,2,0,2"/>
+                                <CheckBox x:Name="EmoteWheelCheckBox" Content="Color Emote Wheel" Margin="0,2,0,2"/>
+                            </StackPanel>
+
                         </StackPanel>
                     </Grid>
 
