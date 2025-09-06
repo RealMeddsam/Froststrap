@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
@@ -61,14 +62,14 @@ namespace Bloxstrap.Integrations
 
         public record GradientStop(float Stop, Color Color);
 
-        public static void RecolorAllPngs(string rootDir, Color? solidColor, List<GradientStop>? gradient = null, string getImageSetDataPath = "", string? customLogoPath = null)
+        public static void RecolorAllPngs(string rootDir, Color? solidColor, List<GradientStop>? gradient = null, string getImageSetDataPath = "", string? customLogoPath = null, float gradientAngleDeg = 0f)
         {
             foreach (var png in Directory.EnumerateFiles(rootDir, "*.png", SearchOption.AllDirectories))
             {
                 if (png.Contains(@"\SpriteSheets\", StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                SafeRecolorImage(png, solidColor, gradient);
+                SafeRecolorImage(png, solidColor, gradient, gradientAngleDeg);
             }
 
             if (File.Exists(getImageSetDataPath))
@@ -80,7 +81,7 @@ namespace Bloxstrap.Integrations
                     if (!File.Exists(sheetPath))
                         continue;
 
-                    SafeRecolorSpriteSheet(sheetPath, sprites, solidColor, gradient);
+                    SafeRecolorSpriteSheet(sheetPath, sprites, solidColor, gradient, gradientAngleDeg);
                 }
             }
 
@@ -167,10 +168,10 @@ namespace Bloxstrap.Integrations
             ZipFile.CreateFromDirectory(sourceDir, outputZip, CompressionLevel.Optimal, false);
         }
 
-        private static void SafeRecolorImage(string path, Color? solidColor, List<GradientStop>? gradient)
+        private static void SafeRecolorImage(string path, Color? solidColor, List<GradientStop>? gradient, float gradientAngleDeg)
         {
             using (var original = new Bitmap(path))
-            using (var recolored = ApplyMask(original, solidColor, gradient))
+            using (var recolored = ApplyMask(original, solidColor, gradient, gradientAngleDeg))
             {
                 string tempPath = path + ".tmp";
                 recolored.Save(tempPath, ImageFormat.Png);
@@ -179,7 +180,7 @@ namespace Bloxstrap.Integrations
             ReplaceFileWithRetry(path, path + ".tmp");
         }
 
-        private static void SafeRecolorSpriteSheet(string sheetPath, List<SpriteDef> sprites, Color? solidColor, List<GradientStop>? gradient)
+        private static void SafeRecolorSpriteSheet(string sheetPath, List<SpriteDef> sprites, Color? solidColor, List<GradientStop>? gradient, float gradientAngleDeg)
         {
             string tempPath = sheetPath + ".tmp";
 
@@ -204,7 +205,7 @@ namespace Bloxstrap.Integrations
 
                     Rectangle r = new Rectangle(sprite.X, sprite.Y, sprite.W, sprite.H);
                     using var cropped = sheet.Clone(r, sheet.PixelFormat);
-                    using var recolored = ApplyMask(cropped, solidColor, gradient);
+                    using var recolored = ApplyMask(cropped, solidColor, gradient, gradientAngleDeg);
                     g.DrawImage(recolored, r);
                 }
 
@@ -214,7 +215,7 @@ namespace Bloxstrap.Integrations
             ReplaceFileWithRetry(sheetPath, tempPath);
         }
 
-        private static Bitmap ApplyMask(Bitmap original, Color? solidColor, List<GradientStop>? gradient)
+        private static Bitmap ApplyMask(Bitmap original, Color? solidColor, List<GradientStop>? gradient, float gradientAngleDeg)
         {
             if (original.Width == 0 || original.Height == 0)
                 return new Bitmap(original);
@@ -223,6 +224,25 @@ namespace Bloxstrap.Integrations
             var rect = new Rectangle(0, 0, original.Width, original.Height);
             BitmapData srcData = original.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             BitmapData dstData = recolored.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+            // Angle math
+            double theta = gradientAngleDeg * Math.PI / 180.0;
+            double cos = Math.Cos(theta);
+            double sin = Math.Sin(theta);
+
+            double w = original.Width - 1;
+            double h = original.Height - 1;
+            double[] projs = new double[]
+            {
+        0 * cos + 0 * sin,
+        w * cos + 0 * sin,
+        0 * cos + h * sin,
+        w * cos + h * sin
+            };
+            double minProj = projs.Min();
+            double maxProj = projs.Max();
+            double denom = maxProj - minProj;
+            if (Math.Abs(denom) < 1e-6) denom = 1.0;
 
             unsafe
             {
@@ -249,7 +269,9 @@ namespace Bloxstrap.Integrations
                         Color overlay;
                         if (gradient != null && gradient.Count > 0)
                         {
-                            float t = (float)x / Math.Max(1, original.Width - 1);
+                            double proj = x * cos + y * sin;
+                            float t = (float)((proj - minProj) / denom);
+                            t = Math.Clamp(t, 0f, 1f);
                             overlay = InterpolateGradient(gradient, t);
                         }
                         else
@@ -260,7 +282,7 @@ namespace Bloxstrap.Integrations
                         dstPtr[idx] = overlay.B;
                         dstPtr[idx + 1] = overlay.G;
                         dstPtr[idx + 2] = overlay.R;
-                        dstPtr[idx + 3] = a; // use original alpha directly
+                        dstPtr[idx + 3] = a;
                     }
                 }
             }

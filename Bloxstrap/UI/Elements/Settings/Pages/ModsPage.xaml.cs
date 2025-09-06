@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Windows.Input;
 
 namespace Bloxstrap.UI.Elements.Settings.Pages
 {
@@ -31,6 +32,8 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Mods");
 
             InitializePreview();
+
+            GradientAngleTextBox.Text = "0.0";
 
             IncludeModificationsCheckBox.IsChecked = true;
 
@@ -159,7 +162,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
                 var recolorSw = System.Diagnostics.Stopwatch.StartNew();
                 App.Logger?.WriteLine(LOG_IDENT, "Starting RecolorAllPngs...");
-                ModGenerator.RecolorAllPngs(froststrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath);
+                ModGenerator.RecolorAllPngs(froststrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath, (float)_gradientAngle);
                 recolorSw.Stop();
                 App.Logger?.WriteLine(LOG_IDENT, $"RecolorAllPngs finished in {recolorSw.ElapsedMilliseconds} ms.");
 
@@ -390,7 +393,9 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     {
                         using var ms2 = new MemoryStream(sheetBytes);
                         using var sheetCopy = new Bitmap(ms2);
-                        var result = RenderPreviewSheet(sheetCopy, solidColor, gradient, customRobloxPath);
+                        float angleDeg = (float)_gradientAngle;
+                        var result = RenderPreviewSheet(sheetCopy, solidColor, gradient, customRobloxPath, angleDeg);
+
                         return result;
                     }
                     catch (Exception ex)
@@ -420,7 +425,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             }
         }
 
-        private Bitmap RenderPreviewSheet(Bitmap sheetBmp, Color? solidColor, List<ModGenerator.GradientStop>? gradient, string? customRobloxPath)
+        private Bitmap RenderPreviewSheet(Bitmap sheetBmp, Color? solidColor, List<ModGenerator.GradientStop>? gradient, string? customRobloxPath, float gradientAngleDeg)
         {
             if (sheetBmp == null) throw new InvalidOperationException("sheetBmp is null.");
 
@@ -467,7 +472,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                         else
                         {
                             using (var cropped = sheetBmp.Clone(rect, PixelFormat.Format32bppArgb))
-                            using (var recolored = ApplyMaskPreview(cropped, solidColor, gradient))
+                            using (var recolored = ApplyMaskPreview(cropped, solidColor, gradient, gradientAngleDeg))
                             using (var g = Graphics.FromImage(output))
                             {
                                 g.CompositingMode = CompositingMode.SourceOver;
@@ -479,7 +484,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     }
 
                     using (var cropped = sheetBmp.Clone(rect, PixelFormat.Format32bppArgb))
-                    using (var recolored = ApplyMaskPreview(cropped, solidColor, gradient))
+                    using (var recolored = ApplyMaskPreview(cropped, solidColor, gradient, gradientAngleDeg))
                     using (var g = Graphics.FromImage(output))
                     {
                         g.CompositingMode = CompositingMode.SourceOver;
@@ -495,7 +500,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             return output;
         }
 
-        private Bitmap ApplyMaskPreview(Bitmap original, Color? solidColor, List<ModGenerator.GradientStop>? gradient)
+        private Bitmap ApplyMaskPreview(Bitmap original, Color? solidColor, List<ModGenerator.GradientStop>? gradient, float gradientAngleDeg)
         {
             if (original.Width == 0 || original.Height == 0)
                 return new Bitmap(original);
@@ -504,6 +509,24 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             var rect = new Rectangle(0, 0, original.Width, original.Height);
             BitmapData srcData = original.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             BitmapData dstData = recolored.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+            double theta = gradientAngleDeg * Math.PI / 180.0;
+            double cos = Math.Cos(theta);
+            double sin = Math.Sin(theta);
+
+            double w = original.Width - 1;
+            double h = original.Height - 1;
+            double[] projs = new double[]
+            {
+                0 * cos + 0 * sin,
+                w * cos + 0 * sin,
+                0 * cos + h * sin,
+                w * cos + h * sin
+            };
+            double minProj = projs.Min();
+            double maxProj = projs.Max();
+            double denom = maxProj - minProj;
+            if (Math.Abs(denom) < 1e-6) denom = 1.0;
 
             unsafe
             {
@@ -527,7 +550,9 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                         Color applyColor;
                         if (gradient != null && gradient.Count > 0)
                         {
-                            float t = (float)x / Math.Max(1, original.Width - 1);
+                            double proj = x * cos + y * sin;
+                            float t = (float)((proj - minProj) / denom);
+                            t = Math.Clamp(t, 0f, 1f);
                             applyColor = InterpolateGradientPreview(gradient, t);
                         }
                         else
@@ -628,6 +653,76 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             {
                 _ = UpdatePreviewAsync();
             }
+        }
+
+        private double _gradientAngle = 0.0;
+
+        private void ApplyGradientAngleFromTextBox()
+        {
+            if (GradientAngleTextBox == null) return;
+
+            string txt = GradientAngleTextBox.Text?.Trim() ?? string.Empty;
+            if (string.IsNullOrEmpty(txt))
+            {
+                _gradientAngle = 0.0;
+            }
+            else
+            {
+                if (!double.TryParse(txt, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double val))
+                {
+                    GradientAngleTextBox.Text = Math.Round(_gradientAngle).ToString(CultureInfo.InvariantCulture);
+                    return;
+                }
+
+                val = Math.Max(0.0, Math.Min(360.0, val));
+                _gradientAngle = val;
+            }
+
+            GradientAngleTextBox.Text = Math.Round(_gradientAngle).ToString(CultureInfo.InvariantCulture);
+
+            _ = UpdatePreviewAsync();
+        }
+
+        private static readonly Regex _angleInputRegex = new Regex("^[0-9]*\\.?[0-9]*$");
+
+        private void GradientAngleTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            var tb = sender as TextBox;
+            if (tb == null) { e.Handled = true; return; }
+
+            string full = tb.Text.Remove(tb.SelectionStart, tb.SelectionLength)
+                .Insert(tb.SelectionStart, e.Text);
+
+            e.Handled = !_angleInputRegex.IsMatch(full);
+        }
+
+        private void GradientAngleTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(DataFormats.Text))
+            {
+                string paste = e.DataObject.GetData(DataFormats.Text) as string ?? string.Empty;
+                if (!_angleInputRegex.IsMatch(paste))
+                    e.CancelCommand();
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+
+        private void GradientAngleTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                ApplyGradientAngleFromTextBox();
+                Keyboard.ClearFocus();
+                e.Handled = true;
+            }
+        }
+
+        private void GradientAngleTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ApplyGradientAngleFromTextBox();
         }
 
         #region Gradient Color Stuff
