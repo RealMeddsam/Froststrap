@@ -457,9 +457,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                             {
                                 g.CompositingMode = CompositingMode.SourceCopy;
                                 using (var clearBrush = new SolidBrush(Color.FromArgb(0, 0, 0, 0)))
-                                {
                                     g.FillRectangle(clearBrush, rect);
-                                }
 
                                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                                 g.CompositingMode = CompositingMode.SourceOver;
@@ -468,11 +466,12 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                         }
                         else
                         {
-                            using (var croppedOriginal = sheetBmp.Clone(rect, sheetBmp.PixelFormat))
+                            using (var cropped = sheetBmp.Clone(rect, PixelFormat.Format32bppArgb))
+                            using (var recolored = ApplyMaskPreview(cropped, solidColor, gradient))
                             using (var g = Graphics.FromImage(output))
                             {
                                 g.CompositingMode = CompositingMode.SourceOver;
-                                g.DrawImage(croppedOriginal, rect);
+                                g.DrawImage(recolored, rect);
                             }
                         }
 
