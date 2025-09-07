@@ -192,6 +192,8 @@ namespace Bloxstrap
 
                 // typically we'd use Show(), but we need to block to ensure IPL stays in scope
                 window.ShowDialog();
+
+                (Application.Current as App)?._froststrapRPC?.Dispose();
             }
             else
             {
@@ -217,6 +219,8 @@ namespace Bloxstrap
             dialog.ShowDialog();
 
             ProcessNextAction(dialog.CloseAction);
+
+            (Application.Current as App) ? ._froststrapRPC?.Dispose();
         }
 
         public static void LaunchRoblox(LaunchMode launchMode)
