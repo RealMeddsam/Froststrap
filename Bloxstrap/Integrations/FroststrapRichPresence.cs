@@ -1,5 +1,4 @@
 ﻿using DiscordRPC;
-using System;
 
 namespace Bloxstrap.Integrations
 {
@@ -62,9 +61,38 @@ namespace Bloxstrap.Integrations
 
         public void Dispose()
         {
+            if (_rpcClient == null)
+                return;
+
             App.Logger.WriteLine("FroststrapRichPresence::Dispose", "Clearing presence and disposing RPC client");
-            _rpcClient.ClearPresence();
-            _rpcClient.Dispose();
+
+            try
+            {
+                // Only attempt to clear if client is not already disposed
+                _rpcClient.ClearPresence();
+            }
+            catch (ObjectDisposedException)
+            {
+                // already disposed, ignore
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("FroststrapRichPresence::Dispose", $"Error clearing presence: {ex}");
+            }
+
+            try
+            {
+                _rpcClient.Dispose();
+            }
+            catch (ObjectDisposedException)
+            {
+                // ignore double-dispose
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("FroststrapRichPresence::Dispose", $"Error disposing RPC client: {ex}");
+            }
+
             GC.SuppressFinalize(this);
         }
     }
