@@ -275,8 +275,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public CommunityViewModel()
         {
             _supabaseService = new SupabaseService(
-                "Cant Share",
-                "Cant Share"
+                "Cant Sharee",
+                "Cant Sharee"
             );
 
             UploadCommand = new RelayCommand(async () => await UploadAsync(), () => CanUpload);
