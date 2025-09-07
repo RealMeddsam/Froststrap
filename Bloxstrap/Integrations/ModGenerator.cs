@@ -21,7 +21,7 @@ namespace Bloxstrap.Integrations
             Keywords = new List<string>
             {
                 "goldrobux",
-                "logo/studiologo"
+                "icons/common/play"
             },
             Strict = new List<string>
             {
@@ -249,8 +249,7 @@ namespace Bloxstrap.Integrations
                     new[]
                     {
                         "SelectedGradient.png", "SelectedGradient@2x.png", "SelectedGradient@3x.png",
-                        "SelectedLine.png", "SelectedLine@2x.png", "SelectedLine@3x.png",
-                        "SegmentedCircle.png", "SegmentedCircle@2x.png", "SegmentedCircle@3x.png"
+                        "SelectedLine.png", "SelectedLine@2x.png", "SelectedLine@3x.png"
                     },
                     Path.Combine("content", "textures", "ui", "Emotes", "Large"));
 

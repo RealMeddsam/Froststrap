@@ -185,9 +185,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     preservePaths.Add(Path.Combine(emotesDir, "SelectedLine.png"));
                     preservePaths.Add(Path.Combine(emotesDir, "SelectedLine@2x.png"));
                     preservePaths.Add(Path.Combine(emotesDir, "SelectedLine@3x.png"));
-                    preservePaths.Add(Path.Combine(emotesDir, "SegmentedCircle.png"));
-                    preservePaths.Add(Path.Combine(emotesDir, "SegmentedCircle@2x.png"));
-                    preservePaths.Add(Path.Combine(emotesDir, "SegmentedCircle@3x.png"));
                 }
 
                 void DeleteExcept(string dir)
