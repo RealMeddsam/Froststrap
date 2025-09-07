@@ -324,26 +324,26 @@ namespace Bloxstrap
                 {
                     if (App.Settings.Prop.SelectedRobloxIcon != RobloxIcon.Default)
                     {
-                        SetStatus("Changing Topbar Roblox Icon...");
-                        await Task.Delay(1000);
+                        SetStatus("Changing TaskBar/TopBar Icon...");
+                        await Task.Delay(500);
 
                         var robloxProcess = Process.GetProcessById(_appPid);
 
                         if (!robloxProcess.HasExited)
                         {
-                            SetRobloxWindowIcon(robloxProcess, App.Settings.Prop.SelectedRobloxIcon);
+                            await SetRobloxWindowIcon(robloxProcess, App.Settings.Prop.SelectedRobloxIcon);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    App.Logger.WriteLine("Bootstrapper", $"Failed to set Roblox icon after crash handler: {ex}");
+                    App.Logger.WriteLine("Bootstrapper", $"Failed to set Roblox icon: {ex}");
                 }
 
                 if (App.Settings.Prop.AutoCloseCrashHandler)
                 {
                     SetStatus("Closing Roblox Crash Handler...");
-                    await Task.Delay(1500);
+                    await Task.Delay(500);
 
                     try
                     {
@@ -354,17 +354,17 @@ namespace Bloxstrap
                             try
                             {
                                 proc.Kill();
-                                App.Logger.WriteLine("Bootstrapper::StartRoblox", $"Killed RobloxCrashHandler process (PID {proc.Id})");
+                                App.Logger.WriteLine("Bootstrapper::Run", $"Killed RobloxCrashHandler process (PID {proc.Id})");
                             }
                             catch (Exception ex)
                             {
-                                App.Logger.WriteLine("Bootstrapper::StartRoblox", $"Failed to kill RobloxCrashHandler process (PID {proc.Id}): {ex.Message}");
+                                App.Logger.WriteLine("Bootstrapper::Run", $"Failed to kill RobloxCrashHandler process (PID {proc.Id}): {ex.Message}");
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        App.Logger.WriteLine("Bootstrapper::StartRoblox", $"Error killing RobloxCrashHandler: {ex.Message}");
+                        App.Logger.WriteLine("Bootstrapper::Run", $"Error killing RobloxCrashHandler: {ex.Message}");
                     }
                 }
             }
@@ -642,6 +642,7 @@ namespace Bloxstrap
         }
 
         private const int WM_SETICON = 0x80;
+        private const int WM_GETICON = 0x7F;
         private const int ICON_SMALL = 0;
         private const int ICON_BIG = 1;
         private const int GCL_HICON = -14;
@@ -653,17 +654,17 @@ namespace Bloxstrap
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SetClassLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "SetClassLongPtr")]
+        private static extern IntPtr SetClassLongPtr32(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
-        [DllImport("user32.dll", EntryPoint = "SetClassLong", SetLastError = true)]
-        private static extern uint SetClassLong32(IntPtr hWnd, int nIndex, uint dwNewLong);
-
-        [DllImport("user32.dll")]
-        private static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, uint flags);
+        [DllImport("user32.dll", SetLastError = true, EntryPoint = "SetClassLongPtrW")]
+        private static extern IntPtr SetClassLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
         [DllImport("user32.dll")]
         private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, uint flags);
 
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
@@ -671,17 +672,29 @@ namespace Bloxstrap
         [DllImport("user32.dll")]
         private static extern bool IsWindowVisible(IntPtr hWnd);
 
-        [DllImport("user32.dll")]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
-
         private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
         private IntPtr SetClassIcon(IntPtr hwnd, Icon icon)
         {
             IntPtr hIcon = icon.Handle;
             return IntPtr.Size == 8
-                ? SetClassLongPtr(hwnd, GCL_HICON, hIcon)
-                : (IntPtr)SetClassLong32(hwnd, GCL_HICON, (uint)hIcon.ToInt32());
+                ? SetClassLongPtr64(hwnd, GCL_HICON, hIcon)
+                : SetClassLongPtr32(hwnd, GCL_HICON, hIcon);
+        }
+
+        private bool IconAlreadySet(IntPtr hwnd, IntPtr hIcon)
+        {
+            var currentSmall = SendMessage(hwnd, WM_GETICON, (IntPtr)ICON_SMALL, IntPtr.Zero);
+            var currentBig = SendMessage(hwnd, WM_GETICON, (IntPtr)ICON_BIG, IntPtr.Zero);
+            return currentSmall == hIcon || currentBig == hIcon;
+        }
+
+        private void ApplyIcon(IntPtr hwnd, Icon icon)
+        {
+            SendMessage(hwnd, WM_SETICON, (IntPtr)ICON_SMALL, icon.Handle);
+            SendMessage(hwnd, WM_SETICON, (IntPtr)ICON_BIG, icon.Handle);
+            SetClassIcon(hwnd, icon);
+            RedrawWindow(hwnd, IntPtr.Zero, IntPtr.Zero, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW);
         }
 
         private IntPtr GetMainWindowHandle(int processId)
@@ -712,64 +725,64 @@ namespace Bloxstrap
             return stream != null ? new Icon(stream) : null;
         }
 
-        private void SetRobloxWindowIcon(Process process, RobloxIcon icon)
+        private Task SetRobloxWindowIcon(Process process, RobloxIcon icon)
         {
             const string LOG_IDENT = "Bootstrapper::SetRobloxWindowIcon";
 
             if (icon == RobloxIcon.Default)
-                return;
+                return Task.CompletedTask;
 
             if (!process.WaitForInputIdle(3000))
-            {
                 App.Logger.WriteLine(LOG_IDENT, "WaitForInputIdle timed out, window might not be ready.");
+
+            var iconHandle = LoadIcon(icon);
+            if (iconHandle == null)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Icon resource '{icon}' not found.");
+                return Task.CompletedTask;
             }
 
-            IntPtr hwnd = IntPtr.Zero;
-
-            // increased the amount of attempt + how long each one takes, hopefully it works everytime now without issues + it stops when it changes it successfully
-            for (int i = 0; i < 1000; i++)
+            return Task.Run(async () =>
             {
-                hwnd = process.MainWindowHandle;
+                IntPtr hwnd = IntPtr.Zero;
+                bool appliedOnce = false;
 
-                if (hwnd != IntPtr.Zero && IsWindowVisible(hwnd))
-                    break;
-
-                Thread.Sleep(10);
-            }
-
-            if (hwnd == IntPtr.Zero || !IsWindowVisible(hwnd))
-                hwnd = GetMainWindowHandle(process.Id);
-
-            if (hwnd == IntPtr.Zero || !IsWindowVisible(hwnd))
-            {
-                App.Logger.WriteLine(LOG_IDENT, "Roblox main window handle not found or not visible.");
-                return;
-            }
-
-            try
-            {
-                using var iconHandle = LoadIcon(icon);
-                if (iconHandle == null)
+                for (int attempt = 0; attempt < 1250 && !process.HasExited; attempt++)
                 {
-                    App.Logger.WriteLine(LOG_IDENT, $"Icon resource '{icon}' not found.");
-                    return;
+                    try
+                    {
+                        hwnd = process.MainWindowHandle;
+                        if (hwnd == IntPtr.Zero || !IsWindowVisible(hwnd))
+                            hwnd = GetMainWindowHandle(process.Id);
+
+                        if (hwnd != IntPtr.Zero && IsWindowVisible(hwnd))
+                        {
+                            if (!IconAlreadySet(hwnd, iconHandle.Handle))
+                            {
+                                ApplyIcon(hwnd, iconHandle);
+
+                                if (!appliedOnce)
+                                {
+                                    appliedOnce = true;
+                                    App.Logger.WriteLine(LOG_IDENT, $"Custom icon '{icon}' applied.");
+                                }
+                                else
+                                {
+                                    App.Logger.WriteLine(LOG_IDENT, $"Icon reapplied after Roblox reset it.");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Failed to set icon: {ex}");
+                    }
+
+                    await Task.Delay(10); // aggressive retry loop
                 }
 
-                SetForegroundWindow(hwnd);
-
-                SendMessage(hwnd, WM_SETICON, (IntPtr)ICON_SMALL, iconHandle.Handle);
-                SendMessage(hwnd, WM_SETICON, (IntPtr)ICON_BIG, iconHandle.Handle);
-                SetClassIcon(hwnd, iconHandle);
-
-                RedrawWindow(hwnd, IntPtr.Zero, IntPtr.Zero, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW);
-
-                App.Logger.WriteLine(LOG_IDENT, $"Custom icon '{icon}' set on Roblox window.");
-
-            }
-            catch (Exception ex)
-            {
-                App.Logger.WriteLine(LOG_IDENT, $"Failed to set icon '{icon}': {ex}");
-            }
+                iconHandle.Dispose();
+            });
         }
 
         private async void StartRoblox()
