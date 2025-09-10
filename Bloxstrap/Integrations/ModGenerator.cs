@@ -59,7 +59,7 @@ namespace Bloxstrap.Integrations
 
         public record GradientStop(float Stop, Color Color);
 
-        public static void RecolorAllPngs(string rootDir, Color? solidColor, List<GradientStop>? gradient = null, string getImageSetDataPath = "", string? customLogoPath = null, float gradientAngleDeg = 0f, bool recolorCursors = false, bool recolorShiftlock = false, bool recolorEmoteWheel = false, IEnumerable<string>? extraSourceDirs = null)
+        public static void RecolorAllPngs(string rootDir, Color? solidColor, List<GradientStop>? gradient = null, string getImageSetDataPath = "", string? customLogoPath = null, float gradientAngleDeg = 0f, bool recolorCursors = false, bool recolorShiftlock = false, bool recolorEmoteWheel = false, bool recolorVoiceChat = false, IEnumerable<string>? extraSourceDirs = null)
         {
             const string LOG_IDENT = "UI::Recolor";
 
@@ -271,6 +271,176 @@ namespace Bloxstrap.Integrations
                 }
             }
 
+            void RecolorGrayParts(string[] candidateNames, string? relativeDir = null)
+            {
+                // target color #4f545f
+                const byte targetR = 0x4F;
+                const byte targetG = 0x54;
+                const byte targetB = 0x5F;
+
+                const int targetDistThreshold = 60;
+                const int grayDiffThreshold = 30;
+                const float satThreshold = 0.28f;
+                const int whiteThreshold = 220;
+
+                int targetDistThresholdSq = targetDistThreshold * targetDistThreshold;
+
+                string sep = Path.DirectorySeparatorChar.ToString();
+                string[] angle270Patterns = new[]
+                {
+                    $"content{sep}textures{sep}ui{sep}VoiceChat",
+                    $"content{sep}textures{sep}ui{sep}VoiceChat{sep}New",
+                    $"content{sep}textures{sep}ui{sep}VoiceChat{sep}MicLight",
+                    $"content{sep}textures{sep}ui{sep}VoiceChat{sep}MicDark"
+                };
+
+                string[] angle0Patterns = new[]
+                {
+                    $"content{sep}textures{sep}ui{sep}VoiceChat{sep}RedSpeakerDark",
+                    $"content{sep}textures{sep}ui{sep}VoiceChat{sep}RedSpeakerLight",
+                    $"content{sep}textures{sep}ui{sep}VoiceChat{sep}SpeakerDark",
+                    $"content{sep}textures{sep}ui{sep}VoiceChat{sep}SpeakerLight",
+                    $"content{sep}textures{sep}ui{sep}VoiceChat{sep}SpeakerNew"
+                };
+
+                Func<byte, byte, byte, byte, bool> MakeDetector() => (r, g, b, a) =>
+                {
+                    if (a < 8) return false;
+
+                    int maxc = Math.Max(r, Math.Max(g, b));
+                    int minc = Math.Min(r, Math.Min(g, b));
+                    int diff = maxc - minc;
+                    float sat = (maxc == 0) ? 0f : (diff / (float)maxc);
+
+                    bool isGrayish = diff <= grayDiffThreshold || sat <= satThreshold;
+                    bool isWhiteish = maxc >= whiteThreshold;
+
+                    int dr = r - targetR;
+                    int dg = g - targetG;
+                    int db = b - targetB;
+                    int distSq = dr * dr + dg * dg + db * db;
+                    bool closeToTarget = distSq <= targetDistThresholdSq;
+
+                    return isGrayish && (closeToTarget || isWhiteish);
+                };
+
+                float AngleForRelativePath(string relPath)
+                {
+                    if (string.IsNullOrWhiteSpace(relPath)) return gradientAngleDeg;
+
+                    string p = relPath.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar).TrimStart(Path.DirectorySeparatorChar).ToLowerInvariant();
+
+                    foreach (var pat in angle270Patterns)
+                    {
+                        if (p.StartsWith(pat, StringComparison.OrdinalIgnoreCase) || p.Contains(pat + sep))
+                            return 270f;
+                    }
+
+                    foreach (var pat in angle0Patterns)
+                    {
+                        if (p.StartsWith(pat, StringComparison.OrdinalIgnoreCase) || p.Contains(pat + sep))
+                            return 0f;
+                    }
+
+                    return gradientAngleDeg;
+                }
+
+                foreach (var name in candidateNames)
+                {
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(relativeDir))
+                        {
+                            string expected = Path.Combine(rootDir, relativeDir, name);
+                            if (File.Exists(expected))
+                            {
+                                string rel = Path.Combine(relativeDir, name);
+                                float angleToUse = AngleForRelativePath(rel);
+                                SafeRecolorImageSelective(expected, solidColor, gradient, angleToUse, MakeDetector());
+                                continue;
+                            }
+                        }
+
+                        var matches = Directory.EnumerateFiles(rootDir, name, SearchOption.AllDirectories).ToList();
+                        if (matches.Count == 0)
+                        {
+                            matches = Directory.EnumerateFiles(rootDir, "*.png", SearchOption.AllDirectories)
+                                .Where(p => p.EndsWith(name, StringComparison.OrdinalIgnoreCase)).ToList();
+                        }
+
+                        if (matches.Count > 0)
+                        {
+                            foreach (var m in matches)
+                            {
+                                try
+                                {
+                                    string rel = Path.GetRelativePath(rootDir, m);
+                                    float angleToUse = AngleForRelativePath(rel);
+                                    SafeRecolorImageSelective(m, solidColor, gradient, angleToUse, MakeDetector());
+                                }
+                                catch (Exception ex)
+                                {
+                                    App.Logger?.WriteLine(LOG_IDENT, $"Error recoloring matched file '{m}': {ex.Message}");
+                                }
+                            }
+                            continue;
+                        }
+
+                        if (extraSourceDirs != null)
+                        {
+                            foreach (var srcBase in extraSourceDirs)
+                            {
+                                if (string.IsNullOrWhiteSpace(srcBase) || !Directory.Exists(srcBase)) continue;
+
+                                var srcMatches = Directory.EnumerateFiles(srcBase, name, SearchOption.AllDirectories).ToList();
+                                if (srcMatches.Count == 0)
+                                {
+                                    srcMatches = Directory.EnumerateFiles(srcBase, "*.png", SearchOption.AllDirectories)
+                                        .Where(p => p.EndsWith(name, StringComparison.OrdinalIgnoreCase)).ToList();
+                                }
+
+                                foreach (var src in srcMatches)
+                                {
+                                    try
+                                    {
+                                        string destDir;
+                                        if (!string.IsNullOrWhiteSpace(relativeDir))
+                                        {
+                                            destDir = Path.Combine(rootDir, relativeDir);
+                                        }
+                                        else
+                                        {
+                                            var rel = Path.GetRelativePath(srcBase, Path.GetDirectoryName(src) ?? string.Empty);
+                                            destDir = Path.Combine(rootDir, rel);
+                                        }
+
+                                        Directory.CreateDirectory(destDir);
+                                        string destPath = Path.Combine(destDir, name);
+
+                                        File.Copy(src, destPath, overwrite: true);
+
+                                        string relForAngle = Path.GetRelativePath(rootDir, destPath);
+                                        float angleToUse = AngleForRelativePath(relForAngle);
+
+                                        SafeRecolorImageSelective(destPath, solidColor, gradient, angleToUse, MakeDetector());
+
+                                        App.Logger?.WriteLine(LOG_IDENT, $"Copied + recolored '{src}' → '{destPath}'");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        App.Logger?.WriteLine(LOG_IDENT, $"Failed copying/recoloring from extraSourceDirs '{src}': {ex.Message}");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger?.WriteLine(LOG_IDENT, $"Exception while trying to handle '{name}': {ex.Message}");
+                    }
+                }
+            }
+
             if (recolorCursors)
                 TryRecolorFilesByNames(
                     new[] { "IBeamCursor.png", "ArrowCursor.png", "ArrowFarCursor.png" },
@@ -289,6 +459,54 @@ namespace Bloxstrap.Integrations
                         "SelectedLine.png", "SelectedLine@2x.png", "SelectedLine@3x.png"
                     },
                     Path.Combine("content", "textures", "ui", "Emotes", "Large"));
+
+            if (recolorVoiceChat)
+            {
+                var voiceChatMappings = new Dictionary<string, (string BaseDir, string[] Files)>
+                {
+                    ["VoiceChat"] = (
+                        @"content\textures\ui\VoiceChat",
+                        new[] { "Blank.png", "Blank@2x.png", "Blank@3x.png", "Error.png", "Error@2x.png", "Error@3x.png", "Muted.png", "Muted@2x.png", "Muted@3x.png", "Unmuted0.png", "Unmuted0@2x.png", "Unmuted0@3x.png", "Unmuted20.png", "Unmuted20@2x.png", "Unmuted20@3x.png", "Unmuted40.png", "Unmuted40@2x.png", "Unmuted40@3x.png", "Unmuted60.png", "Unmuted60@2x.png", "Unmuted60@3x.png", "Unmuted80.png", "Unmuted80@2x.png", "Unmuted80@3x.png", "Unmuted100.png", "Unmuted100@2x.png", "Unmuted100@3x.png" }
+                    ),
+                    ["SpeakerNew"] = (
+                        @"content\textures\ui\VoiceChat\SpeakerNew",
+                        new[] { "Unmuted60@3x.png", "Unmuted80.png", "Unmuted80@2x.png", "Unmuted80@3x.png", "Unmuted100.png", "Unmuted100@2x.png", "Unmuted100@3x.png", "Error.png", "Error@2x.png", "Error@3x.png", "Muted.png", "Muted@2x.png", "Muted@3x.png", "Unmuted0.png", "Unmuted0@2x.png", "Unmuted0@3x.png", "Unmuted20.png", "Unmuted20@2x.png", "Unmuted20@3x.png", "Unmuted40.png", "Unmuted40@2x.png", "Unmuted40@3x.png", "Unmuted60.png", "Unmuted60@2x.png" }
+                    ),
+                    ["SpeakerLight"] = (
+                        @"content\textures\ui\VoiceChat\SpeakerLight",
+                        new[] { "Muted@2x.png", "Muted@3x.png", "Unmuted0.png", "Unmuted0@2x.png", "Unmuted0@3x.png", "Unmuted20.png", "Unmuted20@2x.png", "Unmuted20@3x.png", "Unmuted40.png", "Unmuted40@2x.png", "Unmuted40@3x.png", "Unmuted60.png", "Unmuted60@2x.png", "Unmuted60@3x.png", "Unmuted80.png", "Unmuted80@2x.png", "Unmuted80@3x.png", "Unmuted100.png", "Unmuted100@2x.png", "Unmuted100@3x.png", "Error.png", "Error@2x.png", "Error@3x.png", "Muted.png" }
+                    ),
+                    ["SpeakerDark"] = (
+                        @"content\textures\ui\VoiceChat\SpeakerDark",
+                        new[] { "Unmuted40.png", "Unmuted40@2x.png", "Unmuted40@3x.png", "Unmuted60.png", "Unmuted60@2x.png", "Unmuted60@3x.png", "Unmuted80.png", "Unmuted80@2x.png", "Unmuted80@3x.png", "Unmuted100.png", "Unmuted100@2x.png", "Unmuted100@3x.png", "Error.png", "Error@2x.png", "Error@3x.png", "Muted.png", "Muted@2x.png", "Muted@3x.png", "Unmuted0.png", "Unmuted0@2x.png", "Unmuted0@3x.png", "Unmuted20.png", "Unmuted20@2x.png", "Unmuted20@3x.png" }
+                    ),
+                    ["RedSpeakerLight"] = (
+                        @"content\textures\ui\VoiceChat\RedSpeakerLight",
+                        new[] { "Unmuted20.png", "Unmuted20@2x.png", "Unmuted20@3x.png", "Unmuted40.png", "Unmuted40@2x.png", "Unmuted40@3x.png", "Unmuted60.png", "Unmuted60@2x.png", "Unmuted60@3x.png", "Unmuted80.png", "Unmuted80@2x.png", "Unmuted80@3x.png", "Unmuted100.png", "Unmuted100@2x.png", "Unmuted100@3x.png", "Unmuted0.png", "Unmuted0@2x.png", "Unmuted0@3x.png" }
+                    ),
+                    ["RedSpeakerDark"] = (
+                        @"content\textures\ui\VoiceChat\RedSpeakerDark",
+                        new[] { "Unmuted20.png", "Unmuted20@2x.png", "Unmuted20@3x.png", "Unmuted40.png", "Unmuted40@2x.png", "Unmuted40@3x.png", "Unmuted60.png", "Unmuted60@2x.png", "Unmuted60@3x.png", "Unmuted80.png", "Unmuted80@2x.png", "Unmuted80@3x.png", "Unmuted100.png", "Unmuted100@2x.png", "Unmuted100@3x.png", "Unmuted0.png", "Unmuted0@2x.png", "Unmuted0@3x.png" }
+                    ),
+                    ["New"] = (
+                        @"content\textures\ui\VoiceChat\New",
+                        new[] { "Error.png", "Error@2x.png", "Error@3x.png", "Unmuted0.png", "Unmuted0@2x.png", "Unmuted0@3x.png", "Unmuted20.png", "Unmuted20@2x.png", "Unmuted20@3x.png", "Unmuted40.png", "Unmuted40@2x.png", "Unmuted40@3x.png", "Unmuted60.png", "Unmuted60@2x.png", "Unmuted60@3x.png", "Unmuted80.png", "Unmuted80@2x.png", "Unmuted80@3x.png", "Unmuted100.png", "Unmuted100@2x.png", "Unmuted100@3x.png", "Blank.png", "Blank@2x.png", "Blank@3x.png" }
+                    ),
+                    ["MicLight"] = (
+                        @"content\textures\ui\VoiceChat\MicLight",
+                        new[] { "Error.png", "Error@2x.png", "Error@3x.png", "Muted.png", "Muted@2x.png", "Muted@3x.png", "Unmuted0.png", "Unmuted0@2x.png", "Unmuted0@3x.png", "Unmuted20.png", "Unmuted20@2x.png", "Unmuted20@3x.png", "Unmuted40.png", "Unmuted40@2x.png", "Unmuted40@3x.png", "Unmuted60.png", "Unmuted60@2x.png", "Unmuted60@3x.png", "Unmuted80.png", "Unmuted80@2x.png", "Unmuted80@3x.png", "Unmuted100.png", "Unmuted100@2x.png", "Unmuted100@3x.png" }
+                    ),
+                    ["MicDark"] = (
+                        @"content\textures\ui\VoiceChat\MicDark",
+                        new[] { "Muted.png", "Muted@2x.png", "Muted@3x.png", "Unmuted0.png", "Unmuted0@2x.png", "Unmuted0@3x.png", "Unmuted20.png", "Unmuted20@2x.png", "Unmuted20@3x.png", "Unmuted40.png", "Unmuted40@2x.png", "Unmuted40@3x.png", "Unmuted60.png", "Unmuted60@2x.png", "Unmuted60@3x.png", "Unmuted80.png", "Unmuted80@2x.png", "Unmuted80@3x.png", "Unmuted100.png", "Unmuted100@2x.png", "Unmuted100@3x.png", "Error.png", "Error@2x.png", "Error@3x.png" }
+                    )
+                };
+
+                foreach (var mapping in voiceChatMappings.Values)
+                {
+                    RecolorGrayParts(mapping.Files, mapping.BaseDir);
+                }
+            }
 
             App.Logger?.WriteLine(LOG_IDENT, "RecolorAllPngs finished.");
         }
@@ -363,6 +581,18 @@ namespace Bloxstrap.Integrations
             ReplaceFileWithRetry(sheetPath, tempPath);
         }
 
+        private static void SafeRecolorImageSelective(string path, Color? solidColor, List<GradientStop>? gradient, float gradientAngleDeg, Func<byte, byte, byte, byte, bool> detector)
+        {
+            using (var original = new Bitmap(path))
+            using (var recolored = ApplyMaskSelective(original, solidColor, gradient, gradientAngleDeg, detector))
+            {
+                string tempPath = path + ".tmp";
+                recolored.Save(tempPath, ImageFormat.Png);
+            }
+
+            ReplaceFileWithRetry(path, path + ".tmp");
+        }
+
         private static Bitmap ApplyMask(Bitmap original, Color? solidColor, List<GradientStop>? gradient, float gradientAngleDeg)
         {
             if (original.Width == 0 || original.Height == 0)
@@ -431,6 +661,97 @@ namespace Bloxstrap.Integrations
                         dstPtr[idx + 1] = overlay.G;
                         dstPtr[idx + 2] = overlay.R;
                         dstPtr[idx + 3] = a;
+                    }
+                }
+            }
+
+            original.UnlockBits(srcData);
+            recolored.UnlockBits(dstData);
+            return recolored;
+        }
+
+        private static Bitmap ApplyMaskSelective(Bitmap original, Color? solidColor, List<GradientStop>? gradient, float gradientAngleDeg, Func<byte, byte, byte, byte, bool> detector)
+        {
+            if (original.Width == 0 || original.Height == 0)
+                return new Bitmap(original);
+
+            var recolored = new Bitmap(original.Width, original.Height, PixelFormat.Format32bppArgb);
+            var rect = new Rectangle(0, 0, original.Width, original.Height);
+            BitmapData srcData = original.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            BitmapData dstData = recolored.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+            double theta = gradientAngleDeg * Math.PI / 180.0;
+            double cos = Math.Cos(theta);
+            double sin = Math.Sin(theta);
+
+            double w = original.Width - 1;
+            double h = original.Height - 1;
+            double[] projs = new double[]
+            {
+                0 * cos + 0 * sin,
+                w * cos + 0 * sin,
+                0 * cos + h * sin,
+                w * cos + h * sin
+            };
+            double minProj = projs.Min();
+            double maxProj = projs.Max();
+            double denom = maxProj - minProj;
+            if (Math.Abs(denom) < 1e-6) denom = 1.0;
+
+            unsafe
+            {
+                byte* srcPtr = (byte*)srcData.Scan0;
+                byte* dstPtr = (byte*)dstData.Scan0;
+                int bytesPerPixel = 4;
+
+                for (int y = 0; y < original.Height; y++)
+                {
+                    for (int x = 0; x < original.Width; x++)
+                    {
+                        int idx = y * srcData.Stride + x * bytesPerPixel;
+                        byte bSrc = srcPtr[idx + 0];
+                        byte gSrc = srcPtr[idx + 1];
+                        byte rSrc = srcPtr[idx + 2];
+                        byte a = srcPtr[idx + 3];
+
+                        if (a == 0)
+                        {
+                            dstPtr[idx + 0] = 0;
+                            dstPtr[idx + 1] = 0;
+                            dstPtr[idx + 2] = 0;
+                            dstPtr[idx + 3] = 0;
+                            continue;
+                        }
+
+                        Color overlay;
+                        if (gradient != null && gradient.Count > 0)
+                        {
+                            double proj = x * cos + y * sin;
+                            float t = (float)((proj - minProj) / denom);
+                            t = Math.Clamp(t, 0f, 1f);
+                            overlay = InterpolateGradient(gradient, t);
+                        }
+                        else
+                        {
+                            overlay = solidColor ?? Color.White;
+                        }
+
+                        bool shouldMask = detector(rSrc, gSrc, bSrc, a);
+
+                        if (shouldMask)
+                        {
+                            dstPtr[idx + 0] = overlay.B;
+                            dstPtr[idx + 1] = overlay.G;
+                            dstPtr[idx + 2] = overlay.R;
+                            dstPtr[idx + 3] = a;
+                        }
+                        else
+                        {
+                            dstPtr[idx + 0] = bSrc;
+                            dstPtr[idx + 1] = gSrc;
+                            dstPtr[idx + 2] = rSrc;
+                            dstPtr[idx + 3] = a;
+                        }
                     }
                 }
             }

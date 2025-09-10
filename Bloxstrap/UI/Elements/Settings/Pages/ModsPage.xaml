@@ -431,6 +431,7 @@
                             <StackPanel Orientation="Vertical" Margin="0,0,0,12">
                                 <CheckBox x:Name="CursorsCheckBox" Content="Color Cursors" Margin="0,2,0,2"/>
                                 <CheckBox x:Name="ShiftlockCheckBox" Content="Color Shiftlock Cursor" Margin="0,2,0,2"/>
+                                <CheckBox x:Name="VoiceChatCheckBox" Content="Color Voice Chat Icons" Margin="0,2,0,2"/>
                                 <CheckBox x:Name="EmoteWheelCheckBox" Content="Color Emote Wheel" Margin="0,2,0,2"/>
                             </StackPanel>
 

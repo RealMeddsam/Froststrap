@@ -144,9 +144,10 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 bool colorCursors = CursorsCheckBox?.IsChecked == true;
                 bool colorShiftlock = ShiftlockCheckBox?.IsChecked == true;
                 bool colorEmoteWheel = EmoteWheelCheckBox?.IsChecked == true;
+                bool colorVoiceChat = VoiceChatCheckBox?.IsChecked == true;
 
                 App.Logger?.WriteLine(LOG_IDENT, "Starting RecolorAllPngs...");
-                ModGenerator.RecolorAllPngs(froststrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath, (float)_gradientAngle, colorCursors, colorShiftlock, colorEmoteWheel);
+                ModGenerator.RecolorAllPngs(froststrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath, (float)_gradientAngle, colorCursors, colorShiftlock, colorEmoteWheel, colorVoiceChat);
                 App.Logger?.WriteLine(LOG_IDENT, "RecolorAllPngs finished.");
 
                 DownloadStatusText.Text = "Cleaning up unnecessary files...";
@@ -187,6 +188,69 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     preservePaths.Add(Path.Combine(emotesDir, "SelectedLine@3x.png"));
                 }
 
+                if (colorVoiceChat)
+                {
+                    var voiceChatMappings = new Dictionary<string, (string BaseDir, string[] Files)>
+                    {
+                        ["VoiceChat"] = (
+                            @"content\textures\ui\VoiceChat",
+                            new[]
+                            {"Blank.png","Blank@2x.png","Blank@3x.png","Error.png","Error@2x.png","Error@3x.png","Muted.png","Muted@2x.png","Muted@3x.png","Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png","Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png","Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png","Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png"}
+                        ),
+                        ["SpeakerNew"] = (
+                            @"content\textures\ui\VoiceChat\SpeakerNew",
+                            new[]
+                            {"Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png","Error.png","Error@2x.png","Error@3x.png","Muted.png","Muted@2x.png","Muted@3x.png","Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png","Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png","Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png"}
+                        ),
+                        ["SpeakerLight"] = (
+                            @"content\textures\ui\VoiceChat\SpeakerLight",
+                            new[]
+                            {"Muted@2x.png","Muted@3x.png","Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png","Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png","Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png","Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png","Error.png","Error@2x.png","Error@3x.png","Muted.png"}
+                        ),
+                        ["SpeakerDark"] = (
+                            @"content\textures\ui\VoiceChat\SpeakerDark",
+                            new[]
+                            {"Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png","Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png","Error.png","Error@2x.png","Error@3x.png","Muted.png","Muted@2x.png","Muted@3x.png","Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png","Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png"}
+                        ),
+                        ["RedSpeakerLight"] = (
+                            @"content\textures\ui\VoiceChat\RedSpeakerLight",
+                            new[]
+                            {"Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png","Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png","Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png","Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png"}
+                        ),
+                        ["RedSpeakerDark"] = (
+                            @"content\textures\ui\VoiceChat\RedSpeakerDark",
+                            new[]
+                            {"Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png","Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png","Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png","Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png"}
+                        ),
+                        ["New"] = (
+                            @"content\textures\ui\VoiceChat\New",
+                            new[]
+                            {
+                        "Error.png","Error@2x.png","Error@3x.png",
+                        "Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png","Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png","Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png","Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png","Blank.png","Blank@2x.png","Blank@3x.png"}
+                        ),
+                        ["MicLight"] = (
+                            @"content\textures\ui\VoiceChat\MicLight",
+                            new[]
+                            {"Error.png","Error@2x.png","Error@3x.png","Muted.png","Muted@2x.png","Muted@3x.png","Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png","Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png","Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png","Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png"}
+                        ),
+                        ["MicDark"] = (
+                            @"content\textures\ui\VoiceChat\MicDark",
+                            new[]
+                            {"Muted.png","Muted@2x.png","Muted@3x.png","Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png","Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png","Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png","Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png","Error.png","Error@2x.png","Error@3x.png"}
+                        )
+                    };
+
+                    foreach (var mapping in voiceChatMappings.Values)
+                    {
+                        string baseDir = Path.Combine(froststrapTemp, mapping.BaseDir);
+                        foreach (var file in mapping.Files)
+                        {
+                            preservePaths.Add(Path.Combine(baseDir, file));
+                        }
+                    }
+                }
+
                 void DeleteExcept(string dir)
                 {
                     foreach (var file in Directory.GetFiles(dir))
@@ -217,9 +281,26 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 if (Directory.Exists(contentTexturesDir)) DeleteExcept(contentTexturesDir);
 
                 string infoPath = Path.Combine(froststrapTemp, "info.json");
-                object colorInfo = solidColor.HasValue
-                    ? new { SolidColor = $"#{solidColor.Value.R:X2}{solidColor.Value.G:X2}{solidColor.Value.B:X2}{solidColor.Value.A:X2}" }
-                    : gradient?.Select(g => new { Stop = g.Stop, Color = $"#{g.Color.R:X2}{g.Color.G:X2}{g.Color.B:X2}{g.Color.A:X2}" }).ToArray()!;
+                object? colorInfo;
+                if (solidColor.HasValue)
+                {
+                    colorInfo = new
+                    {
+                        SolidColor = $"#{solidColor.Value.R:X2}{solidColor.Value.G:X2}{solidColor.Value.B:X2}"
+                    };
+                }
+                else if (gradient != null && gradient.Count > 0)
+                {
+                    colorInfo = gradient.Select(g => new
+                    {
+                        Stop = g.Stop,
+                        Color = $"#{g.Color.R:X2}{g.Color.G:X2}{g.Color.B:X2}"
+                    }).ToArray();
+                }
+                else
+                {
+                    colorInfo = null;
+                }
 
                 var infoData = new
                 {
@@ -231,6 +312,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     {
                         ColorCursors = colorCursors,
                         ColorShiftlock = colorShiftlock,
+                        ColorVoicechat = colorVoiceChat,
                         ColorEmoteWheel = colorEmoteWheel,
                         GradientAngle = Math.Round(_gradientAngle, 2)
                     },
