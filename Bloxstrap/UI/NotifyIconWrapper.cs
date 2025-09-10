@@ -45,11 +45,19 @@ namespace Bloxstrap.UI
                 switch (App.Settings.Prop.DoubleClickAction)
                 {
                     case TrayDoubleClickAction.None:
+                        Frontend.ShowMessageBox(
+                             "You dont have the double click action set to anything",
+                            MessageBoxImage.Information
+                        );
                         break;
 
                     case TrayDoubleClickAction.DebugMenu:
-                        var debugMenu = new DebugMenu();
+                        var debugMenu = new DebugMenu
+                        {
+                            Topmost = true
+                        };
                         debugMenu.Show();
+                        debugMenu.Activate();
                         break;
 
                     case TrayDoubleClickAction.GameHistory:
@@ -63,8 +71,19 @@ namespace Bloxstrap.UI
                         }
 
                         _menuContainer!.Dispatcher.Invoke(() =>
-                             _menuContainer.GameHistoryMenuItem.RaiseEvent(
-                                 new RoutedEventArgs(MenuItem.ClickEvent)));
+                        {
+                            _menuContainer.GameHistoryMenuItem.RaiseEvent(
+                                new RoutedEventArgs(MenuItem.ClickEvent));
+
+                            var win = Application.Current.Windows
+                                .OfType<ServerHistory>()
+                                .FirstOrDefault();
+                            if (win != null)
+                            {
+                                win.Topmost = true;
+                                win.Activate();
+                            }
+                        });
                         break;
 
                     case TrayDoubleClickAction.ServerInfo:
@@ -80,6 +99,15 @@ namespace Bloxstrap.UI
                         if (_activityWatcher is not null && _activityWatcher.InGame)
                         {
                             _menuContainer!.ShowServerInformationWindow();
+
+                            var win = Application.Current.Windows
+                                .OfType<ServerInformation>()
+                                .FirstOrDefault();
+                            if (win != null)
+                            {
+                                win.Topmost = true;
+                                win.Activate();
+                            }
                         }
                         else
                         {
@@ -103,8 +131,19 @@ namespace Bloxstrap.UI
                         if (_activityWatcher is not null && _activityWatcher.InGame)
                         {
                             _menuContainer!.Dispatcher.Invoke(() =>
+                            {
                                 _menuContainer.LogsMenuItem.RaiseEvent(
-                                    new RoutedEventArgs(MenuItem.ClickEvent)));
+                                    new RoutedEventArgs(MenuItem.ClickEvent));
+
+                                var win = Application.Current.Windows
+                                    .OfType<Logs>()
+                                    .FirstOrDefault();
+                                if (win != null)
+                                {
+                                    win.Topmost = true;
+                                    win.Activate();
+                                }
+                            });
                         }
                         else
                         {
