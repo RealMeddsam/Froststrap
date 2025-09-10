@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Reflection;
 using System.IO.Compression;
 
 namespace Bloxstrap.Integrations
@@ -68,14 +69,50 @@ namespace Bloxstrap.Integrations
                 return;
             }
 
+            var assembly = Assembly.GetExecutingAssembly();
+            using var stream = assembly.GetManifestResourceStream("Bloxstrap.Resources.mappings.json");
+            if (stream == null)
+            {
+                App.Logger?.WriteLine(LOG_IDENT, "mappings.json embedded resource not found");
+                return;
+            }
+
+            using var reader = new StreamReader(stream);
+            var json = reader.ReadToEnd();
+
+            var mappings = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json);
+            if (mappings == null || mappings.Count == 0)
+            {
+                App.Logger?.WriteLine(LOG_IDENT, "mappings.json parsed but empty");
+                return;
+            }
+
+            var validFiles = new HashSet<string>(mappings.Keys, StringComparer.OrdinalIgnoreCase);
+
+            App.Logger?.WriteLine(LOG_IDENT, $"Loaded {validFiles.Count} valid entries from mappings.json");
             App.Logger?.WriteLine(LOG_IDENT, "RecolorAllPngs started.");
 
-            foreach (var png in Directory.EnumerateFiles(rootDir, "*.png", SearchOption.AllDirectories))
+            foreach (var kv in mappings)
             {
-                if (png.Contains(@"\SpriteSheets\", StringComparison.OrdinalIgnoreCase))
-                    continue;
+                string[] parts = kv.Value;
+                string relativePath = Path.Combine(parts);
+                string fullPath = Path.Combine(rootDir, relativePath);
 
-                SafeRecolorImage(png, solidColor, gradient, gradientAngleDeg);
+                if (!File.Exists(fullPath))
+                {
+                    App.Logger?.WriteLine(LOG_IDENT, $"File missing: {relativePath}");
+                    continue;
+                }
+
+                try
+                {
+                    App.Logger?.WriteLine(LOG_IDENT, $"Recoloring '{relativePath}'");
+                    SafeRecolorImage(fullPath, solidColor, gradient, gradientAngleDeg);
+                }
+                catch (Exception ex)
+                {
+                    App.Logger?.WriteLine(LOG_IDENT, $"Error recoloring '{relativePath}': {ex.Message}");
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(getImageSetDataPath) && File.Exists(getImageSetDataPath))
@@ -345,10 +382,10 @@ namespace Bloxstrap.Integrations
             double h = original.Height - 1;
             double[] projs = new double[]
             {
-        0 * cos + 0 * sin,
-        w * cos + 0 * sin,
-        0 * cos + h * sin,
-        w * cos + h * sin
+                0 * cos + 0 * sin,
+                w * cos + 0 * sin,
+                0 * cos + h * sin,
+                w * cos + h * sin
             };
             double minProj = projs.Min();
             double maxProj = projs.Max();

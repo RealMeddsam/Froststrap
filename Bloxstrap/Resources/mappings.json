@@ -49,6 +49,10 @@
   "ui.common.robux.png": [ "content", "textures", "ui", "common", "robux.png" ],
   "ui.common.robux@2x.png": [ "content", "textures", "ui", "common", "robux@2x.png" ],
 
+  "ui.common.erroricon": [ "content", "textures", "ui", "Emotes", "ErrorIcon.png" ],
+  "ui.common.erroricon@2x": [ "content", "textures", "ui", "Emotes", "ErrorIcon@2x.png" ],
+  "ui.common.erroricon@3x.png": [ "content", "textures", "ui", "Emotes", "ErrorIcon@3x.png" ],
+
   "ui.menubar.icon_home.png": [ "content", "textures", "ui", "MenuBar", "icon_home.png" ],
   "ui.menubar.icon_leaderboard.png": [ "content", "textures", "ui", "MenuBar", "icon_leaderboard.png" ],
   "ui.menubar.icon_leave.png": [ "content", "textures", "ui", "MenuBar", "icon_leave.png" ],
