@@ -343,7 +343,15 @@ namespace Bloxstrap
                 if (App.Settings.Prop.AutoCloseCrashHandler)
                 {
                     SetStatus("Closing Roblox Crash Handler...");
-                    await Task.Delay(500);
+
+                    if (App.Settings.Prop.SelectedRobloxIcon != RobloxIcon.Default)
+                    {
+                        await Task.Delay(500);
+                    }
+                    else
+                    {
+                        await Task.Delay(7000);
+                    }
 
                     try
                     {
@@ -747,7 +755,7 @@ namespace Bloxstrap
                 IntPtr hwnd = IntPtr.Zero;
                 bool appliedOnce = false;
 
-                for (int attempt = 0; attempt < 1250 && !process.HasExited; attempt++)
+                for (int attempt = 0; attempt < 400 && !process.HasExited; attempt++)
                 {
                     try
                     {
@@ -778,7 +786,7 @@ namespace Bloxstrap
                         App.Logger.WriteLine(LOG_IDENT, $"Failed to set icon: {ex}");
                     }
 
-                    await Task.Delay(10); // aggressive retry loop
+                    await Task.Delay(25); // aggressive retry loop
                 }
 
                 iconHandle.Dispose();
