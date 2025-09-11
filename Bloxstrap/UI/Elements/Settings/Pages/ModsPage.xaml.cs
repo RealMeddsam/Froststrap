@@ -22,6 +22,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
     public partial class ModsPage
     {
         private string? CustomLogoPath = null;
+        private string? CustomSpinnerPath = null;
 
         private ModsViewModel ViewModel;
 
@@ -147,7 +148,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 bool colorVoiceChat = VoiceChatCheckBox?.IsChecked == true;
 
                 App.Logger?.WriteLine(LOG_IDENT, "Starting RecolorAllPngs...");
-                ModGenerator.RecolorAllPngs(froststrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath, (float)_gradientAngle, colorCursors, colorShiftlock, colorEmoteWheel, colorVoiceChat);
+                ModGenerator.RecolorAllPngs(froststrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath, CustomSpinnerPath, (float)_gradientAngle, colorCursors, colorShiftlock, colorEmoteWheel, colorVoiceChat);
                 App.Logger?.WriteLine(LOG_IDENT, "RecolorAllPngs finished.");
 
                 DownloadStatusText.Text = "Cleaning up unnecessary files...";
@@ -403,6 +404,27 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             SelectedLogoText.Text = "No custom logo selected";
 
             _ = UpdatePreviewAsync();
+        }
+
+        private void OnSelectCustomSpinner_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog
+            {
+                Filter = "Image Files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg",
+                Title = "Select Custom Spinner"
+            };
+
+            if (dlg.ShowDialog() == true)
+            {
+                CustomSpinnerPath = dlg.FileName;
+                SelectedSpinnerText.Text = $"Selected: {Path.GetFileName(dlg.FileName)}";
+            }
+        }
+
+        private void OnClearCustomSpinner_Click(object sender, RoutedEventArgs e)
+        {
+            CustomSpinnerPath = null;
+            SelectedSpinnerText.Text = "No custom spinner selected";
         }
 
         private Bitmap? _sheetOriginalBitmap = null;

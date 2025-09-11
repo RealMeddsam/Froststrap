@@ -59,7 +59,7 @@ namespace Bloxstrap.Integrations
 
         public record GradientStop(float Stop, Color Color);
 
-        public static void RecolorAllPngs(string rootDir, Color? solidColor, List<GradientStop>? gradient = null, string getImageSetDataPath = "", string? customLogoPath = null, float gradientAngleDeg = 0f, bool recolorCursors = false, bool recolorShiftlock = false, bool recolorEmoteWheel = false, bool recolorVoiceChat = false, IEnumerable<string>? extraSourceDirs = null)
+        public static void RecolorAllPngs(string rootDir, Color? solidColor, List<GradientStop>? gradient = null, string getImageSetDataPath = "", string? customLogoPath = null, string? customSpinnerPath = null, float gradientAngleDeg = 0f, bool recolorCursors = false, bool recolorShiftlock = false, bool recolorEmoteWheel = false, bool recolorVoiceChat = false, IEnumerable<string>? extraSourceDirs = null)
         {
             const string LOG_IDENT = "UI::Recolor";
 
@@ -177,6 +177,61 @@ namespace Bloxstrap.Integrations
                     {
                         ReplaceFileWithRetry(sheetPath, tempPath);
                         App.Logger?.WriteLine(LOG_IDENT, $"Replaced logo in {sheetPath}");
+                    }
+                }
+            }
+
+
+            if (!string.IsNullOrEmpty(customSpinnerPath) && File.Exists(getImageSetDataPath))
+            {
+                App.Logger?.WriteLine(LOG_IDENT, $"Applying custom spinner: {customSpinnerPath}");
+
+                var spriteData = LuaImageSetParser.Parse(getImageSetDataPath);
+                foreach (var (sheetPath, sprites) in spriteData)
+                {
+                    if (!File.Exists(sheetPath)) continue;
+
+                    bool modified = false;
+                    string tempPath = sheetPath + ".logo.tmp";
+                    using Bitmap customInMemory = LoadBitmapIntoMemory(customSpinnerPath);
+
+                    using (var sheet = new Bitmap(sheetPath))
+                    using (var g = Graphics.FromImage(sheet))
+                    {
+                        g.CompositingMode = CompositingMode.SourceOver;
+                        g.CompositingQuality = CompositingQuality.HighQuality;
+                        g.SmoothingMode = SmoothingMode.HighQuality;
+
+                        foreach (var sprite in sprites)
+                        {
+                            if (!string.Equals(sprite.Name, "icons/graphic/loadingspinner", StringComparison.OrdinalIgnoreCase))
+                                continue;
+                            if (sprite.W <= 0 || sprite.H <= 0) continue;
+
+                            Rectangle targetRect = new Rectangle(sprite.X, sprite.Y, sprite.W, sprite.H);
+
+                            var prevCompositing = g.CompositingMode;
+                            g.CompositingMode = CompositingMode.SourceCopy;
+                            using (var clearBrush = new SolidBrush(Color.FromArgb(0, 0, 0, 0)))
+                            {
+                                g.FillRectangle(clearBrush, targetRect);
+                            }
+                            g.CompositingMode = prevCompositing;
+
+                            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                            g.CompositingMode = CompositingMode.SourceOver;
+                            g.DrawImage(customInMemory, targetRect);
+
+                            modified = true;
+                        }
+
+                        if (modified) sheet.Save(tempPath, ImageFormat.Png);
+                    }
+
+                    if (modified)
+                    {
+                        ReplaceFileWithRetry(sheetPath, tempPath);
+                        App.Logger?.WriteLine(LOG_IDENT, $"Replaced spinner in {sheetPath}");
                     }
                 }
             }
