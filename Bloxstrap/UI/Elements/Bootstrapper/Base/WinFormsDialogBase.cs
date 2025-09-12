@@ -95,10 +95,24 @@ namespace Bloxstrap.UI.Elements.Bootstrapper.Base
             get => _cancelEnabled;
             set
             {
+                if (IsDisposed || !IsHandleCreated)
+                    return;
+
                 if (InvokeRequired)
-                    Invoke(() => _cancelEnabled = value);
+                {
+                    try
+                    {
+                        Invoke(new Action(() => _cancelEnabled = value));
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        // form got disposed between the check and the invoke
+                    }
+                }
                 else
+                {
                     _cancelEnabled = value;
+                }
             }
         }
         #endregion
