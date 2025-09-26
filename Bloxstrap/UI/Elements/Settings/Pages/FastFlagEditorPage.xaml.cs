@@ -306,324 +306,40 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
         }
 
-        private static readonly string CacheFolder = Paths.Cache;
-        private static readonly TimeSpan CacheExpiry = TimeSpan.FromDays(1);
-
-        private static readonly string[] JsonUrls = new[]
-        {
-            "https://raw.githubusercontent.com/SCR00M/gsagsssssssagdsgadgsgds/refs/heads/main/PCDesktopClients.json",
-            "https://clientsettings.roblox.com/v2/settings/application/PCDesktopClient",
-            "https://raw.githubusercontent.com/MaximumADHD/Roblox-FFlag-Tracker/refs/heads/main/PCDesktopClient.json",
-        };
-
-        private static string GetSafeFilename(string url)
-        {
-            foreach (var c in Path.GetInvalidFileNameChars())
-                url = url.Replace(c, '_');
-            return url;
-        }
-
-        private static string ComputeHash(string input)
-        {
-            using var sha = System.Security.Cryptography.SHA256.Create();
-            var bytes = System.Text.Encoding.UTF8.GetBytes(input);
-            var hash = sha.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
-        }
-
-        private static async Task<string?> LoadOrDownloadCachedAsync(string url, HttpClient client)
-        {
-            Directory.CreateDirectory(CacheFolder);
-
-            string cacheFile = Path.Combine(CacheFolder, GetSafeFilename(url) + ".cache");
-
-            try
-            {
-                string? existingContent = null;
-                if (File.Exists(cacheFile))
-                {
-                    var info = new FileInfo(cacheFile);
-                    if (DateTime.UtcNow - info.LastWriteTimeUtc < CacheExpiry)
-                    {
-                        existingContent = await File.ReadAllTextAsync(cacheFile).ConfigureAwait(false);
-                    }
-                }
-
-                string newContent = await client.GetStringAsync(url).ConfigureAwait(false);
-
-                if (existingContent is null || ComputeHash(existingContent) != ComputeHash(newContent))
-                {
-                    await File.WriteAllTextAsync(cacheFile, newContent).ConfigureAwait(false);
-                    return newContent;
-                }
-
-                return existingContent;
-            }
-            catch
-            {
-                if (File.Exists(cacheFile))
-                {
-                    try
-                    {
-                        return await File.ReadAllTextAsync(cacheFile).ConfigureAwait(false);
-                    }
-                    catch { }
-                }
-
-                return null;
-            }
-        }
-
-        public static async Task<Dictionary<string, string>> LoadCombinedFlagsAsync(HttpClient client)
-        {
-            Directory.CreateDirectory(CacheFolder);
-            string combinedCacheFile = Path.Combine(CacheFolder, "CombinedFlags.cache");
-
-            try
-            {
-                if (File.Exists(combinedCacheFile))
-                {
-                    var info = new FileInfo(combinedCacheFile);
-                    if (DateTime.UtcNow - info.LastWriteTimeUtc < CacheExpiry)
-                    {
-                        string cachedContent = await File.ReadAllTextAsync(combinedCacheFile).ConfigureAwait(false);
-                        using var doc = JsonDocument.Parse(cachedContent);
-                        var root = doc.RootElement;
-
-                        var combinedDict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                        foreach (var prop in root.EnumerateObject())
-                            combinedDict[prop.Name] = prop.Value.GetString() ?? "";
-                        return combinedDict;
-                    }
-                }
-                var loadTasks = JsonUrls.Select(url => LoadOrDownloadCachedAsync(url, client)).ToList();
-                var jsonContents = await Task.WhenAll(loadTasks);
-
-                var mergedFlags = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                foreach (var json in jsonContents)
-                {
-                    if (string.IsNullOrWhiteSpace(json))
-                        continue;
-
-                    using var doc = JsonDocument.Parse(json);
-                    var root = doc.RootElement.TryGetProperty("applicationSettings", out var appSettings)
-                        ? appSettings
-                        : doc.RootElement;
-
-                    foreach (var prop in root.EnumerateObject())
-                        mergedFlags[prop.Name] = prop.Value.ToString() ?? "";
-                }
-
-                var combinedJson = JsonSerializer.Serialize(mergedFlags, new JsonSerializerOptions { WriteIndented = true });
-
-                if (!File.Exists(combinedCacheFile) ||
-                    ComputeHash(await File.ReadAllTextAsync(combinedCacheFile).ConfigureAwait(false)) != ComputeHash(combinedJson))
-                {
-                    await File.WriteAllTextAsync(combinedCacheFile, combinedJson).ConfigureAwait(false);
-                }
-
-                return mergedFlags;
-            }
-            catch
-            {
-                return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            }
-        }
-
-
-
-        public async Task<Dictionary<string, object>> CheckAndRemoveInvalidFlagsAsync()
-        {
-            var removedFlagsDict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
-            var manualWhitelist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "FStringDebugLuaLogLevel",
-                "FStringDebugLuaLogPattern",
-                "FLogNetwork",
-                "FFlagHandleAltEnterFullscreenManually"
-            };
-
-            try
-            {
-                using HttpClient client = App.HttpClient ?? new HttpClient();
-
-                var combinedFlags = await LoadCombinedFlagsAsync(client);
-                var validFlags = new HashSet<string>(combinedFlags.Keys, StringComparer.OrdinalIgnoreCase);
-                validFlags.UnionWith(manualWhitelist);
-
-                var allFlags = App.FastFlags.GetAllFlags();
-
-                var toRemove = allFlags
-                    .Where(flag =>
-                    {
-                        var name = flag.Name.Trim();
-                        return !manualWhitelist.Contains(name) && !validFlags.Contains(name);
-                    })
-                    .ToList();
-
-                foreach (var flag in toRemove)
-                {
-                    removedFlagsDict[flag.Name] = flag.Value;
-                    App.FastFlags.SetValue(flag.Name, null);
-                }
-
-                if (removedFlagsDict.Count > 0)
-                {
-                    ReloadList();
-                    UpdateTotalFlagsCount();
-                }
-
-                return removedFlagsDict;
-            }
-            catch (Exception ex)
-            {
-                Frontend.ShowMessageBox($"Error checking FastFlags: {ex.Message}", MessageBoxImage.Error);
-                return removedFlagsDict;
-            }
-        }
-
-        public async Task<Dictionary<string, object>> RemoveDefaultsAsync()
-        {
-            var removedDefaults = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
-            var manualWhitelist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "FStringDebugLuaLogLevel",
-                "FStringDebugLuaLogPattern",
-                "FLogNetwork",
-                "FFlagHandleAltEnterFullscreenManually"
-            };
-
-            try
-            {
-                using HttpClient client = App.HttpClient ?? new HttpClient();
-
-                var combinedFlags = await LoadCombinedFlagsAsync(client);
-
-                var allFlags = App.FastFlags.GetAllFlags();
-                var toRemove = new List<FastFlag>();
-
-                foreach (var flag in allFlags)
-                {
-                    var name = flag.Name.Trim();
-
-                    if (manualWhitelist.Contains(name))
-                        continue;
-
-                    if (combinedFlags.TryGetValue(name, out var defaultValue) &&
-                        string.Equals(flag.Value, defaultValue, StringComparison.OrdinalIgnoreCase))
-                    {
-                        toRemove.Add(flag);
-                    }
-                }
-
-                foreach (var flag in toRemove)
-                {
-                    removedDefaults[flag.Name] = flag.Value;
-                    App.FastFlags.SetValue(flag.Name, null);
-                }
-
-                if (removedDefaults.Count > 0)
-                {
-                    ReloadList();
-                    UpdateTotalFlagsCount();
-                }
-
-                return removedDefaults;
-            }
-            catch (Exception ex)
-            {
-                Frontend.ShowMessageBox($"Error removing default value FastFlags: {ex.Message}", MessageBoxImage.Error);
-                return removedDefaults;
-            }
-        }
-
-        public async Task<List<string>> UpdateOutdatedFastFlagsAsync()
-        {
-            var updatedFlags = new List<string>();
-
-            var blacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            {
-                "FStringDebugLuaLogLevel",
-                "FStringDebugLuaLogPattern",
-                "FLogNetwork",
-                "FFlagHandleAltEnterFullscreenManually",
-                "DFIntCSGLevelOfDetailSwitchingDistanceL23",
-                "DFIntCSGLevelOfDetailSwitchingDistanceL12",
-                "FFlagUserShowGuiHideToggles",
-                "FFlagDebugGraphicsDisableVulkan"
-            };
-
-            try
-            {
-                using var client = new HttpClient();
-
-                var combinedFlags = await LoadCombinedFlagsAsync(client);
-                var allValidFlagNames = combinedFlags.Keys;
-
-                var groupedByBaseName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-                foreach (var flag in allValidFlagNames)
-                {
-                    var baseName = Regex.Replace(flag, @"\d+$", "");
-                    var match = Regex.Match(flag, @"(\d+)$");
-                    int version = match.Success ? int.Parse(match.Value) : -1;
-
-                    if (!groupedByBaseName.TryGetValue(baseName, out var current))
-                    {
-                        groupedByBaseName[baseName] = flag;
-                    }
-                    else
-                    {
-                        var currentMatch = Regex.Match(current, @"(\d+)$");
-                        int currentVersion = currentMatch.Success ? int.Parse(currentMatch.Value) : -1;
-
-                        if (version > currentVersion)
-                            groupedByBaseName[baseName] = flag;
-                    }
-                }
-
-                var allUserFlags = App.FastFlags.GetAllFlags();
-                var updates = new List<(string OldName, string NewName, string Value)>();
-
-                foreach (var userFlag in allUserFlags)
-                {
-                    if (blacklist.Contains(userFlag.Name))
-                        continue;
-
-                    string baseName = Regex.Replace(userFlag.Name, @"\d+$", "");
-
-                    if (groupedByBaseName.TryGetValue(baseName, out var latestName) &&
-                        !userFlag.Name.Equals(latestName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        updates.Add((userFlag.Name, latestName, userFlag.Value));
-                    }
-                }
-
-                foreach (var (oldName, newName, value) in updates)
-                {
-                    App.FastFlags.SetValue(oldName, null);
-                    App.FastFlags.SetValue(newName, value);
-                    updatedFlags.Add($"{oldName} → {newName}");
-                }
-
-                if (updates.Count > 0)
-                {
-                    ReloadList();
-                    UpdateTotalFlagsCount();
-                }
-
-                return updatedFlags;
-            }
-            catch (Exception ex)
-            {
-                Frontend.ShowMessageBox($"Error updating FastFlags:\n{ex.Message}", MessageBoxImage.Error);
-                return updatedFlags;
-            }
-        }
-
         private MainWindow GetMainWindow() => (MainWindow)Application.Current.MainWindow;
+
+        private static HashSet<string> DecodeBase64Flags(string? base64)
+        {
+            var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (string.IsNullOrWhiteSpace(base64))
+                return result;
+
+            try
+            {
+                // Remove whitespace and newlines
+                var cleanBase64 = base64.Trim().Replace("\n", "").Replace("\r", "");
+
+                var bytes = Convert.FromBase64String(cleanBase64);
+                var jsonText = Encoding.UTF8.GetString(bytes);
+
+                using var doc = JsonDocument.Parse(jsonText);
+                if (doc.RootElement.TryGetProperty("Allowed", out var allowed))
+                {
+                    foreach (var flagElem in allowed.EnumerateArray())
+                    {
+                        var flag = flagElem.GetString()?.Trim();
+                        if (!string.IsNullOrEmpty(flag))
+                            result.Add(flag);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("DecodeBase64Flags", $"Failed to decode Base64: {ex.Message}");
+            }
+
+            return result;
+        }
 
         public async void CleanListButton_Click(object sender, RoutedEventArgs e)
         {
@@ -631,61 +347,50 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             mainWindow?.ShowLoading("Cleaning List...");
             (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Cleaning List");
 
+            App.FastFlags.suspendUndoSnapshot = true;
+            App.FastFlags.SaveUndoSnapshot();
+
             try
             {
-                App.FastFlags.suspendUndoSnapshot = true;
-                App.FastFlags.SaveUndoSnapshot();
+                var remoteManager = new RemoteDataManager();
+                await remoteManager.LoadData();
 
-                var updatedFlags = await UpdateOutdatedFastFlagsAsync();
-                var invalidRemoved = await CheckAndRemoveInvalidFlagsAsync();
-                var defaultsRemoved = await RemoveDefaultsAsync();
+                var base64Flags = DecodeBase64Flags(remoteManager.Prop.AllowedFastFlags);
+                App.Logger.WriteLine("CleanList", $"Loaded {base64Flags.Count} allowed flags.");
 
-                App.FastFlags.suspendUndoSnapshot = false;
+                var allFlags = App.FastFlags.GetAllFlags();
+                var invalidRemoved = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-                int totalChanges = updatedFlags.Count + invalidRemoved.Count + defaultsRemoved.Count;
+                // Remove any flag not in the remote Allowed list
+                foreach (var flag in allFlags)
+                {
+                    var name = flag.Name.Trim();
+                    if (!base64Flags.Contains(name))
+                    {
+                        invalidRemoved[name] = flag.Value;
+                        App.FastFlags.SetValue(name, null);
+                    }
+                }
 
+                int totalChanges = invalidRemoved.Count;
                 if (totalChanges == 0)
                 {
-                    Frontend.ShowMessageBox("No FastFlag changes detected.", MessageBoxImage.Information);
-                    mainWindow?.HideLoading();
+                    Frontend.ShowMessageBox("No invalid FastFlags detected.", MessageBoxImage.Information);
                     return;
                 }
 
-                mainWindow?.HideLoading();
-
                 var message =
-                    $"{totalChanges} FastFlag{(totalChanges == 1 ? "" : "s")} have been changed, below is a summary:\n\n" +
-                    $"{invalidRemoved.Count} Invalid FastFlags Removed.\n" +
-                    $"{defaultsRemoved.Count} Default Value FastFlags Removed.\n" +
-                    $"{updatedFlags.Count} FastFlags Updated.\n\n" +
-                    "Do you want to see a list of all the changes?";
+                    $"{totalChanges} invalid FastFlag{(totalChanges == 1 ? "" : "s")} have been removed.\n\n" +
+                    "Do you want to see a list of all the removed flags?";
 
-                var result = Frontend.ShowMessageBox(message, MessageBoxImage.Question, MessageBoxButton.YesNo);
-
-                if (result == MessageBoxResult.Yes)
+                if (Frontend.ShowMessageBox(message, MessageBoxImage.Question, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
-                    var updatedTuples = updatedFlags
-                        .Select(s =>
-                        {
-                            var parts = s.Split("→", 2, StringSplitOptions.TrimEntries);
-                            return parts.Length == 2
-                                ? (OldName: parts[0], NewName: parts[1])
-                                : (OldName: s, NewName: s);
-                        })
-                        .ToList();
-
-                    var defaultDict = defaultsRemoved.ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value?.ToString() ?? string.Empty);
-
-                    var flagDialog = new FlagDialog(this, invalidRemoved, defaultDict, updatedTuples)
+                    // Pass empty collections to avoid null warnings
+                    var flagDialog = new FlagDialog(this, invalidRemoved, new Dictionary<string, string>(), new List<(string OldName, string NewName)>())
                     {
                         Owner = Application.Current.MainWindow
                     };
-
                     flagDialog.ShowDialog();
-
-                    (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
                 }
 
                 ReloadList();
@@ -694,6 +399,10 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             catch (Exception ex)
             {
                 Frontend.ShowMessageBox($"An error occurred during FastFlag cleanup: {ex.Message}", MessageBoxImage.Error);
+            }
+            finally
+            {
+                App.FastFlags.suspendUndoSnapshot = false;
                 mainWindow?.HideLoading();
             }
         }

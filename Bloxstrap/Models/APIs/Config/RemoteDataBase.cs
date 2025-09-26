@@ -15,5 +15,8 @@ namespace Bloxstrap.Models.APIs.Config
 
         [JsonPropertyName("packageMaps")]
         public PackageMaps PackageMaps { get; set; } = new();
+
+        [JsonPropertyName("allowedFastFlags")]
+        public string AllowedFastFlags { get; set; } = null!;
     }
 }

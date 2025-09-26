@@ -74,7 +74,8 @@ namespace Bloxstrap
             )
         );
 
-private static bool _showingExceptionDialog = false;
+
+        private static bool _showingExceptionDialog = false;
 
         private static string? _webUrl = null;
         public static string WebUrl
