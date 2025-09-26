@@ -754,12 +754,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             if (valueParts.Length > 0 && double.TryParse(valueParts[0], out double parsed))
                 numericValue = parsed;
 
-            if (BannableFastFlagWarning.IsBannable(formattedName, numericValue))
-            {
-                if (!ConfirmBannableFlags(new[] { (formattedName, numericValue) }))
-                    return;
-            }
-
             App.FastFlags.suspendUndoSnapshot = true;
             App.FastFlags.SaveUndoSnapshot();
 
@@ -876,18 +870,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
                     string flagNameWithSuffix = $"{kvp.Key}{suffix}";
                     return (Name: flagNameWithSuffix, Value: val, BaseKey: kvp.Key);
-                })
-                .Where(pair => BannableFastFlagWarning.IsBannable(pair.Name, pair.Value))
-                .Distinct()
-                .ToList();
-
-            if (bannableFlagPairs.Count > 0 && !ConfirmBannableFlags(bannableFlagPairs.Select(pair => (pair.Name, pair.Value))))
-            {
-                foreach (var bannable in bannableFlagPairs)
-                {
-                    list.Remove(bannable.BaseKey);
-                }
-            }
+                });
 
             foreach (var pair in list)
             {
@@ -914,12 +897,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             {
                 if (double.TryParse(value, out double parsed))
                     val = parsed;
-            }
-
-            if (BannableFastFlagWarning.IsBannable(name, val))
-            {
-                if (!ConfirmBannableFlags(new[] { (Name: name, Value: val) }))
-                    return;
             }
 
             FastFlag? entry;
@@ -1027,16 +1004,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                             val = parsed;
                     }
                     return (Name: kvp.Key, Value: val);
-                })
-                .Where(pair => BannableFastFlagWarning.IsBannable(pair.Name, pair.Value))
-                .Distinct()
-                .ToList();
-
-            if (bannableFlagPairs.Count > 0 && !ConfirmBannableFlags(bannableFlagPairs))
-            {
-                foreach (var bannable in bannableFlagPairs)
-                    list.Remove(bannable.Name);
-            }
+                });
 
             var conflictingFlags = App.FastFlags.Prop.Where(x => list.ContainsKey(x.Key)).Select(x => x.Key);
             bool overwriteConflicting = false;
@@ -1078,127 +1046,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             App.FastFlags.suspendUndoSnapshot = false;
 
             ClearSearch();
-        }
-
-        public bool ConfirmBannableFlags(IEnumerable<(string Name, double? Value)> flagsWithValues)
-        {
-            if (!App.Settings.Prop.FFlagWarningSystem)
-                return true;
-
-            var bannableFlags = flagsWithValues
-                .Where(f => BannableFastFlagWarning.IsBannable(f.Name, f.Value))
-                .Select(f => f.Name)
-                .Distinct()
-                .ToList();
-
-            if (!bannableFlags.Any())
-                return true;
-
-            string formattedFlags = string.Join("\n", bannableFlags.Select(f => $"'{f}'"));
-
-            string message = "Warning: The following FastFlags are known to get you banned from certain experiences. Do you want to remove them?\n\n" +
-                             $"{formattedFlags}";
-
-            var result = Frontend.ShowMessageBox(
-                message,
-                MessageBoxImage.Warning,
-                MessageBoxButton.YesNo);
-
-            return result == MessageBoxResult.No;
-        }
-
-        public class BannableFlagRule
-        {
-            public string FlagName { get; set; } = string.Empty;
-            public double? MinValue { get; set; } = null;
-            public double? MaxValue { get; set; } = null;
-        }
-
-        public static class BannableFastFlagWarning
-        {
-            public static readonly List<BannableFlagRule> BannableRules = new()
-            {
-                new BannableFlagRule { FlagName = "DFFlagAnimationThrottlingInertialization" },
-                new BannableFlagRule { FlagName = "DFFlagAnimatorDrawSkeletonAll" },
-                new BannableFlagRule { FlagName = "DFFlagAnimatorDrawSkeletonAttachments" },
-                new BannableFlagRule { FlagName = "DFFlagAnimatorDrawSkeletonText" },
-                new BannableFlagRule { FlagName = "DFFlagDebugDrawBroadPhaseAABBs" },
-                new BannableFlagRule { FlagName = "DFFlagDebugDrawBvhNodes" },
-                new BannableFlagRule { FlagName = "DFFlagDebugDrawEnable" },
-                new BannableFlagRule { FlagName = "DFFlagDebugEnableInterpThrottle" },
-                new BannableFlagRule { FlagName = "DFFlagDebugPhysicsSenderDoesNotShrinkSimRadius" },
-                new BannableFlagRule { FlagName = "DFFlagNoRunningNoPhysics" },
-                new BannableFlagRule { FlagName = "DFIntAnimatorDrawSkeletonScalePercent" },
-                new BannableFlagRule { FlagName = "DFIntBulletContactBreakOrthogonalThresholdActivatePercent" },
-                new BannableFlagRule { FlagName = "DFIntBulletContactBreakOrthogonalThresholdPercent" },
-                new BannableFlagRule { FlagName = "DFIntBulletContactBreakThresholdPercent" },
-                new BannableFlagRule { FlagName = "DFIntGameNetDontSendRedundantDeltaPositionMillionth" },
-                new BannableFlagRule { FlagName = "DFIntGameNetDontSendRedundantDeltaThresholdMillionth" },
-                new BannableFlagRule { FlagName = "DFIntGameNetDontSendRedundantNumTimes" },
-                new BannableFlagRule { FlagName = "DFIntGameNetLocalSpaceMaxSendIndex" },
-                new BannableFlagRule { FlagName = "DFIntGameNetOptimizeParallelPhysicsSendAssemblyBatch" },
-                new BannableFlagRule { FlagName = "DFIntGameNetPVHeaderLinearVelocityZeroCutoffExponent" },
-                new BannableFlagRule { FlagName = "DFIntGameNetPVHeaderRotationalVelocityZeroCutoffExponent" },
-                new BannableFlagRule { FlagName = "DFIntGameNetPVHeaderRotationOrientIdToleranceExponent" },
-                new BannableFlagRule { FlagName = "DFIntGameNetPVHeaderTranslationZeroCutoffExponent" },
-                new BannableFlagRule { FlagName = "DFIntMaxAltitudePDHipHeightPercent" },
-                new BannableFlagRule { FlagName = "DFIntMaxClientSimulationRadius" },
-                new BannableFlagRule { FlagName = "DFIntMaximumFreefallMoveTimeInTenths" },
-                new BannableFlagRule { FlagName = "DFIntMaximumUnstickForceInGs" },
-                new BannableFlagRule { FlagName = "DFIntMaxMissedWorldStepsRemembered" },
-                new BannableFlagRule { FlagName = "DFIntMinClientSimulationRadius" },
-                new BannableFlagRule { FlagName = "DFIntMinimalSimRadiusBuffer" },
-                new BannableFlagRule { FlagName = "DFIntNewPDAltitudeNoForceZonePercent" },
-                new BannableFlagRule { FlagName = "DFIntNonSolidFloorPercentForceApplication" },
-                new BannableFlagRule { FlagName = "DFIntPhysicsDecompForceUpgradeVersion" },
-                new BannableFlagRule { FlagName = "DFIntPhysicsImprovedCyclicExecutiveThrottleThresholdTenth" },
-                new BannableFlagRule { FlagName = "DFIntPhysicsSenderMaxBandwidthBpsScaling" },
-                new BannableFlagRule { FlagName = "DFIntRaycastMaxDistance" },
-                new BannableFlagRule { FlagName = "DFIntReplicatorAnimationTrackLimitPerAnimator" },
-                new BannableFlagRule { FlagName = "DFIntSimAdaptiveHumanoidPDControllerSubstepMultiplier" },
-                new BannableFlagRule { FlagName = "DFIntSimBlockLargeLocalToolWeldManipulationsThreshold" },
-                new BannableFlagRule { FlagName = "DFIntSimTimestepMultiplierDebounceCount" },
-                new BannableFlagRule { FlagName = "DFIntSmoothTerrainPhysicsRayAabbSlop" },
-                new BannableFlagRule { FlagName = "DFIntSolidFloorMassMultTenth" },
-                new BannableFlagRule { FlagName = "DFIntSolidFloorPercentForceApplication" },
-                new BannableFlagRule { FlagName = "DFIntTargetTimeDelayFacctorTenths" },
-                new BannableFlagRule { FlagName = "DFIntTouchSenderMaxBandwidthBps" },
-                new BannableFlagRule { FlagName = "DFIntUnstickForceDecayInTenths" },
-                new BannableFlagRule { FlagName = "DFIntUnstickForceEpsilonInHundredths" },
-                new BannableFlagRule { FlagName = "FFlagDataModelPatcherForceLocal" },
-                new BannableFlagRule { FlagName = "FFlagDebugHumanoidRendering" },
-                new BannableFlagRule { FlagName = "FFlagDebugNavigationDrawCompactHeightfield" },
-                new BannableFlagRule { FlagName = "FFlagDebugUseCustomSimRadius" },
-                new BannableFlagRule { FlagName = "FFlagEnablePhysicsAdaptiveTimeSteppingIXP" },
-                new BannableFlagRule { FlagName = "FFlagProcessAnimationLooped" },
-                new BannableFlagRule { FlagName = "FFlagRemapAnimationR6T0R15Rig" },
-                new BannableFlagRule { FlagName = "FFlagSimAdaptiveTimesteppingDefault2" },
-                new BannableFlagRule { FlagName = "FFlagAvatarJointFriction" },
-                new BannableFlagRule { FlagName = "FFlagCameraFarZPlane" },
-                new BannableFlagRule { FlagName = "FFlagInterpolationAwareTargetTimeLerpHundredth" },
-                new BannableFlagRule { FlagName = "FFlagParallelDynamicPartsFastClusterBatchSize" },
-                new BannableFlagRule { FlagName = "FFlagPhysicsStepsPerSecond" },
-                new BannableFlagRule { FlagName = "FFlagRaycastMaximumTableNestDepth" },
-                new BannableFlagRule { FlagName = "SFFlagBulletContactBreakOrthogonalThresholdPercent" },  // i need to MaxValue/MinValue to mark them as bannable now
-            };
-
-            public static bool IsBannable(string flagName, double? value = null)
-            {
-                var rule = BannableRules.FirstOrDefault(r => string.Equals(r.FlagName, flagName, StringComparison.OrdinalIgnoreCase));
-                if (rule == null)
-                    return false;
-
-                if (!value.HasValue)
-                    return true;
-
-                if (rule.MinValue.HasValue && value < rule.MinValue.Value)
-                    return true;
-
-                if (rule.MaxValue.HasValue && value > rule.MaxValue.Value)
-                    return true;
-
-                return false;
-            }
         }
 
         private void Editor_DragEnter(object sender, DragEventArgs e)

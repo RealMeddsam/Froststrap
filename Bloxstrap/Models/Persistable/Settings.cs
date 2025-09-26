@@ -44,7 +44,6 @@ namespace Bloxstrap.Models.Persistable
         public CopyFormatMode SelectedCopyFormat { get; set; } = CopyFormatMode.Format1;
         public bool CtrlCJsonFormat { get; set; } = false;
         public bool ShowPresetColumn { get; set; } = false;
-        public bool FFlagWarningSystem { get; set; } = true;
         public bool ShowFlagCount { get; set; } = true;
         public bool ShowAddWithID { get; set; } = false;
         public bool AutomaticallyRemovedAltManually { get; set; } = true;
