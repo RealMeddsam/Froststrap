@@ -698,20 +698,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             }
         }
 
-        private void FindFlag_Button_Click(object sender, RoutedEventArgs e)
-        {
-            var app = (App.Current as App);
-            app?._froststrapRPC?.UpdatePresence("Dialog: Find Flag");
-
-            var dialog = new FindFlagDialog
-            {
-                Owner = Application.Current.MainWindow
-            };
-            dialog.ShowDialog();
-
-            app?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
-        }
-
         private void ShowProfilesDialog()
         {
             (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Profiles");

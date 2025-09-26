@@ -86,13 +86,6 @@
                 Icon="Broom28"
                 Content="Clean FastFlag List"
                 Click="CleanListButton_Click"/>
-            <ui:Button
-                Name="FindFlag_Button"
-                Margin="0,0,8,12"
-                VerticalAlignment="Top"
-                Icon="Search12"
-                Content="Find FastFlags"
-                Click="FindFlag_Button_Click" />
             <ToggleButton
                 x:Name="TogglePresetsButton"
                 Margin="0,0,8,12"
