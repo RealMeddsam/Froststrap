@@ -1,4 +1,5 @@
-﻿using Bloxstrap.UI.ViewModels.Settings;
+﻿using Bloxstrap.Models;
+using Bloxstrap.UI.ViewModels.Settings;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,20 +34,36 @@ namespace Bloxstrap.UI.Elements.Settings
 
             LoadState();
 
+            string? lastPageName = App.State.Prop.LastPage;
+            Type? lastPage = lastPageName is null ? null : Type.GetType(lastPageName);
+
+            App.RemoteData.Subscribe((object? sender, EventArgs e) => {
+                RemoteDataBase Data = App.RemoteData.Prop;
+
+                AlertBar.Visibility = Data.AlertEnabled ? Visibility.Visible : Visibility.Collapsed;
+                AlertBar.Message = Data.AlertContent;
+                AlertBar.Severity = Data.AlertSeverity;
+            });
+
             viewModel.ApplyBackdrop(App.Settings.Prop.SelectedBackdrop);
 
-            int LastPage = App.State.Prop.LastPage;
+            if (lastPage != null)
+                SafeNavigate(lastPage);
 
-            RootNavigation.SelectedPageIndex = LastPage;
+            RootNavigation.Navigated += OnNavigation!;
 
-            RootNavigation.Navigated += SaveNavigation!;
-
-            void SaveNavigation(object? sender, RoutedNavigationEventArgs? e)
+            void OnNavigation(object? sender, RoutedNavigationEventArgs e)
             {
-                if (sender == null || e == null) return;
+                INavigationItem? currentPage = RootNavigation.Current;
 
-                App.State.Prop.LastPage = RootNavigation.SelectedPageIndex;
+                App.State.Prop.LastPage = currentPage?.PageType.FullName!;
             }
+        }
+
+        private async void SafeNavigate(Type page)
+        {
+            await Task.Delay(500); // same as below
+            Navigate(page);
         }
 
         public void LoadState()

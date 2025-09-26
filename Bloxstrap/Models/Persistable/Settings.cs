@@ -95,6 +95,7 @@ namespace Bloxstrap.Models.Persistable
         public bool EnableAnalytics { get; set; } = false;
         public bool DebugDisableVersionPackageCleanup { get; set; } = false;
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public bool ForceLocalData { get; set; } = false;
         public bool DeveloperMode { get; set; } = false;
         public WebEnvironment WebEnvironment { get; set; } = WebEnvironment.Production;
 

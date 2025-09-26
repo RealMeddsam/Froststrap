@@ -51,6 +51,7 @@ namespace Bloxstrap
         private readonly CancellationTokenSource _cancelTokenSource = new();
 
         private IAppData AppData = default!;
+        private Dictionary<string, string> PackageDirectoryMap = null!;
         private LaunchMode _launchMode;
 
         private string _launchCommandLine = App.LaunchSettings.RobloxLaunchArgs;
@@ -107,6 +108,20 @@ namespace Bloxstrap
         {
             AppData = IsStudioLaunch ? new RobloxStudioData() : new RobloxPlayerData();
             Deployment.BinaryType = AppData.BinaryType;
+        }
+
+        // we will use this later on since we have to wait for remote data
+        private async Task SetupPackageDictionaries()
+        {
+            await App.RemoteData.WaitUntilDataFetched();
+
+            var localData = App.RemoteData.Prop.PackageMaps[IsStudioLaunch ? "studio" : "player"];
+            var commonData = App.RemoteData.Prop.PackageMaps.CommonPackageMap;
+
+            PackageDirectoryMap = new(commonData);
+
+            foreach (var package in localData)
+                PackageDirectoryMap[package.Key] = package.Value;
         }
 
         private void SetStatus(string message)
@@ -1379,6 +1394,13 @@ namespace Bloxstrap
                 _taskbarProgressIncrement = _taskbarProgressMaximum / (double)totalPackedSize;
             }
 
+            SetStatus("Waiting For Data...");
+            await SetupPackageDictionaries();// doing it here is better since remote data should be loaded by now
+            SetStatus("Finished Collecting Data...");
+            await Task.Delay(500);
+
+            SetStatus(Strings.Bootstrapper_Status_Upgrading);
+
             var extractionTasks = new List<Task>();
 
             foreach (var package in _versionPackageManifest)
@@ -1445,7 +1467,7 @@ namespace Bloxstrap
                             return;
                         }
 
-                        string baseDirectory = Path.Combine(_latestVersionDirectory, AppData.PackageDirectoryMap[package.Name]);
+                        string baseDirectory = Path.Combine(_latestVersionDirectory, PackageDirectoryMap[package.Name]);
 
                         ExtractPackage(package);
 
@@ -1684,7 +1706,7 @@ namespace Bloxstrap
                 if (modFolderFiles.Contains(fileLocation))
                     continue;
 
-                var packageMapEntry = AppData.PackageDirectoryMap.SingleOrDefault(x => !String.IsNullOrEmpty(x.Value) && fileLocation.StartsWith(x.Value));
+                var packageMapEntry = PackageDirectoryMap.SingleOrDefault(x => !String.IsNullOrEmpty(x.Value) && fileLocation.StartsWith(x.Value));
                 string packageName = packageMapEntry.Key;
 
                 // package doesn't exist, likely mistakenly placed file
@@ -1889,7 +1911,7 @@ namespace Bloxstrap
         {
             const string LOG_IDENT = "Bootstrapper::ExtractPackage";
 
-            string? packageDir = AppData.PackageDirectoryMap.GetValueOrDefault(package.Name);
+            string? packageDir = PackageDirectoryMap.GetValueOrDefault(package.Name);
 
             if (packageDir is null)
             {
