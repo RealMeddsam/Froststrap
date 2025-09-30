@@ -37,13 +37,13 @@
             <StackPanel Margin="5,0,0,10">
 
                 <controls:OptionControl
-                    Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_CopyFormat_Title}" 
-                    Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_CopyFormat_Description}"
-                    HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#copy-format" >
+                        Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_CopyFormat_Title}" 
+                        Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_CopyFormat_Description}"
+                        HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#copy-format" >
                     <ComboBox Margin="5,0,0,0" Padding="10,5,10,5"
-                        Width="200"
-                        ItemsSource="{Binding CopyFormatModes}"
-                        SelectedItem="{Binding SelectedCopyFormat, Mode=TwoWay}">
+                            Width="200"
+                            ItemsSource="{Binding CopyFormatModes}"
+                            SelectedItem="{Binding SelectedCopyFormat, Mode=TwoWay}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Converter={StaticResource EnumNameConverter}}" />
@@ -53,41 +53,35 @@
                 </controls:OptionControl>
 
                 <controls:OptionControl
-                Header="Ctrl+C Json Format" 
-                Description="Copies selected flags as JSON using the chosen Copy Format when pressing Ctrl+C.">
+                        Header="Ctrl+C Json Format" 
+                        Description="Copies selected flags as JSON using the chosen Copy Format when pressing Ctrl+C.">
                     <ui:ToggleSwitch IsChecked="{Binding ShowCtrlCJsonFormatSetting, Mode=TwoWay}" />
                 </controls:OptionControl>
 
                 <controls:OptionControl
-                Header="Vulkan Fix" 
-                Description="Automatically removes alt manually fflag when vulkan is enabled, Enabling this can help people avoid crashes when using vulkan">
+                        Header="Vulkan Fix" 
+                        Description="Automatically removes alt manually fflag when vulkan is enabled, Enabling this can help people avoid crashes when using vulkan">
                     <ui:ToggleSwitch IsChecked="{Binding AutomaticallyRemovedAltManually, Mode=TwoWay}" />
                 </controls:OptionControl>
 
                 <controls:OptionControl
-                    Header="FastFlag Warning System" 
-                    Description="Allows you to remove the built in fflag warning system">
-                    <ui:ToggleSwitch IsChecked="{Binding FFlagWarningSystem, Mode=TwoWay}" />
-                </controls:OptionControl>
-                
-                <controls:OptionControl
-                    Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_PresetColumn_Title}" 
-                    Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_PresetColumn_Description}"
-                    HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#preset-column" >
+                        Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_PresetColumn_Title}" 
+                        Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_PresetColumn_Description}"
+                        HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#preset-column" >
                     <ui:ToggleSwitch IsChecked="{Binding ShowPresetColumnSetting, Mode=TwoWay}" />
                 </controls:OptionControl>
 
                 <controls:OptionControl
-                    Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_ToggleFlagCount_Title}" 
-                    Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_ToggleFlagCount_Description}"
-                    HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#flag-count" >
+                        Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_ToggleFlagCount_Title}" 
+                        Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_ToggleFlagCount_Description}"
+                        HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#flag-count" >
                     <ui:ToggleSwitch IsChecked="{Binding ShowFlagCount, Mode=TwoWay}" />
                 </controls:OptionControl>
 
                 <controls:OptionControl
-                Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_AddWithID_Title}" 
-                Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_AddWithID_Description}"
-                HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#add-with-id" >
+                        Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_AddWithID_Title}" 
+                        Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_AddWithID_Description}"
+                        HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#add-with-id" >
                     <ui:ToggleSwitch IsChecked="{Binding ShowAddWithID, Mode=TwoWay}" />
                 </controls:OptionControl>
 
