@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using System.Windows;
 
 namespace Bloxstrap
@@ -53,7 +51,7 @@ namespace Bloxstrap
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to set FPS cap:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Frontend.ShowMessageBox($"Failed to set FPS cap:\n{ex.Message}", MessageBoxImage.Error, MessageBoxButton.OK);
             }
         }
 
