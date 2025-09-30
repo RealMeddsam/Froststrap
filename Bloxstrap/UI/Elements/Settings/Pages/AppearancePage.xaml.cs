@@ -8,11 +8,23 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 {
     public partial class AppearancePage
     {
+        private readonly MainWindow _mainWindow;
+
+        private bool _isNavigationLocked = false;
+
         public AppearancePage()
         {
             DataContext = new AppearanceViewModel(this);
             InitializeComponent();
             (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Appearance");
+
+            _isNavigationLocked = App.Settings.Prop.IsNavigationOrderLocked;
+
+            UpdateNavigationLockUI();
+
+            _mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
+
+            ListBoxNavigationItems.ItemsSource = MainWindow.MainNavigationItems;
         }
 
         private bool _isWindowsBackdropInitialized = false;
@@ -264,6 +276,130 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
         private void OnClearImageClicked(object sender, RoutedEventArgs e)
         {
             (DataContext as AppearanceViewModel)?.ClearBackgroundImage();
+        }
+
+        public List<string> NavigationOrder
+        {
+            get => App.Settings.Prop.NavigationOrder;
+            set
+            {
+                App.Settings.Prop.NavigationOrder = value;
+                App.State.Save();
+            }
+        }
+
+        private void SaveNavigationOrder()
+        {
+            var order = MainWindow.MainNavigationItems.Select(item => item.Tag?.ToString())
+                .Concat(_mainWindow.RootNavigation.Footer.OfType<Wpf.Ui.Controls.NavigationItem>().Select(item => item.Tag?.ToString()))
+                .Where(tag => !string.IsNullOrEmpty(tag))
+                .ToList();
+
+            App.Settings.Prop.NavigationOrder = order!;
+            App.State.Save();
+        }
+
+        private void MoveUp_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBoxNavigationItems.SelectedItem is not Wpf.Ui.Controls.NavigationItem selectedItem)
+                return;
+
+            if (MainWindow.MainNavigationItems.Contains(selectedItem))
+            {
+                var navItems = MainWindow.MainNavigationItems;
+                int index = navItems.IndexOf(selectedItem);
+
+                if (index > 0)
+                {
+                    navItems.Move(index, index - 1);
+                    ListBoxNavigationItems.SelectedItem = selectedItem;
+                    _mainWindow.ApplyNavigationReorder();
+                    SaveNavigationOrder();
+                }
+            }
+            else if (_mainWindow.RootNavigation.Footer.Contains(selectedItem))
+            {
+                var footerList = _mainWindow.RootNavigation.Footer;
+                int index = footerList.IndexOf(selectedItem);
+
+                if (index > 0)
+                {
+                    footerList.Move(index, index - 1);
+                    ListBoxNavigationItems.SelectedItem = selectedItem;
+                    _mainWindow.ApplyNavigationReorder();
+                    SaveNavigationOrder();
+                }
+            }
+        }
+
+        private void MoveDown_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBoxNavigationItems.SelectedItem is not Wpf.Ui.Controls.NavigationItem selectedItem)
+                return;
+
+            if (MainWindow.MainNavigationItems.Contains(selectedItem))
+            {
+                var navItems = MainWindow.MainNavigationItems;
+                int index = navItems.IndexOf(selectedItem);
+
+                if (index < navItems.Count - 1)
+                {
+                    navItems.Move(index, index + 1);
+                    ListBoxNavigationItems.SelectedItem = selectedItem;
+                    _mainWindow.ApplyNavigationReorder();
+                    SaveNavigationOrder();
+                }
+            }
+            else if (_mainWindow.RootNavigation.Footer.Contains(selectedItem))
+            {
+                var footerList = _mainWindow.RootNavigation.Footer;
+                int index = footerList.IndexOf(selectedItem);
+
+                if (index < footerList.Count - 1)
+                {
+                    footerList.Move(index, index + 1);
+                    ListBoxNavigationItems.SelectedItem = selectedItem;
+                    _mainWindow.ApplyNavigationReorder();
+                    SaveNavigationOrder();
+                }
+            }
+        }
+
+        private void UpdateNavigationLockUI()
+        {
+            MoveUpButton.IsEnabled = !_isNavigationLocked;
+            MoveDownButton.IsEnabled = !_isNavigationLocked;
+            ResetToDefaultButton.IsEnabled = !_isNavigationLocked;
+
+            ToggleLockOrder.IsChecked = _isNavigationLocked;
+        }
+
+        private void LockToggleButton_Checked(object sender, RoutedEventArgs e)
+        {
+            SetNavigationLock(true);
+        }
+
+        private void LockToggleButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SetNavigationLock(false);
+        }
+
+        private void SetNavigationLock(bool isLocked)
+        {
+            if (_isNavigationLocked == isLocked)
+                return;
+
+            _isNavigationLocked = isLocked;
+            App.Settings.Prop.IsNavigationOrderLocked = isLocked;
+            App.State.Save();
+
+            UpdateNavigationLockUI();
+        }
+
+        private void ResetOrder_Click(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            mainWindow.ResetNavigationToDefault();
         }
     }
 }

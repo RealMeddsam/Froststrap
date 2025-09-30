@@ -198,6 +198,44 @@
             <ComboBox Width="200" Padding="10,5,10,5" ItemsSource="{Binding Languages, Mode=OneTime}" Text="{Binding SelectedLanguage, Mode=TwoWay}" />
         </controls:OptionControl>
 
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="True">
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock FontSize="14" Text="Menu Adjustment"  FontWeight="Medium"/>
+                        <TextBlock FontSize="12" Text="Reorder the navigation menu items to your preference. Changes will be saved automatically." Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                    </StackPanel>
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <Grid Margin="0,8,0,0" MinHeight="325">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <ListBox x:Name="ListBoxNavigationItems" Grid.Row="0" Margin="0,0,0,8" SelectedIndex="0" 
+                 HorizontalContentAlignment="Stretch" >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Content}" Padding="4,2" FontWeight="Medium" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Left">
+                    <Button x:Name="MoveUpButton" Content="Move Up" Click="MoveUp_Click" Margin="0,0,8,0" FontWeight="Medium" />
+                    <Button x:Name="MoveDownButton" Content="Move Down" Click="MoveDown_Click" Margin="0,0,8,0" FontWeight="Medium" />
+                    <Button x:Name="ResetToDefaultButton" Content="Reset To Default" Click="ResetOrder_Click" Margin="0,0,8,0" FontWeight="Medium" />
+                    <ToggleButton x:Name="ToggleLockOrder" Content="Lock Order" Checked="LockToggleButton_Checked" Unchecked="LockToggleButton_Unchecked" FontWeight="Medium" />
+                </StackPanel>
+            </Grid>
+        </ui:CardExpander>
+
         <Grid Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />

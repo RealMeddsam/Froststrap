@@ -70,6 +70,8 @@ namespace Bloxstrap.Models.Persistable
         public BackgroundImageStretchMode BackgroundImageStretch { get; set; } = BackgroundImageStretchMode.Fill;
         public double BlackOverlayOpacity { get; set; } = 0.2;
         public string? CustomFontPath { get; set; } = null;
+        public List<string> NavigationOrder { get; set; } = new List<string>();
+        public bool IsNavigationOrderLocked { get; set; } = true;
 
         // No pc tweaks since it checks registry values directly
 
