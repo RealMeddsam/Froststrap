@@ -206,7 +206,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                        <TextBlock FontSize="14" Text="Menu Adjustment"  FontWeight="Medium"/>
+                        <TextBlock FontSize="14" Text="Menu Adjustment" FontWeight="Medium"/>
                         <TextBlock FontSize="12" Text="Reorder the navigation menu items to your preference. Changes will be saved automatically." Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
                     </StackPanel>
                 </Grid>
@@ -218,8 +218,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <ListBox x:Name="ListBoxNavigationItems" Grid.Row="0" Margin="0,0,0,8" SelectedIndex="0" 
-                 HorizontalContentAlignment="Stretch" >
+                <ListBox x:Name="ListBoxNavigationItems" Grid.Row="0" Margin="0,0,0,8" SelectedIndex="0" HorizontalContentAlignment="Stretch">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Content}" Padding="4,2" FontWeight="Medium" />
@@ -245,7 +244,7 @@
                 <TextBlock Text="{x:Static resources:Strings.Menu_Appearance_Bootstrapper_Title}" FontSize="20" FontWeight="Bold" VerticalAlignment="Bottom" />
                 <TextBlock Text="{x:Static resources:Strings.Menu_Appearance_Bootstrapper_Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
             </StackPanel>
-            <ui:Button Grid.Column="1" Content="{x:Static resources:Strings.Menu_Appearance_Preview}" HorizontalAlignment="Stretch" Margin="0,16,0,0" Command="{Binding PreviewBootstrapperCommand}" />
+            <ui:Button Grid.Column="1" Content="{x:Static resources:Strings.Menu_Appearance_Preview}" FontWeight="Medium" HorizontalAlignment="Stretch" Margin="0,16,0,0" Command="{Binding PreviewBootstrapperCommand}" />
         </Grid>
 
         <ui:CardExpander Margin="0,8,0,0" IsExpanded="{Binding Path=CustomThemesExpanded, Mode=OneWay}" Style="{StaticResource NoUserExpansionCardExpanderStyle}">
@@ -372,15 +371,15 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static resources:Strings.Menu_Appearance_CustomisationTitle_Title}" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                 <ui:TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Title, Mode=TwoWay}" />
-                <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,4,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Appearance_CustomisationTitle_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
-                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,12,0,0"  Text="{x:Static resources:Strings.Menu_Appearance_CustomisationIcon_Title}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,4,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Appearance_CustomisationTitle_Description}" FontWeight="Medium" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,12,0,0"  Text="{x:Static resources:Strings.Menu_Appearance_CustomisationIcon_Title}" TextWrapping="Wrap" VerticalAlignment="Center" FontWeight="Medium" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                 <Grid Grid.Row="2" Grid.Column="1" Margin="0,12,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <ui:TextBox Grid.Column="0" Margin="0,0,4,0" Text="{Binding CustomIconLocation, Mode=TwoWay}" />
-                    <ui:Button Grid.Column="1" Margin="4,0,0,0" Height="35" Icon="Folder24" Content="{x:Static resources:Strings.Common_Browse}" Command="{Binding BrowseCustomIconLocationCommand}" />
+                    <ui:Button Grid.Column="1" Margin="4,0,0,0" Height="35" Icon="Folder24" Content="{x:Static resources:Strings.Common_Browse}" Command="{Binding BrowseCustomIconLocationCommand}" FontWeight="Medium" />
                 </Grid>
                 <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,4,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Appearance_CustomisationIcon_Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
             </Grid>

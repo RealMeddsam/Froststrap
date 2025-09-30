@@ -10,21 +10,21 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
     {
         private readonly MainWindow _mainWindow;
 
-        private bool _isNavigationLocked = false;
-
         public AppearancePage()
         {
             DataContext = new AppearanceViewModel(this);
             InitializeComponent();
             (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Appearance");
 
-            _isNavigationLocked = App.Settings.Prop.IsNavigationOrderLocked;
-
-            UpdateNavigationLockUI();
-
             _mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
+            ListBoxNavigationItems.ItemsSource = _mainWindow.NavigationItemsView;
 
-            ListBoxNavigationItems.ItemsSource = MainWindow.MainNavigationItems;
+            if (ListBoxNavigationItems.Items.Count > 0)
+                ListBoxNavigationItems.SelectedIndex = 0;
+
+            UpdateNavigationLockUI(); // now uses App.Settings.Prop directly
+
+            ListBoxNavigationItems.SelectionChanged += ListBoxNavigationItems_SelectionChanged;
         }
 
         private bool _isWindowsBackdropInitialized = false;
@@ -278,58 +278,19 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             (DataContext as AppearanceViewModel)?.ClearBackgroundImage();
         }
 
-        public List<string> NavigationOrder
-        {
-            get => App.Settings.Prop.NavigationOrder;
-            set
-            {
-                App.Settings.Prop.NavigationOrder = value;
-                App.State.Save();
-            }
-        }
-
-        private void SaveNavigationOrder()
-        {
-            var order = MainWindow.MainNavigationItems.Select(item => item.Tag?.ToString())
-                .Concat(_mainWindow.RootNavigation.Footer.OfType<Wpf.Ui.Controls.NavigationItem>().Select(item => item.Tag?.ToString()))
-                .Where(tag => !string.IsNullOrEmpty(tag))
-                .ToList();
-
-            App.Settings.Prop.NavigationOrder = order!;
-            App.State.Save();
-        }
-
         private void MoveUp_Click(object sender, RoutedEventArgs e)
         {
             if (ListBoxNavigationItems.SelectedItem is not Wpf.Ui.Controls.NavigationItem selectedItem)
                 return;
 
-            if (MainWindow.MainNavigationItems.Contains(selectedItem))
+            int result = _mainWindow.MoveNavigationItem(selectedItem, -1);
+            if (result != -1)
             {
-                var navItems = MainWindow.MainNavigationItems;
-                int index = navItems.IndexOf(selectedItem);
-
-                if (index > 0)
-                {
-                    navItems.Move(index, index - 1);
-                    ListBoxNavigationItems.SelectedItem = selectedItem;
-                    _mainWindow.ApplyNavigationReorder();
-                    SaveNavigationOrder();
-                }
+                ListBoxNavigationItems.SelectedItem = selectedItem;
+                ListBoxNavigationItems.ScrollIntoView(selectedItem);
             }
-            else if (_mainWindow.RootNavigation.Footer.Contains(selectedItem))
-            {
-                var footerList = _mainWindow.RootNavigation.Footer;
-                int index = footerList.IndexOf(selectedItem);
 
-                if (index > 0)
-                {
-                    footerList.Move(index, index - 1);
-                    ListBoxNavigationItems.SelectedItem = selectedItem;
-                    _mainWindow.ApplyNavigationReorder();
-                    SaveNavigationOrder();
-                }
-            }
+            UpdateMoveButtons();
         }
 
         private void MoveDown_Click(object sender, RoutedEventArgs e)
@@ -337,41 +298,40 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             if (ListBoxNavigationItems.SelectedItem is not Wpf.Ui.Controls.NavigationItem selectedItem)
                 return;
 
-            if (MainWindow.MainNavigationItems.Contains(selectedItem))
+            int result = _mainWindow.MoveNavigationItem(selectedItem, +1);
+            if (result != -1)
             {
-                var navItems = MainWindow.MainNavigationItems;
-                int index = navItems.IndexOf(selectedItem);
-
-                if (index < navItems.Count - 1)
-                {
-                    navItems.Move(index, index + 1);
-                    ListBoxNavigationItems.SelectedItem = selectedItem;
-                    _mainWindow.ApplyNavigationReorder();
-                    SaveNavigationOrder();
-                }
+                ListBoxNavigationItems.SelectedItem = selectedItem;
+                ListBoxNavigationItems.ScrollIntoView(selectedItem);
             }
-            else if (_mainWindow.RootNavigation.Footer.Contains(selectedItem))
-            {
-                var footerList = _mainWindow.RootNavigation.Footer;
-                int index = footerList.IndexOf(selectedItem);
 
-                if (index < footerList.Count - 1)
-                {
-                    footerList.Move(index, index + 1);
-                    ListBoxNavigationItems.SelectedItem = selectedItem;
-                    _mainWindow.ApplyNavigationReorder();
-                    SaveNavigationOrder();
-                }
-            }
+            UpdateMoveButtons();
         }
 
         private void UpdateNavigationLockUI()
         {
-            MoveUpButton.IsEnabled = !_isNavigationLocked;
-            MoveDownButton.IsEnabled = !_isNavigationLocked;
-            ResetToDefaultButton.IsEnabled = !_isNavigationLocked;
+            bool isLocked = App.Settings.Prop.IsNavigationOrderLocked;
 
-            ToggleLockOrder.IsChecked = _isNavigationLocked;
+            ResetToDefaultButton.IsEnabled = !isLocked;
+            UpdateMoveButtons();
+
+            ToggleLockOrder.IsChecked = isLocked;
+        }
+
+        private void UpdateMoveButtons()
+        {
+            MoveUpButton.IsEnabled = false;
+            MoveDownButton.IsEnabled = false;
+
+            int idx = ListBoxNavigationItems.SelectedIndex;
+            if (idx < 0) return;
+
+            if (App.Settings.Prop.IsNavigationOrderLocked)
+                return;
+
+            int count = ListBoxNavigationItems.Items.Count;
+            MoveUpButton.IsEnabled = idx > 0;
+            MoveDownButton.IsEnabled = idx < (count - 1);
         }
 
         private void LockToggleButton_Checked(object sender, RoutedEventArgs e)
@@ -386,10 +346,9 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private void SetNavigationLock(bool isLocked)
         {
-            if (_isNavigationLocked == isLocked)
+            if (App.Settings.Prop.IsNavigationOrderLocked == isLocked)
                 return;
 
-            _isNavigationLocked = isLocked;
             App.Settings.Prop.IsNavigationOrderLocked = isLocked;
             App.State.Save();
 
@@ -398,8 +357,23 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private void ResetOrder_Click(object sender, RoutedEventArgs e)
         {
-            var mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.ResetNavigationToDefault();
+            _mainWindow.ResetNavigationToDefault();
+
+            ListBoxNavigationItems.ItemsSource = null;
+            ListBoxNavigationItems.ItemsSource = _mainWindow.NavigationItemsView;
+
+            if (ListBoxNavigationItems.Items.Count > 0)
+            {
+                ListBoxNavigationItems.SelectedIndex = 0;
+                ListBoxNavigationItems.ScrollIntoView(ListBoxNavigationItems.SelectedItem);
+            }
+
+            UpdateMoveButtons();
+        }
+
+        private void ListBoxNavigationItems_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            UpdateMoveButtons();
         }
     }
 }
