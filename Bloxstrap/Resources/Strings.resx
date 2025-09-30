@@ -2418,4 +2418,7 @@ You can no longer use Bloxshade with Froststrap.</value>
   <data name="CustomTheme.Errors.InvalidBackdrop" xml:space="preserve">
     <value>Tried to use invalid WindowBackdropType: {0}</value>
   </data>
+  <data name="Bootstrapper.Status.WaitingForData" xml:space="preserve">
+    <value>Waiting for data...</value>
+  </data>
 </root>

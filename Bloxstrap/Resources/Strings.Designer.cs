@@ -394,6 +394,15 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Waiting for data....
+        /// </summary>
+        public static string Bootstrapper_Status_WaitingForData {
+            get {
+                return ResourceManager.GetString("Bootstrapper.Status.WaitingForData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Waiting for other instances....
         /// </summary>
         public static string Bootstrapper_Status_WaitingOtherInstances {
