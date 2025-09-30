@@ -17,22 +17,19 @@ namespace Bloxstrap
 
         public static IReadOnlyDictionary<string, string> PresetFlags = new Dictionary<string, string>
         {
-            // Activity Watcher
-            { "Players.LogLevel", "FStringDebugLuaLogLevel" },
-            { "Players.LogPattern", "FStringDebugLuaLogPattern" },
-            { "Flog.Network", "FLogNetwork" },
-
             // Preset Flags
             { "Rendering.ManualFullscreen", "FFlagHandleAltEnterFullscreenManually" },
 
-            // Recommended Buffering
-            { "Recommended.Buffer", "FIntRakNetResendBufferArrayLength" },
-     
-            // Memory Probing
-            { "Memory.Probe", "DFFlagPerformanceControlEnableMemoryProbing3" },
+            // Pause Voxelizer
+            { "Rendering.PauseVoxerlizer", "DFFlagDebugPauseVoxelizer" },
 
-            // Skys
-            { "Graphic.GraySky", "FFlagDebugSkyGray" },
+            // DPI Scaling
+            { "Rendering.DisableScaling", "DFFlagDisableDPIScale" },
+
+            // Texture Quality Override
+            { "Rendering.TextureQuality.OverrideEnabled", "DFFlagTextureQualityOverrideEnabled" },
+            { "Rendering.TextureQuality.Level", "DFIntTextureQualityOverride" },
+            { "Rendering.FrmQuality", "DFIntDebugFRMQualityLevelOverride" },
 
             // Low Poly Meshes
             { "Rendering.LowPolyMeshes1", "DFIntCSGLevelOfDetailSwitchingDistance" },
@@ -40,304 +37,27 @@ namespace Bloxstrap
             { "Rendering.LowPolyMeshes3", "DFIntCSGLevelOfDetailSwitchingDistanceL23" },
             { "Rendering.LowPolyMeshes4", "DFIntCSGLevelOfDetailSwitchingDistanceL34" },
 
-            // CFrame
-            { "Rendering.CFrame", "FFlagOptimizeCFrameUpdates4" },
-            { "Rendering.CFrameIC", "FFlagOptimizeCFrameUpdatesIC4" },
+            // Rendering Modes
+            { "Rendering.Mode.D3D11", "FFlagDebugGraphicsPreferD3D11" },
+            { "Rendering.Mode.Vulkan", "FFlagDebugGraphicsPreferVulkan" },
+            { "Rendering.Mode.OpenGL", "FFlagDebugGraphicsPreferOpenGL" },
 
-            // Frm Quality Level
-            { "Rendering.FrmQuality", "DFIntDebugFRMQualityLevelOverride" },
+            // Skys
+            { "Graphic.GraySky", "FFlagDebugSkyGray" },
 
-            // Less lag spikes
-            { "Network.DefaultBps", "DFIntBandwidthManagerApplicationDefaultBps" },
-            { "Network.MaxWorkCatchupMs", "DFIntBandwidthManagerDataSenderMaxWorkCatchupMs" },
-
-            // Load Faster
-            { "Network.MeshPreloadding", "DFFlagEnableMeshPreloading2" },
-            { "Network.MaxAssetPreload", "DFIntNumAssetsMaxToPreload" },
-            { "Network.PlayerImageDefault", "FStringGetPlayerImageDefaultTimeout" },
-
-            // Physic
-            { "Network.Phyics1", "DFIntS2PhysicsSenderRate" },
-            { "Network.Phyics2", "DFIntDataSenderRate" },
-
-            // Payload Limit
-            { "Network.Payload1", "DFFlagMaxDataPayloadSizePreciseCh" },
-            { "Network.Payload2", "DFIntCliMaxPayloadRcv" },
-            { "Network.Payload3", "DFIntCliMaxPayloadSnd" },
-            { "Network.Payload4", "DFIntCliTcMaxPayloadRcv" },
-            { "Network.Payload5", "DFIntCliTcMaxPayloadSnd" },
-            { "Network.Payload6", "DFIntHeapProfilerMaxPayloadData" },
-            { "Network.Payload7", "DFIntMaxDataPayloadSize" },
-            { "Network.Payload8", "DFIntMaxProflingDataPayloadSize" },
-            { "Network.Payload9", "DFIntMaxUREPayloadSingleLimit" },
-            { "Network.Payload10", "DFIntRccMaxPayloadRcv" },
-            { "Network.Payload11", "DFIntRccTcMaxPayloadRcv" },
-            { "Network.Payload12", "DFIntRccTcMaxPayloadSnd" },
-            { "Network.Payload13", "DFIntTotalRepPayloadLimit" },
-
-            // Disable Ads
-            { "UI.DisableAds1", "FFlagAdServiceEnabled" },
-            { "UI.DisableAds2", "FFlagEnableRewardedVideoInAdService15" },
-            { "UI.DisableAds3", "FLogAdService" },
-
-
-            // Pseudolocalization
-            { "UI.Pseudolocalization", "FFlagDebugEnablePseudolocalization" },
-
-            // Disable Ads
-            { "Network.Stream1", "DFIntNetworkStreamInitSize" },
-            { "Network.Stream2", "DFIntNetworkStreamMinGrowSize" },
-            { "Network.Stream3", "DFIntNetworkStreamingGCMaxMicroSecondLimit" },
-            { "Network.Stream4", "DFIntNetworkStreamingGCMaxMicroSecondLimitPartsModels" },
-            { "Network.Stream5", "DFIntNetworkStreamingGCUrgentMaxMicroSecondLimit" },
-            { "Network.Stream6", "DFIntNetworkStreamingGCUrgentMaxMicroSecondLimitPartsModels" },
-            { "Network.Stream7", "DFIntSchemaNetworkStreamSize" },
+            // MSAA
+            { "Rendering.MSAA1", "FIntDebugForceMSAASamples" },
 
             // Remove Grass
             { "Rendering.RemoveGrass1", "FIntFRMMinGrassDistance" },
             { "Rendering.RemoveGrass2", "FIntFRMMaxGrassDistance" },
-            { "Rendering.RemoveGrass3", "FIntRenderGrassDetailStrands" },
-
-            // Other FFlags
-            { "Rendering.LimitFramerate", "FFlagTaskSchedulerLimitTargetFpsTo2402" },
-            { "Rendering.Framerate", "DFIntTaskSchedulerTargetFps" },
-            { "Rendering.DisableScaling", "DFFlagDisableDPIScale" },
-            { "Rendering.MSAA1", "FIntDebugForceMSAASamples" },
-            { "Rendering.MSAA2", "FIntDebugFRMOptionalMSAALevelOverride" },
-            { "Rendering.DisablePostFX", "FFlagDisablePostFx" },
-
-            // Debug
-            { "Debug.FlagState", "FStringDebugShowFlagState" },
-            { "Debug.PingBreakdown", "DFFlagDebugPrintDataPingBreakDown" },
-            { "Debug.Chunks", "FFlagDebugLightGridShowChunks" },
-
-            // Draggable Capture
-            { "UI.DraggableCapture", "FFlagEnableUpdatedCaptureControls_v9" },
-
-            // Increase Cache Size
-            { "Cache.Increase1", "DFIntFileCacheReserveSize" },
-            { "Cache.Increase2", "FIntTaskSchedulerMaxTempArenaSizeBytes" },
-
-            // Force Logical Processors
-            { "System.CpuCore1", "DFIntInterpolationNumParallelTasks" },
-            { "System.CpuCore2", "DFIntMegaReplicatorNumParallelTasks" },
-            { "System.CpuCore3", "DFIntNetworkClusterPacketCacheNumParallelTasks" },
-            { "System.CpuCore4", "DFIntReplicationDataCacheNumParallelTasks" },
-            { "System.CpuCore5", "FIntLuaGcParallelMinMultiTasks" },
-            { "System.CpuCore6", "FIntSmoothClusterTaskQueueMaxParallelTasks" },
-            { "System.CpuCore7", "DFIntPhysicsReceiveNumParallelTasks" },
-            { "System.CpuCore8", "FIntTaskSchedulerAutoThreadLimit" },
-            { "System.CpuCore9", "FIntSimWorldTaskQueueParallelTasks" },
-            { "System.CpuThreads", "DFIntRuntimeConcurrency"},
-
-            // Telemetry
-            { "Telemetry.Telemetry1", "DFFlagAddPlaySessionIdTelemetry" },
-            { "Telemetry.Telemetry2", "DFIntPerformanceTelemetryGlobalThrottleHundredthsPercent" },
-            { "Telemetry.Telemetry3", "DFIntTelemetryProfilerHundredthsPercentage" },
-            { "Telemetry.Telemetry4", "DFIntTelemetryRateLimiterBurstSizeHundredths" },
-            { "Telemetry.Telemetry5", "DFIntTelemetryRateLimiterRegenRateHundredths" },
-            { "Telemetry.Telemetry6", "DFStringAltHttpPointsReporterUrl" },
-            { "Telemetry.Telemetry7", "DFStringTelemetryV2Url" },
-            { "Telemetry.Telemetry8", "FFlagEnableTelemetryProtocol" },
-            { "Telemetry.Telemetry9", "FFlagEnableTelemetryService1" },
-            { "Telemetry.Telemetry10", "FFlagEnableTelemetryServicePlaySessionInfo" },
-            { "Telemetry.Telemetry11", "FFlagOpenTelemetryEnabled2" },
-            { "Telemetry.Telemetry12", "FFlagRobloxTelemetryAddDeviceRAM" },
-            { "Telemetry.Telemetry13", "FFlagRobloxTelemetryAddOsVersionAsTag" },
-            { "Telemetry.Telemetry14", "FFlagRobloxTelemetryAddOTAVersionAsTag" },
-            { "Telemetry.Telemetry15", "FStringOpenTelemetryOtlpEndpoint" },
-
-            // Voicechat Telemetry
-            { "Telemetry.Voicechat1", "DFIntVoiceChatTaskStatsTelemetryThrottleHundrethsPercent" },
-            { "Telemetry.Voicechat2", "FFlagEnableLuaVoiceChatAnalyticsV2" },
-            { "Telemetry.Voicechat3", "FFlagLuaVoiceChatAnalyticsBanMessage" },
-            { "Telemetry.Voicechat4", "FFlagLuaVoiceChatAnalyticsUseCounterV2" },
-            { "Telemetry.Voicechat5", "FFlagLuaVoiceChatAnalyticsUseEventsV2" },
-            { "Telemetry.Voicechat6", "FFlagVoiceChatCullingEnableStaleSubsTelemetry" },
-            { "Telemetry.Voicechat7", "FFlagVoiceChatCustomAudioDeviceEnableNeedMorePlayoutTelemetry3" },
-            { "Telemetry.Voicechat8", "FFlagVoiceChatRobloxAudioDeviceUpdateRecordedBufferTelemetryEnabled" },
-            { "Telemetry.Voicechat9", "FIntVoiceChatPerfSensitiveTelemetryIntervalSeconds" },
-
-            // Webview2 telemetry
-            { "Telemetry.Webview1", "DFFlagWindowsWebViewTelemetryEnabled" },
-            { "Telemetry.Webview2", "DFIntWindowsWebViewTelemetryThrottleHundredthsPercent" },
-
-            // Block Tencent
-            { "Telemetry.Tencent1", "DFFlagPolicyServiceReportDetailIsNotSubjectToChinaPolicies" },
-            { "Telemetry.Tencent2", "DFFlagPolicyServiceReportIsNotSubjectToChinaPolicies" },
-            { "Telemetry.Tencent3", "DFIntLuobuDevPublishAnalyticsHundredthsPercentage" },
-            { "Telemetry.Tencent4", "DFIntPolicyServiceReportDetailIsNotSubjectToChinaPoliciesHundredthsPercentage" },
-            { "Telemetry.Tencent5", "DFIntSendJoinTimeDeltasToDiagLuobu_HundredthsPercentage" },
-            { "Telemetry.Tencent6", "DFIntSendJoinTimeStatsHundPrecLuobuOverride" },
-            { "Telemetry.Tencent7", "FFlagConvertXiaomiSdk33VoiceRecord" },
-            { "Telemetry.Tencent8", "FFlagEnableLuobuInGameUpsell" },
-            { "Telemetry.Tencent9", "FFlagLuobuLuaAuthEnabled" },
-            { "Telemetry.Tencent10", "FFlagPolicyServiceReportFailureForLuobu" },
-            { "Telemetry.Tencent11", "FLogDevPublishChinaRequirementsLink" },
-            { "Telemetry.Tencent12", "FLogTencentAuthPath" },
-            { "Telemetry.Tencent13", "FStringDevPublishChinaRequirementsLink" },
-            { "Telemetry.Tencent14", "FStringFeature_LuobuLuaAuthEnabled" },
-            { "Telemetry.Tencent15", "FStringTencentAuthPath" },
-
-            // Block VNG (Vietnamese goverment)
-            { "Telemetry.VNG1", "FFlagLuaAppHomeVngAppUpsell" },
-            { "Telemetry.VNG2", "FFlagUseUpdatedVNGAgreementsWorkflow" },
-            { "Telemetry.VNG3", "FFlagVngLogoutGlobalAppSessionsOnConversion" },
-            { "Telemetry.VNG4", "FFlagVngTOSRevisedEnabled" },
-            { "Telemetry.VNG5", "FStringVNGWebshopUrl" },
-
-            // Minimal Rendering
-            { "Rendering.MinimalRendering", "FFlagDebugRenderingSetDeterministic"},
-
-            // Reduce Cpu Usage when in bg
-            { "Rendering.CpuBG", "DFFlagReduceCPUWhenBG"},
-
-            // Remove Sky/Clouds
-            { "Rendering.NoFrmBloom", "FFlagRenderNoLowFrmBloom"},
-
-            // Unthemed Instances
-            { "UI.UnthemedInstances", "FFlagDebugDisplayUnthemedInstances" },
-
-            // Disable Layered Clothing
-            { "UI.DisableLayeredClothing", "DFIntLCCageDeformLimit" },
-
-            // Remove Buy Gui
-            { "UI.RemoveBuyGui", "DFFlagOrder66" },
-
-            // More characters in text
-            { "UI.TextElongation", "FIntDebugTextElongationFactor" },
-
-            // No Disconnect Message
-            { "UI.NoDisconnectMsg", "DFIntDefaultTimeoutTimeMs" },
-
-            // Gray Avatars
-            { "Rendering.GrayAvatars", "DFIntTextureCompositorActiveJobs" },
-
-            // Cpu cores
-            { "System.CpuCoreMinThreadCount", "FIntTaskSchedulerAsyncTasksMinimumThreadCount"},
-
-            // Animation Smoothing
-            { "Rendering.AnimationSmoothing", "FStringRemoteAnimationSmoothingStrategy"},
-
-            // Disable Dynamic Head Animation
-            { "Rendering.DisableDynamicHeadAnimation1", "DFIntAnimationLodFacsDistanceMin"},
-            { "Rendering.DisableDynamicHeadAnimation2", "DFIntAnimationLodFacsDistanceMax"},
-            { "Rendering.DisableDynamicHeadAnimation3", "DFIntAnimationLodFacsVisibilityDenominator"},
-
-            // Inverse Kinematic
-            { "Rendering.IK1", "DFFlagEnableControlRigIkTargets" },
-            { "Rendering.IK2", "DFFlagAnimatorPostProcessIK" },
-            { "Rendering.IK3", "FFlagAnimationLodIkEnabled" },
-            { "Rendering.IK4", "DFFlagIkControlDeepProfile" },
-
-            // New Fps System
-            { "Rendering.NewFpsSystem", "FFlagEnableFPSAndFrameTime"},
-            { "Rendering.FrameRateBufferPercentage", "FIntMaquettesFrameRateBufferPercentage"},
-
-            // Light Cullings
-            { "System.GpuCulling", "FFlagFastGPULightCulling3" },
-            { "System.CpuCulling", "FFlagDebugForceFSMCPULightCulling" },
-            
-            // Prerender (Prerenderv2 is enabled by default so there is no need to add it here)
-            { "Rendering.Prerender", "FFlagMovePrerender" },
-
-            // Unlimited Camera Distance
-            { "Rendering.Camerazoom","FIntCameraMaxZoomDistance" },
-
-            // Rendering Modes
-            { "Rendering.Mode.DisableD3D11", "FFlagDebugGraphicsDisableDirect3D11" },
-            { "Rendering.Mode.D3D11", "FFlagDebugGraphicsPreferD3D11" },
-            { "Rendering.Mode.D3D10", "FFlagDebugGraphicsPreferD3D11FL10" },
-            { "Rendering.Mode.Vulkan", "FFlagDebugGraphicsPreferVulkan" },
-            { "Rendering.Mode.Metal", "FFlagDebugGraphicsPreferMetal" },
-            { "Rendering.Mode.OpenGL", "FFlagDebugGraphicsPreferOpenGL" },
-
-            // Lighting technology
-            { "Rendering.Lighting.Voxel", "DFFlagDebugRenderForceTechnologyVoxel" },
-            { "Rendering.Lighting.ShadowMap", "FFlagDebugForceFutureIsBrightPhase2" },
-            { "Rendering.Lighting.Future", "FFlagDebugForceFutureIsBrightPhase3" },
-            { "Rendering.Lighting.Unified", "FFlagRenderUnifiedLighting16"},
-            { "Rendering.Lighting.UnifiedNew", "FFlagRenderUnifiedLightingNew"},
-
-            // Texture quality
-            { "Rendering.TerrainTextureQuality", "FIntTerrainArraySliceSize" },
-            { "Rendering.TextureSkipping.Skips", "FIntDebugTextureManagerSkipMips" },
-            { "Rendering.TextureQuality.Level", "DFIntTextureQualityOverride" },
-            { "Rendering.TextureQuality.OverrideEnabled", "DFFlagTextureQualityOverrideEnabled" },
-
-            // Guis
-            { "UI.Hide", "DFIntCanHideGuiGroupId" },
-            { "UI.Hide.Toggles", "FFlagUserShowGuiHideToggles" },
-
-            // Fonts
-            { "UI.FontSize", "FIntFontSizePadding" },
-            { "UI.RedFont", "FStringDebugHighlightSpecificFont" },
-
-            // RCore
-            { "Network.RCore1", "DFIntSignalRCoreHandshakeTimeoutMs"},
-            { "Network.RCore2", "DFIntSignalRCoreHubBaseRetryMs"},
-            { "Network.RCore3", "DFIntSignalRCoreHubMaxBackoffMs"},
-            { "Network.RCore4", "DFIntSignalRCoreKeepAlivePingPeriodMs"},
-            { "Network.RCore5", "DFIntSignalRCoreRpcQueueSize"},
-            { "Network.RCore6", "DFIntSignalRCoreServerTimeoutMs"},
-            { "Network.RCore7", "DFIntSignalRCoreTimerMs"},
-            { "Network.RCore8", "DFIntSignalRHubConnectionBaseRetryTimeMs"},
-            { "Network.RCore9", "DFIntSignalRHubConnectionHeartbeatTimerRateMs"},
-
-            // Large Replicator
-            { "Network.EnableLargeReplicator", "FFlagLargeReplicatorEnabled9"},
-            { "Network.LargeReplicatorWrite", "FFlagLargeReplicatorWrite5"},
-            { "Network.LargeReplicatorRead", "FFlagLargeReplicatorRead5"},
-            { "Network.SerializeRead", "FFlagLargeReplicatorSerializeRead3"},
-            { "Network.SerializeWrite", "FFlagLargeReplicatorSerializeWrite4"},
-            { "Network.EngineModule3", "FFlagGlobalSettingsEngineModule3"},
-
-            // MTU Size
-            { "Network.Mtusize","DFIntConnectionMTUSize" },
-
-            // SSAO
-            { "Rendering.SSAO1","FFlagDebugSSAOForce" },
-            { "Rendering.SSAO2","FIntSSAOMipLevels" },
-            { "Rendering.SSAO3","FIntSSAO" },
-
-            // Dynamic Render Resolution
-            { "Rendering.Dynamic.Resolution","DFIntDebugDynamicRenderKiloPixels"},
-
-            // Fullscreen bar
-            { "UI.FullscreenTitlebarDelay", "FIntFullscreenTitleBarTriggerDelayMillis" },
-
-            // No Shadows
-            { "Rendering.Pause.Voxelizer", "DFFlagDebugPauseVoxelizer" },
-            { "Rendering.ShadowIntensity", "FIntRenderShadowIntensity" },
-            { "Rendering.ShadowMapBias", "FIntRenderShadowmapBias" },
-
-            // Romark
-            { "Rendering.Start.Graphic", "FIntRomarkStartWithGraphicQualityLevel" },
-
-            // Refresh Rate
-            { "System.TargetRefreshRate1", "DFIntGraphicsOptimizationModeFRMFrameRateTarget" },
-            { "System.TargetRefreshRate2", "DFIntGraphicsOptimizationModeMinFrameTimeTargetMs " },
-            { "System.TargetRefreshRate3", "DFIntGraphicsOptimizationModeMaxFrameTimeTargetMs" },
-    
-            // GPU
-            { "System.PreferredGPU", "FStringDebugGraphicsPreferredGPUName"},
-            { "System.DXT", "FStringGraphicsDisableUnalignedDxtGPUNameBlacklist"},
-            { "System.BypassVulkan", "FStringVulkanBuggyRenderpassList2"},
-
-            // Menu stuff
-            { "Menu.VRToggles", "FFlagAlwaysShowVRToggleV3" },
-            { "Menu.Feedback", "FFlagDisableFeedbackSoothsayerCheck" },
-            { "Menu.LanguageSelector", "FIntV1MenuLanguageSelectionFeaturePerMillageRollout" },
-            { "Menu.Framerate", "FFlagGameBasicSettingsFramerateCap5"},
-            { "Menu.ChatTranslation", "FFlagChatTranslationSettingEnabled3" },
+            { "Rendering.RemoveGrass3", "FIntGrassMovementReducedMotionFactor" },
         };
 
         public static IReadOnlyDictionary<RenderingMode, string> RenderingModes => new Dictionary<RenderingMode, string>
         {
             { RenderingMode.Default, "None" },
             { RenderingMode.D3D11, "D3D11" },
-            { RenderingMode.D3D10, "D3D10" },
-            { RenderingMode.Metal, "Metal" },
             { RenderingMode.Vulkan, "Vulkan" },
             { RenderingMode.OpenGL, "OpenGL" },
 
@@ -348,7 +68,6 @@ namespace Bloxstrap
             { ProfileMode.Default, "None" },
             { ProfileMode.Yourmom, "Your Mom" },
             { ProfileMode.SoFatlol, "Is So Fat" },
-
         };
 
         public static IReadOnlyDictionary<MSAAMode, string?> MSAAModes => new Dictionary<MSAAMode, string?>
@@ -360,39 +79,6 @@ namespace Bloxstrap
             { MSAAMode.x8, "8" }
         };
 
-        public static IReadOnlyDictionary<TextureSkipping, string?> TextureSkippingSkips => new Dictionary<TextureSkipping, string?>
-        {
-            { TextureSkipping.Noskip, null },
-            { TextureSkipping.Skip1x, "1" },
-            { TextureSkipping.Skip2x, "2" },
-            { TextureSkipping.Skip3x, "3" },
-            { TextureSkipping.Skip4x, "4" },
-            { TextureSkipping.Skip5x, "5" },
-            { TextureSkipping.Skip6x, "6" },
-            { TextureSkipping.Skip7x, "7" },
-            { TextureSkipping.Skip8x, "8" },
-            { TextureSkipping.Skip9x, "9" },
-            { TextureSkipping.Skip10x, "10" },
-        };
-
-        public static IReadOnlyDictionary<AnimationSmoothing, string?> AnimationSmoothings => new Dictionary<AnimationSmoothing, string?>
-        {
-            { AnimationSmoothing.Default, null },
-            { AnimationSmoothing.Back, "Back" },
-            { AnimationSmoothing.Sine, "Sine" },
-            { AnimationSmoothing.Quad , "Quad" },
-            { AnimationSmoothing.Cubic, "Cubic" },
-            { AnimationSmoothing.Quint, "Quint" },
-            { AnimationSmoothing.Quart, "Quart" },
-            { AnimationSmoothing.Linear, "Linear" },
-            { AnimationSmoothing.Bounce, "Bounce" },
-            { AnimationSmoothing.Elastic, "Elastic" },
-            { AnimationSmoothing.Constant, "Constant" },
-            { AnimationSmoothing.Circular, "Circular" },
-            { AnimationSmoothing.Polynomia, "Polynomia" },
-            { AnimationSmoothing.Exponential, "Exponential" },
-            { AnimationSmoothing.Extrapolation, "Extrapolation" },
-        };
         public static IReadOnlyDictionary<TextureQuality, string?> TextureQualityLevels => new Dictionary<TextureQuality, string?>
         {
             { TextureQuality.Default, null },
@@ -400,51 +86,6 @@ namespace Bloxstrap
             { TextureQuality.Low, "1" },
             { TextureQuality.Medium, "2" },
             { TextureQuality.High, "3" },
-        };
-
-        public static IReadOnlyDictionary<DynamicResolution, string?> DynamicResolutions => new Dictionary<DynamicResolution, string?>
-        {
-            { DynamicResolution.Default, null },
-            { DynamicResolution.Resolution1, "37" },
-            { DynamicResolution.Resolution2, "77" },
-            { DynamicResolution.Resolution3, "230" },
-            { DynamicResolution.Resolution4, "410" },
-            { DynamicResolution.Resolution5, "922" },
-            { DynamicResolution.Resolution6, "2074" },
-            { DynamicResolution.Resolution7, "3686" },
-            { DynamicResolution.Resolution8, "8294" },
-            { DynamicResolution.Resolution9, "33178" },
-        };
-
-        public static IReadOnlyDictionary<RefreshRate, string?> RefreshRates => new Dictionary<RefreshRate, string?>
-        {
-            { RefreshRate.Default, null },
-            { RefreshRate.RefreshRate1, "60" },
-            { RefreshRate.RefreshRate2, "75" },
-            { RefreshRate.RefreshRate3, "80" },
-            { RefreshRate.RefreshRate4, "90" },
-            { RefreshRate.RefreshRate5, "120" },
-            { RefreshRate.RefreshRate6, "144" },
-            { RefreshRate.RefreshRate7, "165" },
-            { RefreshRate.RefreshRate8, "180" },
-            { RefreshRate.RefreshRate9, "240" },
-            { RefreshRate.RefreshRate10, "360" },
-
-        };
-
-        public static IReadOnlyDictionary<RomarkStart, string?> RomarkStartMappings => new Dictionary<RomarkStart, string?>
-        {
-            { RomarkStart.Disabled, null },
-            { RomarkStart.Bar1, "1" },
-            { RomarkStart.Bar2, "2" },
-            { RomarkStart.Bar3, "3" },
-            { RomarkStart.Bar4, "4" },
-            { RomarkStart.Bar5, "5" },
-            { RomarkStart.Bar6, "6" },
-            { RomarkStart.Bar7, "7" },
-            { RomarkStart.Bar8, "8" },
-            { RomarkStart.Bar9, "9" },
-            { RomarkStart.Bar10, "10" }
         };
 
         public static IReadOnlyDictionary<QualityLevel, string?> QualityLevels => new Dictionary<QualityLevel, string?>

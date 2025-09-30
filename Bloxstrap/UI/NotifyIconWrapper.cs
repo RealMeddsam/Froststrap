@@ -117,42 +117,6 @@ namespace Bloxstrap.UI
                             );
                         }
                         break;
-
-                    case TrayDoubleClickAction.LogsMenu:
-                        if (App.FastFlags.GetPreset("Players.LogLevel") != "trace")
-                        {
-                            Frontend.ShowMessageBox(
-                                "Enable 'Logs Menu' to use the logs menu.",
-                                MessageBoxImage.Information
-                            );
-                            return;
-                        }
-
-                        if (_activityWatcher is not null && _activityWatcher.InGame)
-                        {
-                            _menuContainer!.Dispatcher.Invoke(() =>
-                            {
-                                _menuContainer.LogsMenuItem.RaiseEvent(
-                                    new RoutedEventArgs(MenuItem.ClickEvent));
-
-                                var win = Application.Current.Windows
-                                    .OfType<Logs>()
-                                    .FirstOrDefault();
-                                if (win != null)
-                                {
-                                    win.Topmost = true;
-                                    win.Activate();
-                                }
-                            });
-                        }
-                        else
-                        {
-                            Frontend.ShowMessageBox(
-                                "Join a game first to view logs.",
-                                MessageBoxImage.Information
-                            );
-                        }
-                        break;
                 }
             };
 

@@ -34,14 +34,6 @@
         </controls:OptionControl>
 
         <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_Integrations_PlayerMessageLogs_Title}"
-            Description="{x:Static resources:Strings.Menu_Integrations_PlayerMessageLogs_Description}"
-            HelpLink="https://github.com/Meddsam/Froststrap/wiki/Features#logs-menu"
-            IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
-            <ui:ToggleSwitch IsChecked="{Binding PlayerLogsEnabled, Mode=TwoWay}" />
-        </controls:OptionControl>
-
-        <controls:OptionControl 
             Header="Playtime Counter"
             Description="Display your total playtime and game session playtime."
             IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">

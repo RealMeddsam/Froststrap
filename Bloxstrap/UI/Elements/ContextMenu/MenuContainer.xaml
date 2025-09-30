@@ -64,19 +64,6 @@
                 </MenuItem.Header>
             </MenuItem>
             
-            <MenuItem x:Name="LogsMenuItem" Click="LogsMenuItem_Click" Visibility="Collapsed">
-                <MenuItem.Header>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="24" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <ui:SymbolIcon Grid.Column="0" Symbol="DocumentCatchUp20"/>
-                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" Text="Logs Menu" />
-                    </Grid>
-                </MenuItem.Header>
-            </MenuItem>
-            
             <MenuItem x:Name="ServerDetailsMenuItem" Visibility="Collapsed" Click="ServerDetailsMenuItem_Click">
                 <MenuItem.Header>
                     <Grid>

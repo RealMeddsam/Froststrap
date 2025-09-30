@@ -18,7 +18,6 @@ namespace Bloxstrap.UI.Elements.ContextMenu
 
         private ServerInformation? _serverInformationWindow;
         private ServerHistory? _gameHistoryWindow;
-        private Logs? _logsWindow;
 
         private Stopwatch _totalPlaytimeStopwatch = new Stopwatch();
         private TimeSpan _accumulatedTotalPlaytime = TimeSpan.Zero;
@@ -134,8 +133,6 @@ namespace Bloxstrap.UI.Elements.ContextMenu
 
                 ServerDetailsMenuItem.Visibility = Visibility.Visible;
 
-                if (App.FastFlags.GetPreset("Players.LogLevel") == "trace")
-                    LogsMenuItem.Visibility = Visibility.Visible;
             });
         }
 
@@ -145,13 +142,6 @@ namespace Bloxstrap.UI.Elements.ContextMenu
             {
                 InviteDeeplinkMenuItem.Visibility = Visibility.Collapsed;
                 ServerDetailsMenuItem.Visibility = Visibility.Collapsed;
-
-                if (App.FastFlags.GetPreset("Players.LogLevel") == "trace")
-                {
-                    LogsMenuItem.Visibility = Visibility.Collapsed;
-
-                    _logsWindow?.Close();
-                }
 
                 _serverInformationWindow?.Close();
             });
@@ -209,23 +199,6 @@ namespace Bloxstrap.UI.Elements.ContextMenu
                 _gameHistoryWindow.ShowDialog();
             else
                 _gameHistoryWindow.Activate();
-        }
-
-        private void LogsMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            if (_activityWatcher is null)
-                throw new ArgumentNullException(nameof(_activityWatcher));
-
-            if (_logsWindow is null)
-            {
-                _logsWindow = new(_activityWatcher);
-                _logsWindow.Closed += (_, _) => _logsWindow = null;
-            }
-
-            if (!_logsWindow.IsVisible)
-                _logsWindow.ShowDialog();
-            else
-                _logsWindow.Activate();
         }
 
         private void CloseFroststrapMenuItem_Click(object sender, RoutedEventArgs e)

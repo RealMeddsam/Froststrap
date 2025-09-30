@@ -68,12 +68,10 @@ namespace Bloxstrap.UI.ViewModels.Settings
             set
             {
                 App.Settings.Prop.EnableActivityTracking = value;
-                App.FastFlags.SetPreset("Flog.Network", value ? "7" : null);
 
                 if (!value)
                 {
                     ShowServerDetailsEnabled = false;
-                    PlayerLogsEnabled = false;
                     ShowGameHistoryEnabled = false;
                     PlaytimeCounterEnabled = false;
                     DisableAppPatchEnabled = false;
@@ -81,7 +79,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
                     DiscordActivityJoinEnabled = false;
 
                     OnPropertyChanged(nameof(ShowServerDetailsEnabled));
-                    OnPropertyChanged(nameof(PlayerLogsEnabled));
                     OnPropertyChanged(nameof(ShowGameHistoryEnabled));
                     OnPropertyChanged(nameof(PlaytimeCounterEnabled));
                     OnPropertyChanged(nameof(DisableAppPatchEnabled));
@@ -109,16 +106,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
         {
             get => App.Settings.Prop.ShowGameHistoryMenu;
             set => App.Settings.Prop.ShowGameHistoryMenu = value;
-        }
-
-        public bool PlayerLogsEnabled
-        {
-            get => App.FastFlags.GetPreset("Players.LogLevel") == "trace"; // we r using this to determine if its enabled
-            set
-            {
-                App.FastFlags.SetPreset("Players.LogLevel", value ? "trace" : null);
-                App.FastFlags.SetPreset("Players.LogPattern", value ? "ExpChat/mountClientApp" : null);
-            }
         }
 
         public ObservableCollection<TrayDoubleClickAction> TrayDoubleClickActions { get; } =
