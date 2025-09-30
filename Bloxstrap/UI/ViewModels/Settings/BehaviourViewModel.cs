@@ -28,6 +28,12 @@ namespace Bloxstrap.UI.ViewModels.Settings
             }
         }
 
+        public bool UncapFPS
+        {
+            get => FpsUnlocker.IsUncapped();
+            set => FpsUnlocker.SetUncapped(value);
+        }
+
         public bool MultiInstances
         {
             get => App.Settings.Prop.MultiInstanceLaunching;
