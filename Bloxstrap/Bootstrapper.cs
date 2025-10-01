@@ -1711,23 +1711,25 @@ namespace Bloxstrap
                 if (modFolderFiles.Contains(fileLocation))
                     continue;
 
-                var packageMapEntry = PackageDirectoryMap.SingleOrDefault(x => !String.IsNullOrEmpty(x.Value) && fileLocation.StartsWith(x.Value));
-                string packageName = packageMapEntry.Key;
+                var packageMapEntry = PackageDirectoryMap
+                    .SingleOrDefault(x => !string.IsNullOrEmpty(x.Value) && fileLocation.StartsWith(x.Value));
 
-                // package doesn't exist, likely mistakenly placed file
-                if (String.IsNullOrEmpty(packageName))
+                if (string.IsNullOrEmpty(packageMapEntry.Key) || string.IsNullOrEmpty(packageMapEntry.Value))
                 {
-                    App.Logger.WriteLine(LOG_IDENT, $"{fileLocation} was removed as a mod but does not belong to a package");
-
                     string versionFileLocation = Path.Combine(_latestVersionDirectory, fileLocation);
-
                     if (File.Exists(versionFileLocation))
+                    {
                         File.Delete(versionFileLocation);
+                        App.Logger.WriteLine(LOG_IDENT, $"{fileLocation} deleted from version folder");
+                    }
 
                     continue;
                 }
 
-                string fileName = fileLocation.Substring(packageMapEntry.Value.Length);
+                string packageName = packageMapEntry.Key;
+                string packagePath = packageMapEntry.Value;
+
+                string fileName = fileLocation.Substring(packagePath.Length);
 
                 if (!fileRestoreMap.ContainsKey(packageName))
                     fileRestoreMap[packageName] = new();
@@ -1739,16 +1741,19 @@ namespace Bloxstrap
 
             foreach (var entry in fileRestoreMap)
             {
-                var package = _versionPackageManifest.Find(x => x.Name == entry.Key);
+                if (_cancelTokenSource.IsCancellationRequested)
+                    break;
 
-                if (package is not null)
+                var package = _versionPackageManifest.FirstOrDefault(x => x.Name == entry.Key);
+
+                if (package is null)
                 {
-                    if (_cancelTokenSource.IsCancellationRequested)
-                        return true;
-
-                    await DownloadPackage(package);
-                    ExtractPackage(package, entry.Value);
+                    App.Logger.WriteLine(LOG_IDENT, $"Package {entry.Key} not found in manifest, skipping restoration");
+                    continue;
                 }
+
+                await DownloadPackage(package);
+                ExtractPackage(package, entry.Value);
             }
 
             // make sure we're not overwriting a new update
