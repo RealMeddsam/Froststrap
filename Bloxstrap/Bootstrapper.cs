@@ -406,10 +406,9 @@ namespace Bloxstrap
             const string LOG_IDENT = "Bootstrapper::GetLatestVersionInfo";
 
             // before we do anything, we need to query our channel
-            // if it's set in the launch uri, we need to use it and set the registry key for it
-            // else, check if the registry key for it exists, and use it
-
-            using var key = Registry.CurrentUser.CreateSubKey($"SOFTWARE\\ROBLOX Corporation\\Environments\\{AppData.RegistryName}\\Channel");
+            using var key = Registry.CurrentUser.CreateSubKey(
+                $"SOFTWARE\\ROBLOX Corporation\\Environments\\{AppData.RegistryName}\\Channel"
+            );
 
             var match = Regex.Match(
                 App.LaunchSettings.RobloxLaunchArgs,
@@ -420,7 +419,6 @@ namespace Bloxstrap
             bool ChannelFlag = App.LaunchSettings.ChannelFlag.Active && !string.IsNullOrEmpty(App.LaunchSettings.ChannelFlag.Data);
 
             // CHANNEL CHANGE MODE
-
             void EnrollChannel(string Channel = "production")
             {
                 Deployment.Channel = Channel;
@@ -443,30 +441,24 @@ namespace Bloxstrap
                 {
                     case ChannelChangeMode.Automatic:
                         App.Logger.WriteLine(LOG_IDENT, "Enrolling into channel");
-
                         EnrollChannel(EnrolledChannel);
                         break;
                     case ChannelChangeMode.Prompt:
                         App.Logger.WriteLine(LOG_IDENT, "Prompting channel enrollment");
 
-                        if
-                        (
-                        !match.Success ||
-                        match.Groups.Count != 2 ||
-                        match.Groups[1].Value.ToLowerInvariant() == Deployment.Channel
-                        )
+                        if (!match.Success || match.Groups.Count != 2 || match.Groups[1].Value.ToLowerInvariant() == Deployment.Channel)
                         {
                             App.Logger.WriteLine(LOG_IDENT, "Channel is either equal or incorrectly formatted");
                             break;
                         }
 
-                        string DisplayChannel = !String.IsNullOrEmpty(match.Groups[1].Value) ? match.Groups[1].Value : Deployment.DefaultChannel;
+                        string DisplayChannel = !string.IsNullOrEmpty(match.Groups[1].Value) ? match.Groups[1].Value : Deployment.DefaultChannel;
 
                         var Result = Frontend.ShowMessageBox(
-                        String.Format(Strings.Bootstrapper_Bootstrapper_Dialog_PromptChannelChange,
-                        DisplayChannel, App.Settings.Prop.Channel),
-                        MessageBoxImage.Question,
-                        MessageBoxButton.YesNo
+                            String.Format(Strings.Bootstrapper_Bootstrapper_Dialog_PromptChannelChange,
+                            DisplayChannel, App.Settings.Prop.Channel),
+                            MessageBoxImage.Question,
+                            MessageBoxButton.YesNo
                         );
 
                         if (Result == MessageBoxResult.Yes)
@@ -480,8 +472,7 @@ namespace Bloxstrap
             else
             {
                 string ChannelFlagData = App.LaunchSettings.ChannelFlag.Data!;
-
-                if (!String.IsNullOrEmpty(ChannelFlagData))
+                if (!string.IsNullOrEmpty(ChannelFlagData))
                 {
                     App.Logger.WriteLine(LOG_IDENT, $"Forcing channel {ChannelFlagData}");
                     EnrollChannel(ChannelFlagData);
@@ -496,30 +487,27 @@ namespace Bloxstrap
                 {
                     clientVersion = await Deployment.GetInfo(Deployment.Channel);
                 }
+                catch (InvalidChannelException ex) when (ex.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"403 Forbidden fetching channel {Deployment.Channel}, falling back to production");
+                    Deployment.Channel = "production";
+                    clientVersion = await Deployment.GetInfo(Deployment.Channel);
+                }
                 catch (InvalidChannelException ex)
                 {
-                    // copied from v2.5.4
-                    // we are keeping similar logic just updated for newer apis
-
-                    // If channel does not exist
                     if (ex.StatusCode == HttpStatusCode.NotFound)
                     {
                         App.Logger.WriteLine(LOG_IDENT, $"Reverting enrolled channel to {Deployment.DefaultChannel} because a WindowsPlayer build does not exist for {App.Settings.Prop.Channel}");
                     }
-                    // If channel is not available to the user (private/internal release channel)
                     else if (ex.StatusCode == HttpStatusCode.Unauthorized)
                     {
                         App.Logger.WriteLine(LOG_IDENT, $"Reverting enrolled channel to {Deployment.DefaultChannel} because {App.Settings.Prop.Channel} is restricted for public use.");
-
-                        // Only prompt if user has channel switching mode set to something other than Automatic.
                         if (App.Settings.Prop.ChannelChangeMode != ChannelChangeMode.Automatic)
                         {
                             Frontend.ShowMessageBox(
-                                String.Format(
-                                    Strings.Boostrapper_Dialog_UnauthorizedChannel,
-                                    Deployment.Channel,
-                                    Deployment.DefaultChannel
-                                ),
+                                String.Format(Strings.Boostrapper_Dialog_UnauthorizedChannel,
+                                Deployment.Channel,
+                                Deployment.DefaultChannel),
                                 MessageBoxImage.Information
                             );
                         }
@@ -550,14 +538,17 @@ namespace Bloxstrap
                     if (action == MessageBoxResult.Yes)
                     {
                         App.Logger.WriteLine("Bootstrapper::CheckLatestVersion", $"Changed Roblox channel from {App.Settings.Prop.Channel} to {Deployment.DefaultChannel}");
-
                         RevertChannel();
                         clientVersion = await Deployment.GetInfo(Deployment.Channel);
                     }
 
                     RevertChannel();
-                    clientVersion = await Deployment.GetInfo(); // what is this for
+                    clientVersion = await Deployment.GetInfo(); // optional, keep as before
                 }
+
+                // Always write "production" if channel was live
+                if (Deployment.Channel == "live")
+                    Deployment.Channel = "production";
 
                 key.SetValueSafe("www.roblox.com", Deployment.IsDefaultChannel ? "" : Deployment.Channel);
 
@@ -568,7 +559,6 @@ namespace Bloxstrap
             {
                 App.Logger.WriteLine(LOG_IDENT, $"Version set to {App.LaunchSettings.VersionFlag.Data} from arguments");
                 _latestVersionGuid = App.LaunchSettings.VersionFlag.Data;
-                // we can't determine the version
             }
 
             _latestVersionDirectory = Path.Combine(Paths.Versions, _latestVersionGuid);
@@ -578,7 +568,6 @@ namespace Bloxstrap
 
             _versionPackageManifest = new(pkgManifestData);
 
-            // this can happen if version is set through arguments
             if (_launchMode == LaunchMode.Unknown)
             {
                 App.Logger.WriteLine(LOG_IDENT, "Identifying launch mode from package manifest");
@@ -587,7 +576,7 @@ namespace Bloxstrap
                 App.Logger.WriteLine(LOG_IDENT, $"isPlayer: {isPlayer}");
 
                 _launchMode = isPlayer ? LaunchMode.Player : LaunchMode.Studio;
-                SetupAppData(); // we need to set it up again
+                SetupAppData();
             }
         }
 
@@ -1328,6 +1317,24 @@ namespace Bloxstrap
         {
             const string LOG_IDENT = "Bootstrapper::UpgradeRoblox";
 
+            bool CancelUpgrade = !App.Settings.Prop.UpdateRoblox;
+
+            if (CancelUpgrade)
+            {
+                SetStatus(Strings.Bootstrapper_Status_CancelUpgrade);
+                App.Logger.WriteLine(LOG_IDENT, "Upgrading disabled, cancelling the upgrade.");
+                Thread.Sleep(2000);
+            }
+
+            if (CancelUpgrade && !Directory.Exists(_latestVersionDirectory))
+            {
+                Frontend.ShowMessageBox(Strings.Bootstrapper_Dialog_NoUpgradeWithoutClient, MessageBoxImage.Warning, MessageBoxButton.OK);
+            }
+            else if (CancelUpgrade)
+            {
+                return;
+            }
+
             if (App.RemoteData.LoadedState == GenericTriState.Unknown) // we dont want it to flicker
                 SetStatus(Strings.Bootstrapper_Status_WaitingForData);
 
@@ -1398,8 +1405,6 @@ namespace Bloxstrap
 
                 _taskbarProgressIncrement = _taskbarProgressMaximum / (double)totalPackedSize;
             }
-
-            SetStatus(Strings.Bootstrapper_Status_Upgrading);
 
             var extractionTasks = new List<Task>();
 
