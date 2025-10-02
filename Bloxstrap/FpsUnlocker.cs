@@ -5,25 +5,23 @@ namespace Bloxstrap
 {
     public static class FpsUnlocker
     {
-        private static readonly string SettingsPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Roblox",
-            "GlobalBasicSettings_13.xml"
-        );
+        private static readonly string SettingsPath = Path.Combine(Paths.RobloxGlobal, "GlobalBasicSettings_13.xml");
 
-        public static bool IsUncapped()
+        public static int GetFpsCap()
         {
             try
             {
-                if (!File.Exists(SettingsPath)) return false;
+                if (!File.Exists(SettingsPath)) return -1;
                 var doc = XDocument.Load(SettingsPath);
                 var fpsElement = FindFPSElement(doc);
-                return fpsElement != null && int.TryParse(fpsElement.Value, out int fps) && fps > 240;
+                if (fpsElement != null && int.TryParse(fpsElement.Value, out int fps))
+                    return fps;
             }
-            catch { return false; }
+            catch { }
+            return -1;
         }
 
-        public static void SetUncapped(bool uncap)
+        public static void SetFpsCap(int fpsCap)
         {
             try
             {
@@ -31,7 +29,7 @@ namespace Bloxstrap
                 {
                     var newDoc = new XDocument(
                         new XElement("robloxSettings",
-                            new XElement("int", new XAttribute("name", "FramerateCap"), uncap ? "9999" : "-1")
+                            new XElement("int", new XAttribute("name", "FramerateCap"), fpsCap.ToString())
                         )
                     );
                     Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
@@ -43,9 +41,9 @@ namespace Bloxstrap
                 var fpsElement = FindFPSElement(doc);
 
                 if (fpsElement != null)
-                    fpsElement.Value = uncap ? "9999" : "-1";
+                    fpsElement.Value = fpsCap.ToString();
                 else
-                    doc.Root?.Add(new XElement("int", new XAttribute("name", "FramerateCap"), uncap ? "9999" : "-1"));
+                    doc.Root?.Add(new XElement("int", new XAttribute("name", "FramerateCap"), fpsCap.ToString()));
 
                 doc.Save(SettingsPath);
             }

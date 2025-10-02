@@ -28,10 +28,10 @@ namespace Bloxstrap.UI.ViewModels.Settings
             }
         }
 
-        public bool UncapFPS
+        public int FPSCap
         {
-            get => FpsUnlocker.IsUncapped();
-            set => FpsUnlocker.SetUncapped(value);
+            get => FpsUnlocker.GetFpsCap();
+            set => FpsUnlocker.SetFpsCap(value);
         }
 
         public bool MultiInstances

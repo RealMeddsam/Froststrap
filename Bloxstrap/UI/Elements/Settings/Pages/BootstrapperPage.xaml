@@ -51,8 +51,8 @@
 
         <controls:OptionControl 
             Header="FPS Unlocker"
-            Description="Removes the 240 FPS Limit without using FastFlags.">
-            <ui:ToggleSwitch IsChecked="{Binding UncapFPS, Mode=TwoWay}" />
+            Description="Set a custom FPS cap, -1 means default.">
+            <ui:TextBox Margin="5,0,0,0" Padding="10,7,10,7" Width="200" Text="{Binding FPSCap, Mode=TwoWay}" />
         </controls:OptionControl>
 
         <controls:OptionControl 
