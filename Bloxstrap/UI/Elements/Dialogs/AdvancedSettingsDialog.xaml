@@ -59,9 +59,9 @@
                 </controls:OptionControl>
 
                 <controls:OptionControl
-                        Header="Vulkan Fix" 
-                        Description="Automatically removes alt manually fflag when vulkan is enabled, Enabling this can help people avoid crashes when using vulkan">
-                    <ui:ToggleSwitch IsChecked="{Binding AutomaticallyRemovedAltManually, Mode=TwoWay}" />
+                        Header="Use Alt Manually" 
+                        Description="Auto add the Alt Manually flag when starting Froststrap.">
+                    <ui:ToggleSwitch IsChecked="{Binding UseAltManually, Mode=TwoWay}" />
                 </controls:OptionControl>
 
                 <controls:OptionControl

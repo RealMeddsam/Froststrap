@@ -28,10 +28,11 @@
             Header="{x:Static resources:Strings.Menu_FastFlags_Reset_Title}">
             <ui:ToggleSwitch IsChecked="{Binding ResetConfiguration, Mode=TwoWay}" />
         </controls:OptionControl>
+        <ui:InfoBar Margin="0,8,0,0" Padding="8" IsOpen="True" Title="Important" Message="Following the removal of most Roblox FastFlags, these are the only currently available FastFlags you can use." Severity="Informational" IsClosable="False" Background="{DynamicResource PrimaryBackgroundColor}" />
 
-        <TextBlock Text="Presets" FontSize="20" FontWeight="Bold" Margin="0,10,0,0" />
-        <Separator Margin="0,4,0,10"/>
+        <Separator Margin="0,8,0,4"/>
 
+        <TextBlock Text="Presets" FontSize="20" FontWeight="Bold"/>
 
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_FastFlags_Presets_MSAA_Title}" 
@@ -47,19 +48,19 @@
 
         <controls:OptionControl 
             Header="Pause Voxelizer"
-            Description="Disables some shadows but not all.">
+            Description="Disables baked shadows to boost performance, but may cause lighting issues like bright or dark maps in some games.">
             <ui:ToggleSwitch IsChecked="{Binding PauseVoxelizer, Mode=TwoWay}" />
         </controls:OptionControl>
 
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_FastFlags_Presets_GraySky_Title}"
-            Description="Changes the sky color to gray.">
+            Description="Replaces the game's sky with a solid gray color. This flag might not work in all games.">
             <ui:ToggleSwitch IsChecked="{Binding GraySky, Mode=TwoWay}" />
         </controls:OptionControl>
 
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_FastFlags_Presets_RemoveGrass_Title}"
-            Description="Removes grass rendering to improve performance">
+            Description="{x:Static resources:Strings.Menu_FastFlags_Presets_RemoveGrass_Description}">
             <ui:ToggleSwitch IsChecked="{Binding RemoveGrass, Mode=TwoWay}" />
         </controls:OptionControl>
 

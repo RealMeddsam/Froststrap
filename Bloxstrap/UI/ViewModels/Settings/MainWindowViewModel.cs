@@ -65,8 +65,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
             }
         }
 
-
-
         public bool IsSidebarExpanded
         {
             get => App.Settings.Prop.IsNavigationSidebarExpanded;

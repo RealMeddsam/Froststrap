@@ -24,8 +24,6 @@ using Bloxstrap.RobloxInterfaces;
 using Bloxstrap.UI.Elements.Bootstrapper.Base;
 
 using ICSharpCode.SharpZipLib.Zip;
-using System.Threading.Channels;
-using System.Windows.Controls;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -803,16 +801,6 @@ namespace Bloxstrap
 
             SetStatus(Strings.Bootstrapper_Status_Starting);
 
-            if (_launchMode == LaunchMode.Player && App.Settings.Prop.ForceRobloxLanguage)
-            {
-                var match = Regex.Match(_launchCommandLine, "gameLocale:([a-z_]+)", RegexOptions.CultureInvariant);
-                if (match.Groups.Count == 2)
-                    _launchCommandLine = _launchCommandLine.Replace(
-                        "robloxLocale:en_us",
-                        $"robloxLocale:{match.Groups[1].Value}",
-                        StringComparison.OrdinalIgnoreCase);
-            }
-
             string[] Names = { App.RobloxPlayerAppName, App.RobloxAnselAppName, App.RobloxStudioAppName };
             string ResolvedName = null!;
 
@@ -878,50 +866,60 @@ namespace Bloxstrap
             {
                 using var process = Process.Start(startInfo)!;
 
-                try
+                if (_launchMode == LaunchMode.Player)
                 {
-                    var selectedPriority = App.Settings.Prop.SelectedProcessPriority;
-
-                    if (selectedPriority != ProcessPriorityOption.Normal)
+                    try
                     {
-                        ProcessPriorityClass priorityClass = selectedPriority switch
-                        {
-                            ProcessPriorityOption.Low => ProcessPriorityClass.Idle,
-                            ProcessPriorityOption.BelowNormal => ProcessPriorityClass.BelowNormal,
-                            ProcessPriorityOption.Normal => ProcessPriorityClass.Normal,
-                            ProcessPriorityOption.AboveNormal => ProcessPriorityClass.AboveNormal,
-                            ProcessPriorityOption.High => ProcessPriorityClass.High,
-                            ProcessPriorityOption.RealTime => ProcessPriorityClass.RealTime,
-                            _ => ProcessPriorityClass.Normal
-                        };
+                        var selectedPriority = App.Settings.Prop.SelectedProcessPriority;
 
-                        var robloxProcesses = Process.GetProcessesByName("RobloxPlayerBeta");
-
-                        if (robloxProcesses.Length == 0)
+                        if (selectedPriority != ProcessPriorityOption.Normal)
                         {
-                            System.Windows.MessageBox.Show("Roblox process not found. Priority not applied.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                        else
-                        {
-                            foreach (var proc in robloxProcesses)
+                            ProcessPriorityClass priorityClass = selectedPriority switch
                             {
-                                try
+                                ProcessPriorityOption.Low => ProcessPriorityClass.Idle,
+                                ProcessPriorityOption.BelowNormal => ProcessPriorityClass.BelowNormal,
+                                ProcessPriorityOption.Normal => ProcessPriorityClass.Normal,
+                                ProcessPriorityOption.AboveNormal => ProcessPriorityClass.AboveNormal,
+                                ProcessPriorityOption.High => ProcessPriorityClass.High,
+                                ProcessPriorityOption.RealTime => ProcessPriorityClass.RealTime,
+                                _ => ProcessPriorityClass.Normal
+                            };
+
+                            var robloxProcesses = Process.GetProcessesByName("RobloxPlayerBeta");
+
+                            if (robloxProcesses.Length == 0)
+                            {
+                                Frontend.ShowMessageBox(
+                                    "Roblox process not found. Priority not applied.",
+                                    MessageBoxImage.Warning,
+                                    MessageBoxButton.OK
+                                );
+                            }
+                            else
+                            {
+                                foreach (var proc in robloxProcesses)
                                 {
-                                    proc.PriorityClass = priorityClass;
-                                }
-                                catch (Exception ex)
-                                {
-                                    App.Logger.WriteLine(LOG_IDENT, $"Failed to set priority for process {proc.Id}: {ex}");
+                                    try
+                                    {
+                                        proc.PriorityClass = priorityClass;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        App.Logger.WriteLine(LOG_IDENT, $"Failed to set priority for process {proc.Id}: {ex}");
+                                    }
                                 }
                             }
-
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    App.Logger.WriteLine(LOG_IDENT, $"Failed to set process priority: {ex}");
-                    System.Windows.MessageBox.Show($"Failed to set CPU Priority:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Failed to set process priority: {ex}");
+                        Frontend.ShowMessageBox(
+                            $"Failed to set CPU Priority:\n{ex.Message}",
+                            MessageBoxImage.Error,
+                            MessageBoxButton.OK
+                        );
+                    }
                 }
 
                 // Continue with the rest of your code like _appPid assignment, icon setting, etc.
@@ -1624,7 +1622,7 @@ namespace Bloxstrap
 
                     App.Logger.WriteLine(LOG_IDENT, $"Setting font for {jsonFilename}");
 
-                    var fontFamilyData = JsonSerializer.Deserialize<Models.FontFamily>(File.ReadAllText(jsonFilePath));
+                    var fontFamilyData = JsonSerializer.Deserialize<Bloxstrap.Models.FontFamily>(File.ReadAllText(jsonFilePath));
 
                     if (fontFamilyData is null)
                         continue;
@@ -1711,25 +1709,27 @@ namespace Bloxstrap
                 if (modFolderFiles.Contains(fileLocation))
                     continue;
 
-                var packageMapEntry = PackageDirectoryMap
-                    .SingleOrDefault(x => !string.IsNullOrEmpty(x.Value) && fileLocation.StartsWith(x.Value));
-
-                if (string.IsNullOrEmpty(packageMapEntry.Key) || string.IsNullOrEmpty(packageMapEntry.Value))
+                if (PackageDirectoryMap == null || PackageDirectoryMap.Count == 0)
                 {
-                    string versionFileLocation = Path.Combine(_latestVersionDirectory, fileLocation);
-                    if (File.Exists(versionFileLocation))
-                    {
-                        File.Delete(versionFileLocation);
-                        App.Logger.WriteLine(LOG_IDENT, $"{fileLocation} deleted from version folder");
-                    }
-
+                    App.Logger.WriteLine(LOG_IDENT, "PackageDirectoryMap is null or empty, skipping package restoration check");
                     continue;
                 }
 
-                string packageName = packageMapEntry.Key;
-                string packagePath = packageMapEntry.Value;
+                var packageMapEntry = PackageDirectoryMap
+                    .SingleOrDefault(x => !String.IsNullOrEmpty(x.Value) && fileLocation.StartsWith(x.Value));
 
-                string fileName = fileLocation.Substring(packagePath.Length);
+                string packageName = packageMapEntry.Key;
+
+                if (String.IsNullOrEmpty(packageName))
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"{fileLocation} was removed as a mod but does not belong to a package");
+                    string versionFileLocation = Path.Combine(_latestVersionDirectory, fileLocation);
+                    if (File.Exists(versionFileLocation))
+                        File.Delete(versionFileLocation);
+                    continue;
+                }
+
+                string fileName = fileLocation.Substring(packageMapEntry.Value.Length);
 
                 if (!fileRestoreMap.ContainsKey(packageName))
                     fileRestoreMap[packageName] = new();
@@ -1741,19 +1741,16 @@ namespace Bloxstrap
 
             foreach (var entry in fileRestoreMap)
             {
-                if (_cancelTokenSource.IsCancellationRequested)
-                    break;
+                var package = _versionPackageManifest.Find(x => x.Name == entry.Key);
 
-                var package = _versionPackageManifest.FirstOrDefault(x => x.Name == entry.Key);
-
-                if (package is null)
+                if (package is not null)
                 {
-                    App.Logger.WriteLine(LOG_IDENT, $"Package {entry.Key} not found in manifest, skipping restoration");
-                    continue;
-                }
+                    if (_cancelTokenSource.IsCancellationRequested)
+                        return true;
 
-                await DownloadPackage(package);
-                ExtractPackage(package, entry.Value);
+                    await DownloadPackage(package);
+                    ExtractPackage(package, entry.Value);
+                }
             }
 
             // make sure we're not overwriting a new update
@@ -1769,6 +1766,7 @@ namespace Bloxstrap
             }
 
             App.Logger.WriteLine(LOG_IDENT, $"Finished checking file mods");
+
             if (!success)
                 App.Logger.WriteLine(LOG_IDENT, "Failed to apply all modifications");
 

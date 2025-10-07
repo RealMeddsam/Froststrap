@@ -844,7 +844,7 @@ Bạn có muốn nâng cấp phiên bản đã cài đặt không?</value>
     <value>Tự động cập nhật Froststrap</value>
   </data>
   <data name="Menu.Behaviour.HardwareAcceleration.Description">
-    <value>Vô hiệu tăng tốc phần cứng trên Frostrap. Lưu ý: Bạn phải khởi động lại ứng dụng để thấy bất kỳ thay đổi nào.</value>
+    <value>Vô hiệu tăng tốc phần cứng trên Froststrap. Lưu ý: Bạn phải khởi động lại ứng dụng để thấy bất kỳ thay đổi nào.</value>
   </data>
   <data name="Menu.Behaviour.HardwareAcceleration.Title">
     <value>Vô hiệu tăng tốc phần cứng</value>

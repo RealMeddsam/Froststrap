@@ -8,6 +8,7 @@ namespace Bloxstrap.Models.Persistable
         // Integration Page
         public bool EnableActivityTracking { get; set; } = true;
         public bool ShowServerDetails { get; set; } = true;
+        public bool ShowServerUptime { get; set; } = false;
         public bool ShowGameHistoryMenu { get; set; } = true;
         public bool PlaytimeCounter { get; set; } = true;
         public TrayDoubleClickAction DoubleClickAction { get; set; } = TrayDoubleClickAction.ServerInfo;
@@ -25,7 +26,6 @@ namespace Bloxstrap.Models.Persistable
         public bool ConfirmLaunches { get; set; } = true;
         public bool AutoCloseCrashHandler { get; set; } = false;
         public string Locale { get; set; } = "nil";
-        public bool ForceRobloxLanguage { get; set; } = false;
         public CleanerOptions CleanerOptions { get; set; } = CleanerOptions.Never;
         public List<string> CleanerDirectories { get; set; } = new List<string>();
         public bool BackgroundUpdatesEnabled { get; set; } = false;
@@ -46,7 +46,7 @@ namespace Bloxstrap.Models.Persistable
         public bool ShowPresetColumn { get; set; } = false;
         public bool ShowFlagCount { get; set; } = true;
         public bool ShowAddWithID { get; set; } = false;
-        public bool AutomaticallyRemovedAltManually { get; set; } = false;
+        public bool UseAltManually { get; set; } = true;
 
         // Appearance Page
         public BootstrapperStyle BootstrapperStyle { get; set; } = BootstrapperStyle.CustomFluentDialog;

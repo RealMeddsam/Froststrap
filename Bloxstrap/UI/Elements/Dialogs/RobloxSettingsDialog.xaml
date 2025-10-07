@@ -1,22 +1,21 @@
-﻿<base:WpfUiWindow
-    x:Class="Bloxstrap.UI.Elements.Dialogs.ChannelListsDialog"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:base="clr-namespace:Bloxstrap.UI.Elements.Base"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:Bloxstrap.UI.Elements.Dialogs"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:resources="clr-namespace:Bloxstrap.Resources"
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="Available Channels"
-    Width="700"
-    MinHeight="350"
-    Height="550"
-    Background="{ui:ThemeResource ApplicationBackgroundBrush}"
-    ExtendsContentIntoTitleBar="True"
-    ResizeMode="CanResize"
-    WindowStartupLocation="CenterScreen"
-    mc:Ignorable="d">
+﻿<base:WpfUiWindow x:Class="Bloxstrap.UI.Elements.Dialogs.RobloxSettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:local="clr-namespace:Bloxstrap.UI.Elements.Dialogs"
+        xmlns:base="clr-namespace:Bloxstrap.UI.Elements.Base"
+        xmlns:resources="clr-namespace:Bloxstrap.Resources"
+        xmlns:converters="clr-namespace:Bloxstrap.UI.Converters"
+        mc:Ignorable="d"
+        Title="Roblox Settings" 
+        Height="600"
+        Width="800"
+        ResizeMode="CanResize"
+        Background="{ui:ThemeResource ApplicationBackgroundBrush}"
+        ExtendsContentIntoTitleBar="True"
+        WindowStartupLocation="CenterScreen">
 
     <Grid>
         <Grid.Background>
@@ -30,8 +29,13 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <Grid x:Name="ImageBackgroundLayer" Panel.ZIndex="-1" Visibility="{Binding IsImageMode, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.RowSpan="3">
+            <Border Background="{DynamicResource WindowBackgroundImage}" />
+            <Border Background="{DynamicResource WindowBackgroundBlackOverlay}" />
+        </Grid>
+
         <ui:TitleBar
-            Title="Available Channels"
+            Title="Roblox Settings"
             Grid.Row="0" 
             Grid.ColumnSpan="2" 
             Padding="8" 
@@ -42,7 +46,7 @@
 
         <TextBlock
             Grid.Row="1"
-            Text="Check the large majority of the current available channels to use"
+            Text="Check and Change the large majority of hidden Roblox settings"
             FontSize="12"
             FontWeight="Medium"
             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
@@ -50,25 +54,19 @@
             TextWrapping="Wrap" />
 
         <Grid Grid.Row="2" Margin="8">
-            <Grid Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Border Background="{DynamicResource ControlFillColorDefaultBrush}" Opacity="0.7" />
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <ProgressBar Width="200" Height="8" IsIndeterminate="True"/>
-                    <TextBlock Text="Loading channels..." FontSize="13" Margin="0,12,0,0" HorizontalAlignment="Center"/>
-                </StackPanel>
-            </Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <ui:TextBox x:Name="SearchTextBox" Grid.Row="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" BorderThickness="0" FocusVisualStyle="{x:Null}" FontSize="14" Icon="Search48" PlaceholderText="{x:Static resources:Strings.Menu_FastFlagEditor_Search}" TextChanged="SearchBox_TextChanged" Margin="0,0,0,8" />
 
             <DataGrid
-                ItemsSource="{Binding Channels}"
-                Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                Grid.Row="1"
+                ItemsSource="{Binding FilteredSettings}"
                 AutoGenerateColumns="False"
-                IsReadOnly="True"
-                HeadersVisibility="Column"
-                CanUserResizeRows="False"
-                CanUserResizeColumns="True"
-                PreviewKeyDown="ChannelDataGrid_PreviewKeyDown"
-                SelectionMode="Single"
-                GridLinesVisibility="Horizontal">
+                CanUserAddRows="True"
+                CanUserDeleteRows="True">
 
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
@@ -121,17 +119,17 @@
                 </DataGrid.CellStyle>
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Channel Name" Binding="{Binding ChannelName}" Width="150" />
-                    <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="*" />
-                    <DataGridTextColumn Header="Version GUID" Binding="{Binding VersionGuid}" Width="*" />
+                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" IsReadOnly="True" Width="Auto"/>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" Width="Auto"/>
+                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
 
         <Border Grid.Row="3" Margin="0,10,0,0" Padding="15" Background="{DynamicResource PrimaryBackgroundColor}">
             <StackPanel HorizontalAlignment="Right" FlowDirection="LeftToRight" Orientation="Horizontal">
-                <Button MinWidth="100" Content="Refresh" Width="110" Command="{Binding RefreshCommand}" FontWeight="Medium" />
-                <Button MinWidth="100" Margin="12,0,0,0" FontWeight="Medium" Click="Close_Click" Content="Close" IsCancel="True" />
+                <Button MinWidth="100" Content="{x:Static resources:Strings.Menu_Save}" Click="SaveButton_Click" FontWeight="Medium" />
+                <Button MinWidth="100" Margin="12,0,0,0" Content="{x:Static resources:Strings.Common_Close}" IsCancel="True" FontWeight="Medium" />
             </StackPanel>
         </Border>
     </Grid>

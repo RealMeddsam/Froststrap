@@ -28,12 +28,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
             }
         }
 
-        public int FPSCap
-        {
-            get => FpsUnlocker.GetFpsCap();
-            set => FpsUnlocker.SetFpsCap(value);
-        }
-
         public bool MultiInstances
         {
             get => App.Settings.Prop.MultiInstanceLaunching;
@@ -56,12 +50,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
         {
             get => App.Settings.Prop.ConfirmLaunches;
             set => App.Settings.Prop.ConfirmLaunches = value;
-        }
-
-        public bool ForceRobloxLanguage
-        {
-            get => App.Settings.Prop.ForceRobloxLanguage;
-            set => App.Settings.Prop.ForceRobloxLanguage = value;
         }
 
         public IEnumerable<RobloxIcon> RobloxIcon { get; } = Enum.GetValues(typeof(RobloxIcon)).Cast<RobloxIcon>();

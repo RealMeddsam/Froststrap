@@ -853,7 +853,7 @@
 		<value>Автоматически обновлять Froststrap</value>
 	</data>
 	<data name="Menu.Behaviour.HardwareAcceleration.Description">
-		<value>Отключает аппаратное ускорение только на Frostrap. Примечание: Вы должны перезапустить приложение, чтобы увидеть любые эффекты.</value>
+		<value>Отключает аппаратное ускорение только на Froststrap. Примечание: Вы должны перезапустить приложение, чтобы увидеть любые эффекты.</value>
 	</data>
 	<data name="Menu.Behaviour.HardwareAcceleration.Title">
 		<value>Отключить аппаратное ускорение</value>
@@ -2197,7 +2197,7 @@
 		<value>[Радужный интерфейс/текстуры](https://github.com/Meddsam/Froststrap/wiki/Common-FFlag-Issues#rainbow-colored-uigraphics)</value>
 	</data>
 	<data name="Menu.Behaviour.DisableHardwareAcceleration.Description">
-		<value>Отключает аппаратное ускорение только на Frostrap. Примечание: Вы должны перезапустить приложение, чтобы увидеть любые эффекты.</value>
+		<value>Отключает аппаратное ускорение только на Froststrap. Примечание: Вы должны перезапустить приложение, чтобы увидеть любые эффекты.</value>
 	</data>
 	<data name="Menu.Behaviour.DisableHardwareAcceleration.Title">
 		<value>Отключить аппаратное ускорение</value>

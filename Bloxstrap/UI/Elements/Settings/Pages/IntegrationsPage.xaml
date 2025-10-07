@@ -9,7 +9,7 @@
       xmlns:controls="clr-namespace:Bloxstrap.UI.Elements.Controls"
       xmlns:resources="clr-namespace:Bloxstrap.Resources"
       mc:Ignorable="d"
-      d:DesignHeight="1080" d:DesignWidth="800"
+      d:DesignHeight="1500" d:DesignWidth="800"
       Title="IntegrationsPage"
       Scrollable="True">
     <StackPanel Margin="0,0,14,14">
@@ -31,6 +31,13 @@
             HelpLink="https://github.com/bloxstraplabs/bloxstrap/wiki/What-is-activity-tracking%3F#server-location-querying"
             IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
             <ui:ToggleSwitch IsChecked="{Binding ShowServerDetailsEnabled, Mode=TwoWay}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl 
+            Header="{x:Static resources:Strings.Menu_Integrations_QueryServerUptime_Title}" 
+            Description="{Binding Source={x:Static resources:Strings.Menu_Integrations_QueryServerUptime_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://www.rovalra.com'}"
+            IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
+        <ui:ToggleSwitch IsChecked="{Binding ShowServerUptimeEnabled, Mode=TwoWay}" />
         </controls:OptionControl>
 
         <controls:OptionControl 
@@ -101,7 +108,9 @@
             </StackPanel>
         </ui:CardExpander>
 
-        <TextBlock Text="{x:Static resources:Strings.Common_DiscordRichPresence}" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
+        <Separator Margin="0,8,0,8"/>
+
+        <TextBlock Text="{x:Static resources:Strings.Common_DiscordRichPresence}" FontSize="20" FontWeight="Bold" />
         <controls:MarkdownTextBlock MarkdownText="{Binding Source={x:Static resources:Strings.Menu_Integrations_RequiresActivityTracking}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://github.com/bloxstraplabs/bloxstrap/wiki/What-is-activity-tracking%3F#discord-rich-presence'}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
 
         <controls:OptionControl 
@@ -139,7 +148,9 @@
             <ui:ToggleSwitch IsChecked="{Binding DiscordAccountOnProfile, Mode=TwoWay}" />
         </controls:OptionControl>
 
-        <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_Custom_Title}" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
+        <Separator Margin="0,8,0,8"/>
+
+        <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_Custom_Title}" FontSize="20" FontWeight="Bold" />
         <TextBlock Text="{x:Static resources:Strings.Menu_Integrations_Custom_Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
         <Grid Margin="0,8,0,0" MinHeight="325">
             <Grid.RowDefinitions>

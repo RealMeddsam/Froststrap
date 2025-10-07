@@ -1,11 +1,5 @@
-﻿using System.Reflection;
-using System.Windows;
+﻿using System.Windows;
 using Bloxstrap.UI.ViewModels.Dialogs;
-using System.Windows.Input;
-using Bloxstrap.Resources;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
-using Wpf.Ui.Mvvm.Interfaces;
 
 namespace Bloxstrap.UI.Elements.Dialogs
 {

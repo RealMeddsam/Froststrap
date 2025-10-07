@@ -117,6 +117,7 @@
                     <controls:MarkdownTextBlock MarkdownText="[Obsurd](https://discord.com/users/818680236963135498)" />
                     <controls:MarkdownTextBlock MarkdownText="[Ghiram](https://discord.com/users/1208558834273095712)" />
                     <controls:MarkdownTextBlock MarkdownText="[Alex](https://discord.com/users/1275186734367506523)" />
+                    <controls:MarkdownTextBlock MarkdownText="[Valra](https://github.com/NotValra)" />
                 </StackPanel>
             </controls:Expander>
 

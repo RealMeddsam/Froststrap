@@ -415,6 +415,7 @@ namespace Bloxstrap
                 State.Load();
                 RobloxState.Load();
                 FastFlags.Load();
+                Task.Run(App.RemoteData.LoadData); // ok
 
                 if (!Locale.SupportedLocales.ContainsKey(Settings.Prop.Locale))
                 {
@@ -429,8 +430,6 @@ namespace Bloxstrap
 
                 if (!LaunchSettings.BypassUpdateCheck)
                     Installer.HandleUpgrade();
-
-                Task.Run(App.RemoteData.LoadData); // ok
 
                 WindowsRegistry.RegisterApis();
 

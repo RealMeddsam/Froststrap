@@ -7,11 +7,12 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>Bloxstrap.ico</ApplicationIcon>
-    <Version>1.2.3.3</Version>
-    <FileVersion>1.2.3.3</FileVersion>
+    <Version>1.2.4.0</Version>
+    <FileVersion>1.2.4.0</FileVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+	<AssemblyName>Froststrap</AssemblyName>
     <Product>$(AssemblyName)</Product>
     <RootNamespace>Bloxstrap</RootNamespace>
   </PropertyGroup>
@@ -69,22 +70,14 @@
     <EmbeddedResource Include="Resources\Mods\Cursor\PurpleCross\ArrowCursor.png" />
     <EmbeddedResource Include="Resources\Mods\Cursor\PurpleCross\ArrowFarCursor.png" />
     <EmbeddedResource Include="Resources\Mods\Cursor\PurpleCross\IBeamCursor.png" />
-    <EmbeddedResource Include="Resources\Mods\Sounds\OldDeath.ogg" />
     <EmbeddedResource Include="Resources\Mods\Sounds\OldGetUp.mp3" />
     <EmbeddedResource Include="Resources\Mods\Sounds\OldJump.mp3" />
     <EmbeddedResource Include="Resources\Mods\Sounds\OldWalk.mp3" />
     <EmbeddedResource Include="Resources\Mods\Sounds\Empty.mp3" />
     <EmbeddedResource Include="Resources\Mods\OldAvatarBackground.rbxl" />
-    <EmbeddedResource Include="Resources\PresetFlags\5070%27s Latency Pack V32" />
-    <EmbeddedResource Include="Resources\PresetFlags\Fps and Latency Lisy by Froststrap" />
-    <EmbeddedResource Include="Resources\PresetFlags\Stoof%27s High Graphics V35" />
-    <EmbeddedResource Include="Resources\PresetFlags\Stoof%27s Balanced Graphics V35" />
-    <EmbeddedResource Include="Resources\PresetFlags\Stoof%27s Low Graphics V35" />
-    <EmbeddedResource Include="Resources\PresetFlags\Better Synchronization" />
-    <EmbeddedResource Include="Resources\PresetFlags\Reduced Input Delay" />
-    <EmbeddedResource Include="Resources\PresetFlags\Obsurd V5 %28DX11%29" />
-    <EmbeddedResource Include="Resources\PresetFlags\Obsurd V5 %28Vulkan%29" />
-    <EmbeddedResource Include="Resources\PresetFlags\Scroom%27s Unplayable Graphics" />
+    <EmbeddedResource Include="Resources\PresetFlags\High Quality" />
+    <EmbeddedResource Include="Resources\PresetFlags\Balanced Quality" />
+    <EmbeddedResource Include="Resources\PresetFlags\Low Quality" />
   </ItemGroup>
 
   <ItemGroup>
@@ -97,8 +90,6 @@
     </PackageReference>
 	<PackageReference Include="AvalonEdit" Version="6.3.1.120" />
     <PackageReference Include="securifybv.ShellLink" Version="0.1.0" />
-    <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
-    <PackageReference Include="SharpVectors.Wpf" Version="1.8.5" />
     <PackageReference Include="SharpZipLib" Version="1.4.2" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
     <PackageReference Include="XamlAnimatedGif" Version="2.3.1" />

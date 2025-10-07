@@ -198,7 +198,7 @@
             <ComboBox Width="200" Padding="10,5,10,5" ItemsSource="{Binding Languages, Mode=OneTime}" Text="{Binding SelectedLanguage, Mode=TwoWay}" />
         </controls:OptionControl>
 
-        <ui:CardExpander Margin="0,8,0,0" IsExpanded="True">
+        <ui:CardExpander Margin="0,8,0,0">
             <ui:CardExpander.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -235,7 +235,9 @@
             </Grid>
         </ui:CardExpander>
 
-        <Grid Margin="0,8,0,0">
+        <Separator Margin="0,8,0,4"/>
+
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="128" />

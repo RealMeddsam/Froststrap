@@ -96,6 +96,12 @@ namespace Bloxstrap.UI.ViewModels.Settings
             set => App.Settings.Prop.ShowServerDetails = value;
         }
 
+        public bool ShowServerUptimeEnabled
+        {
+            get => App.Settings.Prop.ShowServerUptime;
+            set => App.Settings.Prop.ShowServerUptime = value;
+        }
+
         public bool PlaytimeCounterEnabled
         {
             get => App.Settings.Prop.PlaytimeCounter;

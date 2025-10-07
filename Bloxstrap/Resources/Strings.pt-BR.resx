@@ -971,7 +971,7 @@
 		<value>Automatically update Froststrap</value>
 	</data>
 	<data name="Menu.Behaviour.HardwareAcceleration.Description">
-		<value>Disables hardware acceleration on Frostrap only. Note: You must restart the application in order to see any effects.</value>
+		<value>Disables hardware acceleration on Froststrap only. Note: You must restart the application in order to see any effects.</value>
 	</data>
 	<data name="Menu.Behaviour.HardwareAcceleration.Title">
 		<value>Disable Hardware Acceleration</value>
@@ -2331,7 +2331,7 @@
 		<value>[Rainbow Colored UI/Textures](https://github.com/Meddsam/Froststrap/wiki/Common-FFlag-Issues#rainbow-colored-uigraphics)</value>
 	</data>
 	<data name="Menu.Behaviour.DisableHardwareAcceleration.Description">
-		<value>Disables hardware acceleration on Frostrap only. Note: You must restart the application in order to see any effects.</value>
+		<value>Disables hardware acceleration on Froststrap only. Note: You must restart the application in order to see any effects.</value>
 	</data>
 	<data name="Menu.Behaviour.DisableHardwareAcceleration.Title">
 		<value>Disable Hardware Acceleration</value>

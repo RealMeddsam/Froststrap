@@ -17,7 +17,7 @@
     <StackPanel Margin="0,0,14,14">
         <TextBlock Margin="0,0,0,8" Text="{x:Static resources:Strings.Menu_Channel_Description}" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
 
-        <TextBlock Text="Froststrap" FontSize="16" FontWeight="Bold" Margin="0,16,0,0" />
+        <TextBlock Text="Froststrap" FontSize="20" FontWeight="Bold" Margin="0,16,0,0" />
         
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_Behaviour_AutoUpdate_Title}"
@@ -37,7 +37,9 @@
             <ui:ToggleSwitch IsChecked="{Binding DisableAnimations, Mode=TwoWay}" Checked="ToggleSwitch_Checked_2" Unchecked="ToggleSwitch_Unchecked_2" />
         </controls:OptionControl>
 
-        <TextBlock Text="Roblox" FontSize="16" FontWeight="Bold" Margin="0,16,0,0" />
+        <Separator Margin="0,8,0,6"/>
+
+        <TextBlock Text="Roblox" FontSize="20" FontWeight="Bold"/>
 
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_Behaviour_ForceRobloxReinstall_Title}"
@@ -79,7 +81,7 @@
 
         <controls:OptionControl
             Header="Save And Launch Options"
-            Description="Change what Save and Launch button opens">
+            Description="Change what the Save and Launch button launches.">
             <ComboBox
                 Width="200"
                 Margin="5,0,0,0"
@@ -107,7 +109,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Common_Channel}" />
+                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Common_Channel}" FontWeight="Medium" />
                         <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_ChannelChanger_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
                     </StackPanel>
                     <ui:TextBox Grid.Column="1" Grid.Row="0" Margin="8,0,8,0" Padding="10,5,10,5" Width="200" Text="{Binding ViewChannel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
@@ -139,11 +141,11 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Center" Text="{x:Static resources:Strings.Common_Version}" />
-                    <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ChannelDeployInfo.Version, Mode=OneWay}" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Center" Text="{x:Static resources:Strings.Common_Version}" FontWeight="Medium" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ChannelDeployInfo.Version, Mode=OneWay}" FontWeight="Medium" />
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Center" Text="{x:Static resources:Strings.Common_VersionGuid}" />
-                    <TextBlock Grid.Row="1" Grid.Column="1" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ChannelDeployInfo.VersionGuid, Mode=OneWay}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Center" Text="{x:Static resources:Strings.Common_VersionGuid}" FontWeight="Medium" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ChannelDeployInfo.VersionGuid, Mode=OneWay}" FontWeight="Medium" />
 
                     <Button Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Content="Available Channels" Click="OpenChannelListDialog_Click" />
 

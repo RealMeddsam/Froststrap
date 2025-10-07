@@ -205,7 +205,7 @@ namespace Bloxstrap.UI.Elements.ContextMenu
         {
             try
             {
-                var processes = Process.GetProcessesByName("Bloxstrap");
+                var processes = Process.GetProcessesByName(App.ProjectName);
                 foreach (var proc in processes)
                 {
                     proc.Kill();
