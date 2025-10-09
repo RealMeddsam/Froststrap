@@ -1,0 +1,396 @@
+﻿<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.AppearancePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:models="clr-namespace:Bloxstrap.UI.ViewModels"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:controls="clr-namespace:Bloxstrap.UI.Elements.Controls"
+      xmlns:resources="clr-namespace:Bloxstrap.Resources"
+      mc:Ignorable="d"
+      d:DesignHeight="900" d:DesignWidth="800"
+      Title="AppearancePage"
+      Scrollable="True">
+    <StackPanel Margin="0,0,14,14">
+        <TextBlock Text="{x:Static resources:Strings.Menu_Appearance_Description}" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,8" />
+
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="{Binding CustomGlobalThemeExpanded, Mode=OneWay}" Style="{StaticResource NoUserExpansionCardExpanderStyle}">
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Appearance_Custom_Theme_Title}" FontWeight="Medium" />
+                        <TextBlock FontSize="12" Text="{x:Static resources:Strings.Menu_Appearance_Custom_Theme_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                    </StackPanel>
+                    <ComboBox Width="200" Padding="10,5,10,5" ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme, Mode=TwoWay}" Grid.Column="1" >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource EnumNameConverter}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </ui:CardExpander.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12" Grid.Column="0" Grid.Row="0">
+                    <RadioButton Content="Custom Gradient Background" GroupName="BackgroundMode" IsChecked="{Binding IsGradientMode, Mode=TwoWay}" Margin="0,0,12,0"/>
+                    <RadioButton Content="Custom Image/Animated Background" GroupName="BackgroundMode" IsChecked="{Binding IsImageMode, Mode=TwoWay}"/>
+                </StackPanel>
+
+                <Separator Margin="0,0,0,12" Grid.Column="0" Grid.Row="1" />
+
+                <StackPanel Grid.Column="0" Grid.Row="2" Margin="0,0,0,0" VerticalAlignment="Top" Visibility="{Binding IsGradientMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,4">
+                        <TextBlock Text="Gradient Stops:" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <Button Width="20" Height="20" Padding="0" FontSize="12" Content="?" Margin="4,4,0,0" VerticalAlignment="Center" ToolTip="Offset controls where the color appears (0 to 1). You can change the hex color or open a color picker."/>
+                    </StackPanel>
+
+                    <ItemsControl ItemsSource="{Binding GradientStops}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,2" HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="30"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="Offset:" VerticalAlignment="Center" Margin="4,0,4,0" Grid.Column="0"/>
+                                    <Slider Minimum="0" Maximum="1" Value="{Binding Offset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PreviewMouseLeftButtonUp="OnGradientSliderReleased" TickFrequency="0.01" IsSnapToTickEnabled="True" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="2" Margin="4,8,4,8" Grid.Column="1"/>
+                                    <TextBlock Text="{Binding Offset, StringFormat=F2}" VerticalAlignment="Center" Margin="8,0,8,0" Width="30" Grid.Column="2"/>
+                                    <TextBox Text="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="130" Margin="0,0,8,0" VerticalAlignment="Center" TextChanged="OnGradientColorHexChanged" Grid.Column="3" MinWidth="100"/>
+                                    <Button Content="Color" Width="75" Margin="0,0,4,0" Tag="{Binding}" Click="OnChangeGradientColor_Click" Grid.Column="4"/>
+                                    <Button Content="Remove" Width="95" Margin="0,0,4,0" Tag="{Binding}" Click="OnRemoveGradientStop_Click" Grid.Column="5"/>
+                                    <StackPanel Grid.Column="6">
+                                        <Button Content="▲" Width="28" Margin="0,0,4,0" Padding="0" Tag="{Binding}" Click="OnMoveUpGradientStop_Click" ToolTip="Move Up" />
+                                        <Button Content="▼" Width="28" Margin="0,0,4,0" Padding="0" Tag="{Binding}" Click="OnMoveDownGradientStop_Click" ToolTip="Move Down" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,12" HorizontalAlignment="Right">
+                        <Button Content="Reset to Default" Click="OnResetGradient_Click" Margin="0,0,4,0" />
+                        <Button Content="Add Gradient Color" Click="OnAddGradientStop_Click" Margin="0,0,4,0"/>
+                    </StackPanel>
+
+                    <Separator Margin="0,0,0,12" />
+
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock Text="Tools:" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                    <Button Width="20" Height="20" Padding="0" FontSize="12" Content="?" Margin="4,4,0,0" VerticalAlignment="Center" ToolTip="Various actions for exporting, importing, copying, and resetting gradients."/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Export as JSON" Click="OnExportGradient_Click" Margin="4"/>
+                                    <Button Content="Import from JSON" Click="OnImportGradient_Click" Margin="4"/>
+                                    <Button Content="Copy JSON" Click="OnCopyGradientJson_Click" Margin="4"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock Text="Gradient Direction:" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <Button Width="20" Height="20" Padding="0" FontSize="12" Content="?" Margin="4,4,0,0" VerticalAlignment="Center" ToolTip="StartPoint and EndPoint define the direction of the gradient. (0,0) is top-left, (1,1) is bottom-right."/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Start X:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <TextBox Text="{Binding GradientStartPointX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="50" Margin="4"/>
+                                    <TextBlock Text="Y:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <TextBox Text="{Binding GradientStartPointY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="50" Margin="12,4"/>
+                                    <TextBlock Text="End X:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <TextBox Text="{Binding GradientEndPointX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="50" Margin="8,4"/>
+                                    <TextBlock Text="Y:" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                    <TextBox Text="{Binding GradientEndPointY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="50"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel Margin="4,12,0,0">
+                            <Separator Margin="0,0,0,4" />
+                            <TextBlock Text="Import JSON Text" FontSize="14" FontWeight="SemiBold" Margin="0,12,0,4"/>
+                            <ui:TextBox x:Name="ImportJsonTextBox" MinHeight="100" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" PlaceholderText="Paste JSON gradient stops here..." />
+                            <Button Content="Import from JSON Text" HorizontalAlignment="Right" Margin="0,8,0,0" Click="OnImportFromJsonText_Click" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="0" Grid.Row="2" Visibility="{Binding IsImageMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Border Background="#59000000" Width="215" Height="135" CornerRadius="4">
+                        <Image Width="200" Height="120" Stretch="Uniform" Source="{Binding BackgroundPreviewImageSource}" />
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0" Height="34">
+                        <ComboBox ItemsSource="{Binding BackgroundImageStretchModes}" SelectedItem="{Binding BackgroundImageStretch, Mode=TwoWay}" Margin="0,0,4,0" Width="150" />
+                        <Button Content="Browse Image..." Click="OnBrowseImageClicked" Width="120" Margin="0,0,4,0" Height="34"/>
+                        <Button Content="Clear Image" Click="OnClearImageClicked" Width="100" Margin="0,0,4,0" Height="34"/>
+                    </StackPanel>
+
+                    <TextBlock Text="Animated backgrounds currently work only on the main window/ui sadly. (i cant figure out how to make it work on other stuff for now)" FontSize="10" TextWrapping="Wrap" />
+
+                    <StackPanel Margin="0,10,0,0">
+                        <TextBlock Text="Black Overlay Opacity" Margin="0,0,0,4" FontWeight="Medium" />
+                        <Slider Minimum="0" Maximum="1" Value="{Binding BlackOverlayOpacity, Mode=TwoWay}" TickFrequency="0.01" IsSnapToTickEnabled="True" />
+                        <TextBlock Text="{Binding BlackOverlayOpacity, StringFormat=P0}" HorizontalAlignment="Right" Margin="0,4,0,0" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </ui:CardExpander>
+
+        <controls:OptionControl Header="Window Backdrop" Description="Select the window backdrop effect. Note: you must use dark theme, Mica only works on windows 11, you have to restart after selecting one.">
+            <ComboBox
+                Width="200"
+                Margin="5,0,0,0"
+                Padding="10,5,10,5"
+                SelectionChanged="WindowsBackdropChangeSelectionChanged"
+                ItemsSource="{Binding BackdropOptions}"
+                SelectedItem="{Binding SelectedBackdrop, Mode=TwoWay}" />
+        </controls:OptionControl>
+
+        <controls:OptionControl
+            Header="Custom App Font"
+            Description="Choose a custom font to override Froststrap default UI font.">
+            <StackPanel>
+                <ui:Button
+                    Content="Choose Font"
+                    Icon="DocumentAdd16"
+                    Command="{Binding ManageCustomFontCommand}"
+                    CommandParameter="Choose"
+                    Visibility="{Binding ChooseCustomFontVisibility, Mode=OneWay}" />
+                <ui:Button
+                    Content="Remove Font"
+                    Icon="Delete16"
+                    Appearance="Danger"
+                    Command="{Binding ManageCustomFontCommand}"
+                    CommandParameter="Remove"
+                    Visibility="{Binding DeleteCustomFontVisibility, Mode=OneWay}" />
+            </StackPanel>
+        </controls:OptionControl>
+
+        <controls:OptionControl
+            Header="{x:Static resources:Strings.Menu_Appearance_Language_Title}"
+            Description="{x:Static resources:Strings.Menu_Appearance_Language_Description}">
+            <ComboBox Width="200" Padding="10,5,10,5" ItemsSource="{Binding Languages, Mode=OneTime}" Text="{Binding SelectedLanguage, Mode=TwoWay}" />
+        </controls:OptionControl>
+
+        <ui:CardExpander Margin="0,8,0,0">
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock FontSize="14" Text="Menu Adjustment" FontWeight="Medium"/>
+                        <TextBlock FontSize="12" Text="Reorder the navigation menu items to your preference. Changes will be saved automatically." Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                    </StackPanel>
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <Grid Margin="0,8,0,0" MinHeight="325">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <ListBox x:Name="ListBoxNavigationItems" Grid.Row="0" Margin="0,0,0,8" SelectedIndex="0" HorizontalContentAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Content}" Padding="4,2" FontWeight="Medium" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Left">
+                    <Button x:Name="MoveUpButton" Content="Move Up" Click="MoveUp_Click" Margin="0,0,8,0" FontWeight="Medium" />
+                    <Button x:Name="MoveDownButton" Content="Move Down" Click="MoveDown_Click" Margin="0,0,8,0" FontWeight="Medium" />
+                    <Button x:Name="ResetToDefaultButton" Content="Reset To Default" Click="ResetOrder_Click" Margin="0,0,8,0" FontWeight="Medium" />
+                    <ToggleButton x:Name="ToggleLockOrder" Content="Lock Order" Checked="LockToggleButton_Checked" Unchecked="LockToggleButton_Unchecked" FontWeight="Medium" />
+                </StackPanel>
+            </Grid>
+        </ui:CardExpander>
+
+        <Separator Margin="0,8,0,4"/>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="128" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" VerticalAlignment="Bottom">
+                <TextBlock Text="{x:Static resources:Strings.Menu_Appearance_Bootstrapper_Title}" FontSize="20" FontWeight="Bold" VerticalAlignment="Bottom" />
+                <TextBlock Text="{x:Static resources:Strings.Menu_Appearance_Bootstrapper_Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+            <ui:Button Grid.Column="1" Content="{x:Static resources:Strings.Menu_Appearance_Preview}" FontWeight="Medium" HorizontalAlignment="Stretch" Margin="0,16,0,0" Command="{Binding PreviewBootstrapperCommand}" />
+        </Grid>
+
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="{Binding Path=CustomThemesExpanded, Mode=OneWay}" Style="{StaticResource NoUserExpansionCardExpanderStyle}">
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Appearance_Launcher_Title}" FontWeight="Medium" />
+                            <TextBlock FontSize="12" Text="{x:Static resources:Strings.Menu_Appearance_Launcher_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
+                        </StackPanel>
+                        <ComboBox Width="200" Padding="10,5,10,5" ItemsSource="{Binding Dialogs, Mode=OneTime}" Text="{Binding Dialog, Mode=TwoWay}" Grid.Column="1">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=., Converter={StaticResource EnumNameConverter}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+                </Grid>
+            </ui:CardExpander.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ListBox x:Name="CustomThemesListBox" Height="265" Grid.Row="0" Grid.Column="0" Margin="0,2,4,38" ItemsSource="{Binding CustomThemes, Mode=OneWay}" SelectionChanged="CustomThemeSelection" SelectedIndex="{Binding SelectedCustomThemeIndex, Mode=TwoWay}" Grid.RowSpan="2" />
+                <Grid Grid.Row="1" Grid.Column="0" Margin="0,8,4,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ui:Button Grid.Column="0" Margin="0,0,4,0" Icon="Add28" Content="{x:Static resources:Strings.Common_New}" HorizontalAlignment="Stretch" Command="{Binding AddCustomThemeCommand, Mode=OneTime}" FontWeight="Medium" />
+                    <ui:Button Grid.Column="1" Margin="4,0,0,0" Icon="Delete28" Content="{x:Static resources:Strings.Common_Delete}" HorizontalAlignment="Stretch" Appearance="Danger" IsEnabled="{Binding IsCustomThemeSelected, Mode=OneWay}" Command="{Binding DeleteCustomThemeCommand, Mode=OneTime}" FontWeight="Medium" />
+                </Grid>
+                <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="4,0,0,0">
+                    <StackPanel.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCustomThemeSelected}" Value="False">
+                                    <Setter Property="StackPanel.Visibility" Value="Hidden"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <TextBlock Text="{x:Static resources:Strings.Common_Name}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <ui:TextBox Margin="0,4,0,0" Text="{Binding SelectedCustomThemeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <ui:Button Grid.Column="0" Margin="0,0,4,0" Icon="Edit28" Content="{x:Static resources:Strings.Common_Rename}" HorizontalAlignment="Stretch" Command="{Binding RenameCustomThemeCommand, Mode=OneTime}" FontWeight="Medium" />
+                        <ui:Button Grid.Column="1" Margin="4,0,4,0" Icon="DesktopEdit24" Content="{x:Static resources:Strings.Common_Edit}" HorizontalAlignment="Stretch" Command="{Binding EditCustomThemeCommand, Mode=OneTime}" FontWeight="Medium" />
+                        <ui:Button Grid.Column="2" Margin="4,0,0,0" Icon="ArrowExportRtl24" Content="{x:Static resources:Strings.Common_Export}" HorizontalAlignment="Stretch" Command="{Binding ExportCustomThemeCommand, Mode=OneTime}" FontWeight="Medium" />
+                    </Grid>
+                </StackPanel>
+                <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Text="{x:Static resources:Strings.Menu_Appearance_CustomThemes_NoneSelected}" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Medium">
+                    <TextBlock.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCustomThemeSelected}" Value="True">
+                                    <Setter Property="TextBlock.Visibility" Value="Hidden"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+        </ui:CardExpander>
+
+        <controls:OptionControl 
+            x:Name="IconSelector"
+            Header="{x:Static resources:Strings.Menu_Appearance_Icon_Title}" 
+            Description="{x:Static resources:Strings.Menu_Appearance_Icon_Description}">
+            <ComboBox Width="200" Padding="10,5,10,5" ItemsSource="{Binding Icons, Mode=OneWay}" SelectedValuePath="IconType" SelectedValue="{Binding Icon, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Image Height="16" Source="{Binding ImageSource, Mode=OneWay}" RenderOptions.BitmapScalingMode="HighQuality" />
+                            <TextBlock Grid.Column="1" Margin="8,0,0,0" Text="{Binding Path=IconType, Converter={StaticResource EnumNameConverter}}" />
+                        </Grid>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </controls:OptionControl>
+
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Appearance_Customisation_Title}" FontWeight="Medium" />
+                        <TextBlock FontSize="12" Text="{x:Static resources:Strings.Menu_Appearance_Customisation_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
+                    </StackPanel>
+                </Grid>
+            </ui:CardExpander.Header>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="180" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static resources:Strings.Menu_Appearance_CustomisationTitle_Title}" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <ui:TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Title, Mode=TwoWay}" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,4,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Appearance_CustomisationTitle_Description}" FontWeight="Medium" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,12,0,0"  Text="{x:Static resources:Strings.Menu_Appearance_CustomisationIcon_Title}" TextWrapping="Wrap" VerticalAlignment="Center" FontWeight="Medium" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <Grid Grid.Row="2" Grid.Column="1" Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ui:TextBox Grid.Column="0" Margin="0,0,4,0" Text="{Binding CustomIconLocation, Mode=TwoWay}" />
+                    <ui:Button Grid.Column="1" Margin="4,0,0,0" Height="35" Icon="Folder24" Content="{x:Static resources:Strings.Common_Browse}" Command="{Binding BrowseCustomIconLocationCommand}" FontWeight="Medium" />
+                </Grid>
+                <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,4,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Appearance_CustomisationIcon_Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+            </Grid>
+        </ui:CardExpander>
+        <TextBlock Text="5"
+               FontSize="12"
+               Opacity="0.3"
+               HorizontalAlignment="Right"
+               Margin="0,8,4,0"
+               ToolTip="Secret code digit #5" />
+    </StackPanel>
+</ui:UiPage>

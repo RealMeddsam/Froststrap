@@ -1,0 +1,168 @@
+﻿<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.RobloxSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:controls="clr-namespace:Bloxstrap.UI.Elements.Controls"
+      xmlns:resources="clr-namespace:Bloxstrap.Resources"
+      mc:Ignorable="d"
+      d:DesignHeight="900" d:DesignWidth="800"
+      Title="RobloxSettingsPage"
+      Scrollable="True"
+      x:Name="RobloxSettingsPageControl">
+
+    <StackPanel Margin="0,0,14,14">
+        <TextBlock Text="This allows you to configure some Roblox settings." FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12" />
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ui:InfoBar Margin="0,0,0,8" Grid.Column="0" Padding="8" IsOpen="True" Message="Some of these options might not work, if it dosent then tell us on our discord server" Severity="Informational" IsClosable="False" Background="{DynamicResource PrimaryBackgroundColor}" />
+            <Button Grid.Column="1" Padding="8" Content="Edit All Roblox Settings" Margin="4,0,0,8" Click="OpenRobloxSettingsDialog_Click" />
+        </Grid>
+
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
+            <ui:CardExpander.Header>
+                <StackPanel>
+                    <TextBlock FontSize="14" Text="Normal Roblox Settings" FontWeight="Medium" />
+                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="These are normal settings that can be found in roblox settings page." Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+            </ui:CardExpander.Header>
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding NormalRobloxSettings}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:OptionControl Header="{Binding Header}" Description="{Binding Description}">
+                                <StackPanel>
+                                    <!-- Boolean ToggleSwitch -->
+                                    <ui:ToggleSwitch IsChecked="{Binding BoolValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Visibility="{Binding IsBoolean, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                    <!-- String TextBox - No validation -->
+                                    <TextBox Text="{Binding StringValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsString, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                    <!-- Int TextBox - Only allows integers (positive and negative) -->
+                                    <TextBox Text="{Binding IntValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsInt, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    PreviewTextInput="ValidateInt32"/>
+
+                                    <!-- Int64 TextBox - Only allows integers (positive and negative) -->
+                                    <TextBox Text="{Binding Int64Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsInt64, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    PreviewTextInput="ValidateInt64"/>
+
+                                    <!-- Float TextBox - Allows decimals and negative numbers -->
+                                    <TextBox Text="{Binding FloatValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsFloat, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    PreviewTextInput="ValidateFloat"/>
+
+                                    <!-- Token TextBox - Only allows integers -->
+                                    <TextBox Text="{Binding TokenValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsToken, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                    <!-- SecurityCapabilities TextBox - Only allows integers -->
+                                    <TextBox Text="{Binding SecurityCapabilitiesValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsSecurityCapabilities, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                    <!-- Vector2 - Two TextBoxes for X and Y - Allows decimals and negative numbers -->
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsVector2, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <TextBlock Text="X:" Padding="10,7,10,7" Margin="0,0,5,0" />
+                                        <TextBox Text="{Binding Vector2XValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="95" Padding="10,7,10,7" Margin="0,0,5,0"
+                                         ToolTip="X value"
+                                         PreviewTextInput="ValidateFloat"/>
+                                        <TextBlock Text="Y:" Padding="10,7,10,7" Margin="0,0,5,0" />
+                                        <TextBox Text="{Binding Vector2YValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="95" Padding="10,7,10,7" Margin="5,0,0,0"
+                                         ToolTip="Y value"
+                                         PreviewTextInput="ValidateFloat"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </controls:OptionControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ui:CardExpander>
+
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="True">
+            <ui:CardExpander.Header>
+                <StackPanel>
+                    <TextBlock FontSize="14" Text="Hidden Roblox Settings" FontWeight="Medium" />
+                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="This contains some settings hidden in roblox files." Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+            </ui:CardExpander.Header>
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding HiddenRobloxSettings}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:OptionControl Header="{Binding Header}" Description="{Binding Description}">
+                                <StackPanel>
+                                    <!-- Boolean ToggleSwitch -->
+                                    <ui:ToggleSwitch IsChecked="{Binding BoolValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Visibility="{Binding IsBoolean, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                    <!-- String TextBox - No validation -->
+                                    <TextBox Text="{Binding StringValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsString, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                    <!-- Int TextBox - Only allows integers (positive and negative) -->
+                                    <TextBox Text="{Binding IntValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsInt, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    PreviewTextInput="ValidateInt32"/>
+
+                                    <!-- Int64 TextBox - Only allows integers (positive and negative) -->
+                                    <TextBox Text="{Binding Int64Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsInt64, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    PreviewTextInput="ValidateInt64"/>
+
+                                    <!-- Float TextBox - Allows decimals and negative numbers -->
+                                    <TextBox Text="{Binding FloatValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsFloat, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    PreviewTextInput="ValidateFloat"/>
+
+                                    <!-- Token TextBox - Only allows integers -->
+                                    <TextBox Text="{Binding TokenValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsToken, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                    <!-- SecurityCapabilities TextBox - Only allows integers -->
+                                    <TextBox Text="{Binding SecurityCapabilitiesValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="200" Padding="10,7,10,7"
+                                    Visibility="{Binding IsSecurityCapabilities, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                    <!-- Vector2 - Two TextBoxes for X and Y - Allows decimals and negative numbers -->
+                                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsVector2, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <TextBlock Text="X:" Padding="10,7,10,7" Margin="0,0,5,0" />
+                                        <TextBox Text="{Binding Vector2XValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="95" Padding="10,7,10,7" Margin="0,0,5,0"
+                                         PreviewTextInput="ValidateFloat"/>
+                                        <TextBlock Text="Y:" Padding="10,7,10,7" Margin="0,0,5,0" />
+                                        <TextBox Text="{Binding Vector2YValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="95" Padding="10,7,10,7" Margin="5,0,0,0"
+                                         ToolTip="Y value"
+                                         PreviewTextInput="ValidateFloat"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </controls:OptionControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ui:CardExpander>
+    </StackPanel>
+</ui:UiPage>

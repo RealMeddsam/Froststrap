@@ -1,0 +1,36 @@
+name: Bug Report
+title: "[BUG] "
+description: Report a problem you're having
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Froststrap Version
+      description: "What version of Froststrap are you using?"
+      placeholder: "v1.2.0.1"
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What problem did you encounter?
+      description: Provide a comprehensive description of the problem you're facing. Don't forget to attach any additional resources you may have, such as log files and screenshots.
+    validations:
+      required: true
+  - type: textarea
+    id: repro-steps
+    attributes:
+      label: How do you reproduce the problem?
+      description: Include the steps to reproduce the problem from start to finish. Include details such as FastFlags you added and settings you changed.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+  - type: textarea
+    id: log
+    attributes:
+      label: Froststrap Log
+      description: If you're getting a Froststrap Exception error, upload your log file here. Otherwise, just leave it empty.
+      value: "N/A"
+      render: text
