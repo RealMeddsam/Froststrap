@@ -18,6 +18,7 @@ namespace Bloxstrap.UI.Elements.ContextMenu
 
         private ServerInformation? _serverInformationWindow;
         private ServerHistory? _gameHistoryWindow;
+        private RegionSelectorMenu? _regionSelectorWindow;
 
         private Stopwatch _totalPlaytimeStopwatch = new Stopwatch();
         private TimeSpan _accumulatedTotalPlaytime = TimeSpan.Zero;
@@ -107,6 +108,17 @@ namespace Bloxstrap.UI.Elements.ContextMenu
                 return $"{ts.Minutes}:{ts.Seconds:D2}";
         }
 
+        private void CopyPlaceIdMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (_activityWatcher?.Data.PlaceId != null && _activityWatcher.Data.PlaceId != 0)
+            {
+                string placeId = _activityWatcher.Data.PlaceId.ToString();
+                Clipboard.SetDataObject(placeId);
+
+                App.Logger.WriteLine("MenuContainer::CopyPlaceIdMenuItem_Click", $"Copied Place ID: {placeId}");
+            }
+        }
+
         public void ShowServerInformationWindow()
         {
             if (_serverInformationWindow is null)
@@ -131,8 +143,10 @@ namespace Bloxstrap.UI.Elements.ContextMenu
                 if (_activityWatcher?.Data.ServerType == ServerType.Public)
                     InviteDeeplinkMenuItem.Visibility = Visibility.Visible;
 
-                ServerDetailsMenuItem.Visibility = Visibility.Visible;
+                if (_activityWatcher?.Data.PlaceId != null && _activityWatcher.Data.PlaceId != 0)
+                    CopyPlaceIdMenuItem.Visibility = Visibility.Visible;
 
+                ServerDetailsMenuItem.Visibility = Visibility.Visible;
             });
         }
 
@@ -141,6 +155,7 @@ namespace Bloxstrap.UI.Elements.ContextMenu
             Dispatcher.Invoke(() =>
             {
                 InviteDeeplinkMenuItem.Visibility = Visibility.Collapsed;
+                CopyPlaceIdMenuItem.Visibility = Visibility.Collapsed;
                 ServerDetailsMenuItem.Visibility = Visibility.Collapsed;
 
                 _serverInformationWindow?.Close();
@@ -162,6 +177,28 @@ namespace Bloxstrap.UI.Elements.ContextMenu
         private void InviteDeeplinkMenuItem_Click(object sender, RoutedEventArgs e) => Clipboard.SetDataObject(_activityWatcher?.Data.GetInviteDeeplink());
 
         private void ServerDetailsMenuItem_Click(object sender, RoutedEventArgs e) => ShowServerInformationWindow();
+
+        private void RegionSelectorMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_regionSelectorWindow is null)
+                {
+                    _regionSelectorWindow = new RegionSelectorMenu();
+                    _regionSelectorWindow.Closed += (_, _) => _regionSelectorWindow = null;
+                }
+
+                if (!_regionSelectorWindow.IsVisible)
+                    _regionSelectorWindow.ShowDialog();
+                else
+                    _regionSelectorWindow.Activate();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("MenuContainer::RegionSelectorMenuItem_Click", $"Failed to open region selector: {ex.Message}");
+                Frontend.ShowMessageBox($"Failed to open region selector: {ex.Message}", MessageBoxImage.Error);
+            }
+        }
 
         private void DebugMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -219,6 +256,5 @@ namespace Bloxstrap.UI.Elements.ContextMenu
                 Frontend.ShowMessageBox($"Failed to close Froststrap: {ex.Message}", MessageBoxImage.Error);
             }
         }
-
     }
 }

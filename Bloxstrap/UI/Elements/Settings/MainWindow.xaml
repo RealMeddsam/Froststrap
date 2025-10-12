@@ -12,9 +12,9 @@
              d:DataContext="{d:DesignInstance dmodels:MainWindowViewModel, IsDesignTimeCreatable=True}"
              Title="{x:Static resources:Strings.Menu_Title}"
              MinWidth="250"
-             Width="1070"
+             Width="1125"
              MinHeight="250"
-             Height="675"
+             Height="700"
              Background="{ui:ThemeResource ApplicationBackgroundBrush}"
              ExtendsContentIntoTitleBar="True"
              WindowBackdropType="{Binding SelectedBackdrop}"
@@ -68,6 +68,7 @@
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_FastFlagEditor_Title}" PageType="{x:Type pages:FastFlagEditorPage}" Icon="EditSettings20" IconSize="20" Tag="fastflagEditor" FontWeight="Medium" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Appearance_Title}" PageType="{x:Type pages:AppearancePage}" Icon="PaintBrush24" IconSize="20" Tag="appearance" FontWeight="Medium" />
                     <ui:NavigationItem Content="PC Tweaks" PageType="{x:Type pages:PCTweaksPage}" Icon="DesktopCheckmark24" IconSize="20" Tag="pctweaks" FontWeight="Medium" />
+                    <ui:NavigationItem Content="Region Selector" PageType="{x:Type pages:RegionSelectorPage}" Icon="Earth24" IconSize="20" Tag="regionselector" FontWeight="Medium" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Common_Shortcuts}" PageType="{x:Type pages:ShortcutsPage}" Icon="Apps28" IconSize="20" Tag="shortcuts" FontWeight="Medium" />
                 </ui:NavigationCompact.Items>
                 <ui:NavigationCompact.Footer>

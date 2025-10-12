@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Security.Principal;
 using System.Windows;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace Bloxstrap.PcTweaks
 {
@@ -30,19 +30,8 @@ namespace Bloxstrap.PcTweaks
             {
                 if (enable)
                 {
-                    string? exePath = TryFindRobloxPlayerBeta();
-                    if (string.IsNullOrEmpty(exePath) || !File.Exists(exePath))
-                    {
-                        Frontend.ShowMessageBox(
-                            "Roblox is not installed. Please launch Roblox through Froststrap to use this feature.",
-                            MessageBoxImage.Error,
-                            MessageBoxButton.OK
-                        );
-                        return false;
-                    }
-
-                    AddFirewallRule("in", exePath);
-                    AddFirewallRule("out", exePath);
+                    AddFirewallRule("in");
+                    AddFirewallRule("out");
                 }
                 else
                 {
@@ -51,7 +40,7 @@ namespace Bloxstrap.PcTweaks
                 }
 
                 Frontend.ShowMessageBox(
-                    $"Roblox has been {(enable ? "allowed through" : "removed from")} the firewall.\n\nRestart Roblox to apply changes.",
+                    $"Firewall rules have been {(enable ? "added" : "removed")}.\n\n{(enable ? "Roblox will be allowed through the firewall." : "Restart Roblox to apply changes.")}",
                     MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -65,7 +54,7 @@ namespace Bloxstrap.PcTweaks
             return true;
         }
 
-        private static void AddFirewallRule(string direction, string exePath)
+        private static void AddFirewallRule(string direction)
         {
             var directionFlag = direction == "in" ? "in" : "out";
             var ruleName = $"{RuleName} ({directionFlag.ToUpper()})";
@@ -73,7 +62,7 @@ namespace Bloxstrap.PcTweaks
             Process.Start(new ProcessStartInfo
             {
                 FileName = "netsh",
-                Arguments = $"advfirewall firewall add rule name=\"{ruleName}\" dir={directionFlag} action=allow program=\"{exePath}\" enable=yes profile=any",
+                Arguments = $"advfirewall firewall add rule name=\"{ruleName}\" dir={directionFlag} action=allow enable=yes profile=any",
                 UseShellExecute = false,
                 CreateNoWindow = true
             })?.WaitForExit();
@@ -91,32 +80,6 @@ namespace Bloxstrap.PcTweaks
                 UseShellExecute = false,
                 CreateNoWindow = true
             })?.WaitForExit();
-        }
-
-        private static string? TryFindRobloxPlayerBeta()
-        {
-            try
-            {
-                string versionsPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "Froststrap", "Versions");
-
-                if (!Directory.Exists(versionsPath))
-                    return null;
-
-                var versionFolders = Directory.GetDirectories(versionsPath)
-                    .Where(d => Path.GetFileName(d).StartsWith("version-", StringComparison.OrdinalIgnoreCase));
-
-                return versionFolders
-                    .Select(dir => Path.Combine(dir, "RobloxPlayerBeta.exe"))
-                    .Where(File.Exists)
-                    .OrderByDescending(File.GetLastWriteTimeUtc)
-                    .FirstOrDefault();
-            }
-            catch
-            {
-                return null;
-            }
         }
 
         private static bool IsRunningAsAdmin()
@@ -166,7 +129,6 @@ namespace Bloxstrap.PcTweaks
 
                 string output = proc.StandardOutput.ReadToEnd();
                 proc.WaitForExit();
-
 
                 string pattern = @$"Rule Name:\s*{Regex.Escape(RuleName)} \((IN|OUT)\)[\s\S]*?Enabled:\s*Yes";
 

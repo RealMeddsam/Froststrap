@@ -324,7 +324,7 @@ namespace Bloxstrap
 
             ApplicationConfiguration.Initialize();
 
-            HttpClient.Timeout = TimeSpan.FromSeconds(30);
+            HttpClient.Timeout = TimeSpan.FromSeconds(60);
 
             if (!HttpClient.DefaultRequestHeaders.UserAgent.Any())
                 HttpClient.DefaultRequestHeaders.Add("User-Agent", userAgent.ToString());
@@ -436,12 +436,6 @@ namespace Bloxstrap
                 LaunchHandler.ProcessLaunchArgs();
             }
 
-            if (string.IsNullOrWhiteSpace(Settings.Prop.UserId))
-            {
-                Settings.Prop.UserId = Guid.NewGuid().ToString();
-                Settings.Save();
-                Logger.WriteLine("Startup", $"Generated UserId: {Settings.Prop.UserId}");
-            }
         }
 
         protected override void OnExit(ExitEventArgs e)

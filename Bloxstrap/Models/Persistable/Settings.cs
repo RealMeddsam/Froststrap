@@ -78,9 +78,6 @@ namespace Bloxstrap.Models.Persistable
         // Shortcuts Page
         public string GameShortcutsJson { get; set; } = "[]";
 
-        // Community Page
-        public string UserId { get; set; } = string.Empty;
-
         // Settings Page
         public bool CheckForUpdates { get; set; } = true;
         public bool WPFSoftwareRender { get; set; } = false;
@@ -93,6 +90,7 @@ namespace Bloxstrap.Models.Persistable
 
         // Misc Stuff
         public bool IsNavigationSidebarExpanded { get; set; } = true;
+        public string SelectedRegion { get; set; } = string.Empty;
         public bool EnableAnalytics { get; set; } = false;
         public bool DebugDisableVersionPackageCleanup { get; set; } = false;
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]

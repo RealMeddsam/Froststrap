@@ -280,7 +280,7 @@
                     <ColumnDefinition Width="250" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <ListBox x:Name="CustomThemesListBox" Height="265" Grid.Row="0" Grid.Column="0" Margin="0,0,4,0" ItemsSource="{Binding CustomThemes, Mode=OneWay}" SelectionChanged="CustomThemeSelection" SelectedIndex="{Binding SelectedCustomThemeIndex, Mode=TwoWay}" />
+                <ListBox x:Name="CustomThemesListBox" Height="265" Grid.Row="0" Grid.Column="0" Margin="0,2,4,38" ItemsSource="{Binding CustomThemes, Mode=OneWay}" SelectionChanged="CustomThemeSelection" SelectedIndex="{Binding SelectedCustomThemeIndex, Mode=TwoWay}" Grid.RowSpan="2" />
                 <Grid Grid.Row="1" Grid.Column="0" Margin="0,8,4,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />

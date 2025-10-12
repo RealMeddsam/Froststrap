@@ -30,11 +30,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             if (confirm != MessageBoxResult.Yes)
                 return;
 
-            string preservedUserId = App.Settings.Prop.UserId;
-
             App.Settings.Prop = new Models.Persistable.Settings();
-            App.Settings.Prop.UserId = preservedUserId; // this is so the user dosent lose his id that he uses for publishing lists
-
             App.Settings.Save();
 
             Frontend.ShowMessageBox("Settings have been reset. Restarting the app...", MessageBoxImage.Information);

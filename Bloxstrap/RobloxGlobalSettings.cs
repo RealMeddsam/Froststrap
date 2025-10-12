@@ -9,7 +9,7 @@ namespace Bloxstrap
 {
     public static class RobloxGlobalSettings
     {
-        private static readonly string SettingsPath = Path.Combine(Paths.RobloxGlobal, "GlobalBasicSettings_13.xml");
+        private static readonly string SettingsPath = Path.Combine(Paths.Roblox, "GlobalBasicSettings_13.xml");
 
         public static string? GetValue(string name, string type) => GetRaw(name, type);
         public static void SetValue(string name, string type, string value) => SetRaw(name, type, value);

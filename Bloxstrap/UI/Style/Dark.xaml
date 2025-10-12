@@ -2,7 +2,7 @@
     <SolidColorBrush x:Key="NewTextEditorBackground" Color="#2D2D2D" />
     <SolidColorBrush x:Key="NewTextEditorForeground" Color="White" />
     <SolidColorBrush x:Key="NewTextEditorLink" Color="#3A9CEA" />
-    <SolidColorBrush x:Key="PrimaryBackgroundColor" Color="#0FFFFFFF" />
+    <SolidColorBrush x:Key="PrimaryBackgroundColor" Color="#19000000" />
     <SolidColorBrush x:Key="NormalDarkAndLightBackground" Color="#0FFFFFFF" />
     <SolidColorBrush x:Key="WindowBackgroundGradient" Color="#01000000" />
 </ResourceDictionary>

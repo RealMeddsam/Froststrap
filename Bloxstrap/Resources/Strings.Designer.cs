@@ -2325,6 +2325,15 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Direct3D 11.
+        /// </summary>
+        public static string Enums_FlagPresets_RenderingMode_D3D11 {
+            get {
+                return ResourceManager.GetString("Enums.FlagPresets.RenderingMode.D3D11", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OpenGL.
         /// </summary>
         public static string Enums_FlagPresets_RenderingMode_OpenGL {
@@ -4806,7 +4815,7 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Displays the server’s estimated uptime using data from [RoValra&apos;s APIs]({0}), This could make the notification take longer to show. [RoValra&apos;s privacy policy]({0}/privacy) applies..
+        ///   Looks up a localized string similar to Displays the server’s estimated uptime using data from [RoValra&apos;s APIs]({0}), This could make the notification take longer to show. [RoValra&apos;s privacy policy]({0}/privacy) applies. (Feature Made By Fishstrap).
         /// </summary>
         public static string Menu_Integrations_QueryServerUptime_Description {
             get {
@@ -5135,6 +5144,15 @@ namespace Bloxstrap.Resources {
         public static string Menu_MoreInfo {
             get {
                 return ResourceManager.GetString("Menu.MoreInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Join servers near your location easily, if nothing shows up when searching, spam load more, if still nothing, switch the region. made using [RoValra&apos;s APIs]({0}), [RoValra&apos;s privacy policy]({0}/privacy) applies..
+        /// </summary>
+        public static string Menu_RegionSelector_Description {
+            get {
+                return ResourceManager.GetString("Menu.RegionSelector.Description", resourceCulture);
             }
         }
         

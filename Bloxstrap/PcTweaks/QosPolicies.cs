@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Security.Principal;
 using System.Windows;
 
@@ -28,21 +26,9 @@ namespace Bloxstrap.PcTweaks
                 return false;
             }
 
-            if (enable)
+            try
             {
-                string? exePath = TryFindRobloxPlayerBeta();
-
-                if (string.IsNullOrEmpty(exePath) || !File.Exists(exePath))
-                {
-                    Frontend.ShowMessageBox(
-                        "Roblox is not installed. Please launch Roblox through Froststrap to use this feature.",
-                        MessageBoxImage.Error,
-                        MessageBoxButton.OK
-                    );
-                    return false;
-                }
-
-                try
+                if (enable)
                 {
                     using var key = Microsoft.Win32.Registry.LocalMachine.CreateSubKey(KeyPath);
                     key?.SetValue("ApplicationName", "RobloxPlayerBeta.exe", Microsoft.Win32.RegistryValueKind.String);
@@ -51,29 +37,26 @@ namespace Bloxstrap.PcTweaks
                     key?.SetValue("DSCPValue", 46, Microsoft.Win32.RegistryValueKind.DWord);
                     key?.SetValue("ThrottleRate", unchecked((int)0xFFFFFFFF), Microsoft.Win32.RegistryValueKind.DWord);
                 }
-                catch
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                try
+                else
                 {
                     Microsoft.Win32.Registry.LocalMachine.DeleteSubKeyTree(KeyPath, throwOnMissingSubKey: false);
                 }
-                catch
-                {
-                    return false;
-                }
+
+                Frontend.ShowMessageBox(
+                    "QoS policy updated. Please restart your PC for this to take full effect.",
+                    MessageBoxImage.Information,
+                    MessageBoxButton.OK);
+
+                return true;
             }
-
-            Frontend.ShowMessageBox(
-                "QoS policy updated. Please restart your PC for this to take full effect.",
-                MessageBoxImage.Information,
-                MessageBoxButton.OK);
-
-            return true;
+            catch (Exception ex)
+            {
+                Frontend.ShowMessageBox(
+                    $"Failed to {(enable ? "enable" : "disable")} QoS policy:\n\n{ex.Message}",
+                    MessageBoxImage.Error,
+                    MessageBoxButton.OK);
+                return false;
+            }
         }
 
         private static bool IsRunningAsAdmin()
@@ -102,32 +85,6 @@ namespace Bloxstrap.PcTweaks
                 Application.Current.Shutdown();
             }
             catch { }
-        }
-
-        private static string? TryFindRobloxPlayerBeta()
-        {
-            try
-            {
-                string versionsPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "Froststrap", "Versions");
-
-                if (!Directory.Exists(versionsPath))
-                    return null;
-
-                var versionFolders = Directory.GetDirectories(versionsPath)
-                    .Where(d => Path.GetFileName(d).StartsWith("version-", StringComparison.OrdinalIgnoreCase));
-
-                return versionFolders
-                    .Select(dir => Path.Combine(dir, "RobloxPlayerBeta.exe"))
-                    .Where(File.Exists)
-                    .OrderByDescending(File.GetLastWriteTimeUtc)
-                    .FirstOrDefault();
-            }
-            catch
-            {
-                return null;
-            }
         }
 
         public static bool IsPolicyEnabled()

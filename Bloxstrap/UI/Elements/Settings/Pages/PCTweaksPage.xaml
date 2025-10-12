@@ -29,125 +29,76 @@
                 Severity="Warning"
                 IsClosable="True" />
 
-            <WrapPanel x:Name="SquareCardWrapPanel"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Top"
-                ItemWidth="260"
-                ItemHeight="210">
+            <UniformGrid x:Name="SquareCardWrapPanel"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Top"
+                         Columns="4"
+                         MinWidth="200">
 
                 <controls:SquareCard Title="Froststrap Power Plan: Maximum FPS"
-                     Description="Imports Froststrap’s custom power plandesigned for the highest frame rates.
-                                     Credits to Onion for creating"
                      HorizontalAlignment="Stretch"
-                     CategoryIcon="⚠"
-                     PrimaryIconToolTip="Warning: Applying may cause overheating!"
-                     SecondaryCategoryIcon="⚡"
-                     SecondaryIconToolTip="Performance Optimization"
-                     VerticalAlignment="Top">
-                    <controls:SquareCard.ButtonContent>
-                        <Button Content="Apply" Click="BtnImportMaxFPS_Click" Height="35" Width="75"/>
-                    </controls:SquareCard.ButtonContent>
+                     Description="Imports Froststrap's custom power plan designed for the highest frame rates. Credits to Onion for creating"
+                     WarningToolTip="Warning: This may cause overheating issues."
+                     Categories="Performance,Warning">
+                    <Button Content="Apply" Click="BtnImportMaxFPS_Click" Height="35" Width="75"/>
                 </controls:SquareCard>
 
                 <controls:SquareCard Title="Froststrap Power Plan: Low Latency"
-                     Description="Imports Froststrap’s custom power plandesigned for the lowest system latency.
-                                     Credits to Onion for creating"
                      HorizontalAlignment="Stretch"
-                     CategoryIcon="⚠"
-                     PrimaryIconToolTip="Warning: Applying may cause overheating!"
-                     SecondaryCategoryIcon="⚡"
-                     SecondaryIconToolTip="Performance Optimization"
-                     VerticalAlignment="Top">
-                    <controls:SquareCard.ButtonContent>
-                        <Button Content="Apply" Click="BtnImportLowLatency_Click" Height="35" Width="75"/>
-                    </controls:SquareCard.ButtonContent>
+                     Description="Imports Froststrap's custom power plan designed for the lowest system latency. Credits to Onion for creating"
+                     WarningToolTip="Warning: This may cause overheating issues."
+                     Categories="Performance,Warning">
+                    <Button Content="Apply" Click="BtnImportLowLatency_Click" Height="35" Width="75"/>
                 </controls:SquareCard>
 
-                <controls:SquareCard Title="Disable Game DVR"
-                             Description="Toggle to disable Game DVR, improving game performance by turning off background recording and Game Bar capture features."
-                             HorizontalAlignment="Stretch"
-                             CategoryIcon="⚡"
-                             PrimaryIconToolTip="Performance Optimization"
-                             VerticalAlignment="Top">
-                    <controls:SquareCard.ButtonContent>
-                        <ui:ToggleSwitch IsChecked="{Binding DisableGameDVR, Mode=TwoWay}" />
-                    </controls:SquareCard.ButtonContent>
+
+                <controls:SquareCard Title="General System Optimizations"
+                    HorizontalAlignment="Stretch"
+                    Description="Applies various Windows optimizations for better performance, lower latency, and improved responsiveness."
+                    Categories="Performance,Privacy">
+                    <ui:ToggleSwitch IsChecked="{Binding GeneralOptimizationsEnabled, Mode=TwoWay}" />
                 </controls:SquareCard>
 
                 <controls:SquareCard Title="QoS Policy"
-                             Description="Optimizes network traffic by prioritizing Roblox with Windows Quality of Service."
-                             Category="Network"
-                             PrimaryIconToolTip="Network Optimization"
-                             HorizontalAlignment="Stretch"
-                             VerticalAlignment="Top">
-                    <controls:SquareCard.ButtonContent>
-                        <ui:ToggleSwitch IsChecked="{Binding RobloxWiFiPriorityBoost, Mode=TwoWay}" />
-                    </controls:SquareCard.ButtonContent>
+                     HorizontalAlignment="Stretch"
+                     Description="Optimizes network traffic by prioritizing Roblox with Windows Quality of Service."        
+                     Categories="Network">
+                    <ui:ToggleSwitch IsChecked="{Binding RobloxWiFiPriorityBoost, Mode=TwoWay}" />
                 </controls:SquareCard>
 
                 <controls:SquareCard Title="Firewall Access"
-                             Description="Allows Roblox through the Windows Firewall for improved connectivity."
-                             Category="Network"
-                             PrimaryIconToolTip="Network Optimization"
-                             SecondaryCategoryIcon="🔒"
-                             SecondaryIconToolTip ="Privacy"
-                             HorizontalAlignment="Stretch"
-                             VerticalAlignment="Top">
-                    <controls:SquareCard.ButtonContent>
-                        <ui:ToggleSwitch IsChecked="{Binding AllowRobloxFirewall, Mode=TwoWay}" />
-                    </controls:SquareCard.ButtonContent>
-                </controls:SquareCard>
-
-                <controls:SquareCard Title="Network Adapter Optimization"
-                     Description="Optimizes network adapter settings for better latency and packet handling in games."
                      HorizontalAlignment="Stretch"
-                     Category="Network"
-                     PrimaryIconToolTip="Network Optimization"
-                     VerticalAlignment="Top">
-                    <controls:SquareCard.ButtonContent>
-                        <ui:ToggleSwitch IsChecked="{Binding NetworkAdapterOptimizationEnabled, Mode=TwoWay}" />
-                    </controls:SquareCard.ButtonContent>
+                     Description="Allows Roblox through the Windows Firewall for improved connectivity." 
+                     Categories="Network,Privacy">
+                    <ui:ToggleSwitch IsChecked="{Binding AllowRobloxFirewall, Mode=TwoWay}" />
                 </controls:SquareCard>
 
-                <controls:SquareCard Title="Supress Defender"
-                     Description="Lowers Windows Defender’s task priority to reduce performance impact."
+                <controls:SquareCard Title="Disable Power Saving Features"
                      HorizontalAlignment="Stretch"
-                     CategoryIcon="⚠"
-                     PrimaryIconToolTip="Warning: Disabling this will reduce system security!"
-                     SecondaryCategoryIcon="🔒"
-                     SecondaryIconToolTip="Privacy"
-                     VerticalAlignment="Top">
-                    <controls:SquareCard.ButtonContent>
-                        <ui:ToggleSwitch IsChecked="{Binding DisableDefenderSmartScreen, Mode=TwoWay}" />
-                    </controls:SquareCard.ButtonContent>
+                     Description="This disables some of your PC power saving features." 
+                     WarningToolTip="Warning: This may cause overheating issues."
+                     Categories="Performance,Warning">
+                    <ui:ToggleSwitch IsChecked="{Binding DisablePowerSavingFeature, Mode=TwoWay}" />
                 </controls:SquareCard>
 
-                <controls:SquareCard Title="Disable Mitigations"
-                     Description="Disables security and process mitigations for reduced background activity and better performance."
+                <controls:SquareCard Title="Intel CPU Optimization"
                      HorizontalAlignment="Stretch"
-                     CategoryIcon="⚠"
-                     PrimaryIconToolTip="Warning: Disabling this will reduce system security!"
-                     SecondaryCategoryIcon="⚡"
-                     SecondaryIconToolTip="Performance Optimization"
-                     VerticalAlignment="Top">
-                    <controls:SquareCard.ButtonContent>
-                        <ui:ToggleSwitch IsChecked="{Binding DisableMitigations, Mode=TwoWay}" />
-                    </controls:SquareCard.ButtonContent>
+                     Description="Optimizes your Intel CPU, please dont use with AMD CPU." 
+                     WarningToolTip="Warning: This may cause overheating issues."
+                     Categories="CPU,Performance,Warning">
+                    <ui:ToggleSwitch IsChecked="{Binding IntelOptimizationsEnabled, Mode=TwoWay}" />
                 </controls:SquareCard>
 
-                <controls:SquareCard Title="Disable Telemetry"
-                     Description="Prevents Windows from automatically collecting diagnostic and usage data, reducing background activity."
+                <controls:SquareCard Title="AMD CPU Optimization"
                      HorizontalAlignment="Stretch"
-                     Category="Privacy"
-                     PrimaryIconToolTip="Privacy"
-                     VerticalAlignment="Top">
-                    <controls:SquareCard.ButtonContent>
-                        <ui:ToggleSwitch IsChecked="{Binding TelemetryDisabled, Mode=TwoWay}" />
-                    </controls:SquareCard.ButtonContent>
+                     Description="Optimizes your AMD CPU, please dont use with Intel CPU." 
+                     WarningToolTip="Warning: This may cause overheating issues."
+                     Categories="CPU,Performance,Warning">
+                    <ui:ToggleSwitch IsChecked="{Binding AmdOptimizationsEnabled, Mode=TwoWay}" />
                 </controls:SquareCard>
 
-            </WrapPanel>
-            
+            </UniformGrid>
+
             <!-- Easter Egg Button -->
             <ui:Button x:Name="EasterEggButton"
                    Width="24"

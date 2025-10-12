@@ -1,18 +1,27 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Animation;
+using System.Windows.Markup;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Bloxstrap.UI.Elements.Controls
 {
-    public partial class SquareCard : UserControl
+    [ContentProperty(nameof(InnerContent))]
+    public partial class SquareCard : UserControl, INotifyPropertyChanged
     {
         public enum CategoryType
         {
-            Network,
+            Performance,
             Privacy,
             Cpu,
             Gpu,
-            Performance
+            Network,
+            Warning
         }
 
         public static readonly DependencyProperty TitleProperty =
@@ -24,23 +33,13 @@ namespace Bloxstrap.UI.Elements.Controls
         public static readonly DependencyProperty InnerContentProperty =
             DependencyProperty.Register(nameof(InnerContent), typeof(object), typeof(SquareCard));
 
-        public static readonly DependencyProperty ButtonContentProperty =
-            DependencyProperty.Register(nameof(ButtonContent), typeof(object), typeof(SquareCard));
+        public static readonly DependencyProperty CategoriesProperty =
+            DependencyProperty.Register(nameof(Categories), typeof(string), typeof(SquareCard),
+                new PropertyMetadata("", OnCategoriesChanged));
 
-        public static readonly DependencyProperty CategoryIconProperty =
-            DependencyProperty.Register(nameof(CategoryIcon), typeof(string), typeof(SquareCard));
-
-        public static readonly DependencyProperty CategoryProperty =
-            DependencyProperty.Register(nameof(Category), typeof(CategoryType), typeof(SquareCard), new PropertyMetadata(CategoryType.Performance, OnCategoryChanged));
-
-        public static readonly DependencyProperty SecondaryCategoryIconProperty =
-            DependencyProperty.Register(nameof(SecondaryCategoryIcon), typeof(string), typeof(SquareCard));
-
-        public static readonly DependencyProperty PrimaryIconToolTipProperty =
-            DependencyProperty.Register(nameof(PrimaryIconToolTip), typeof(string), typeof(SquareCard));
-
-        public static readonly DependencyProperty SecondaryIconToolTipProperty =
-            DependencyProperty.Register(nameof(SecondaryIconToolTip), typeof(string), typeof(SquareCard));
+        public static readonly DependencyProperty WarningToolTipProperty =
+            DependencyProperty.Register(nameof(WarningToolTip), typeof(string), typeof(SquareCard),
+                new PropertyMetadata("", OnCategoriesChanged));
 
         public string Title
         {
@@ -60,60 +59,117 @@ namespace Bloxstrap.UI.Elements.Controls
             set => SetValue(InnerContentProperty, value);
         }
 
-        public object ButtonContent
+        public string Categories
         {
-            get => GetValue(ButtonContentProperty);
-            set => SetValue(ButtonContentProperty, value);
+            get => (string)GetValue(CategoriesProperty);
+            set => SetValue(CategoriesProperty, value);
         }
 
-        public string CategoryIcon
+        public string WarningToolTip
         {
-            get => (string)GetValue(CategoryIconProperty);
-            set => SetValue(CategoryIconProperty, value);
+            get => (string)GetValue(WarningToolTipProperty);
+            set => SetValue(WarningToolTipProperty, value);
         }
 
-        public string SecondaryCategoryIcon
+        public ObservableCollection<CategoryIconInfo> CategoryIcons
         {
-            get => (string)GetValue(SecondaryCategoryIconProperty);
-            set => SetValue(SecondaryCategoryIconProperty, value);
+            get
+            {
+                var icons = new ObservableCollection<CategoryIconInfo>();
+
+                if (!string.IsNullOrEmpty(Categories))
+                {
+                    var categoryStrings = Categories.Split(',')
+                        .Select(c => c.Trim())
+                        .Where(c => !string.IsNullOrEmpty(c));
+
+                    foreach (var categoryString in categoryStrings)
+                    {
+                        if (Enum.TryParse<CategoryType>(categoryString, true, out var category))
+                        {
+                            icons.Add(new CategoryIconInfo
+                            {
+                                Category = category,
+                                Icon = GetCategoryIcon(category),
+                                BorderColor = GetCategoryBorderColor(category),
+                                ToolTip = GetCategoryToolTip(category)
+                            });
+                        }
+                    }
+                }
+
+                return icons;
+            }
         }
 
-        public string PrimaryIconToolTip
-        {
-            get => (string)GetValue(PrimaryIconToolTipProperty);
-            set => SetValue(PrimaryIconToolTipProperty, value);
-        }
-
-        public string SecondaryIconToolTip
-        {
-            get => (string)GetValue(SecondaryIconToolTipProperty);
-            set => SetValue(SecondaryIconToolTipProperty, value);
-        }
-
-        public CategoryType Category
-        {
-            get => (CategoryType)GetValue(CategoryProperty);
-            set => SetValue(CategoryProperty, value);
-        }
-
-        private static void OnCategoryChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnCategoriesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (SquareCard)d;
-            var category = (CategoryType)e.NewValue;
+            control.OnPropertyChanged(nameof(CategoryIcons));
+        }
 
-            control.CategoryIcon = category switch
+        private BitmapImage GetCategoryIcon(CategoryType category)
+        {
+            string iconName = category switch
             {
-                CategoryType.Network => "🌐",
-                CategoryType.Privacy => "🔒",
-                CategoryType.Cpu => "🧠",
-                CategoryType.Gpu => "🖥️",
-                CategoryType.Performance => "⚡",
-                _ => "⚙️"
+                CategoryType.Performance => "Performance",
+                CategoryType.Privacy => "Privacy",
+                CategoryType.Cpu => "CPU",
+                CategoryType.Gpu => "GPU",
+                CategoryType.Network => "Network",
+                CategoryType.Warning => "Warning",
+                _ => "Performance"
+            };
+
+            return new BitmapImage(new Uri($"/Resources/PCTweaks/{iconName}.png", UriKind.Relative));
+        }
+
+        private SolidColorBrush GetCategoryBorderColor(CategoryType category)
+        {
+            return category switch
+            {
+                CategoryType.Performance => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ffef24")),
+                CategoryType.Privacy => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f9de70")),
+                CategoryType.Cpu => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#b772fb")),
+                CategoryType.Gpu => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#abfb72")),
+                CategoryType.Network => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#70d3f9")),
+                CategoryType.Warning => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f97070")),
+                _ => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#000000"))
             };
         }
+
+        private string GetCategoryToolTip(CategoryType category)
+        {
+            return category switch
+            {
+                CategoryType.Warning => WarningToolTip,
+                CategoryType.Performance => "Performance Optimization",
+                CategoryType.Privacy => "Privacy & Security",
+                CategoryType.Cpu => "CPU Optimization",
+                CategoryType.Gpu => "GPU Optimization",
+                CategoryType.Network => "Network Optimization",
+                _ => "Unknown Category"
+            };
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         public SquareCard()
         {
             InitializeComponent();
         }
+    }
+
+    public class CategoryIconInfo
+    {
+        public SquareCard.CategoryType Category { get; set; }
+        public BitmapImage Icon { get; set; } = null!;
+        public SolidColorBrush BorderColor { get; set; } = null!;
+        public string ToolTip { get; set; } = string.Empty;
     }
 }

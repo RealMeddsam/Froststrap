@@ -5,6 +5,9 @@
         [EnumName(StaticName = "Server Information")]
         ServerInfo,
 
+        [EnumName(StaticName = "Region Selector")]
+        RegionSelector,
+
         [EnumName(StaticName = "Game History")]
         GameHistory,
 

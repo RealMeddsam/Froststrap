@@ -146,12 +146,6 @@ namespace Bloxstrap
             App.State.Load(false);
             App.FastFlags.Load(false);
 
-            if (string.IsNullOrWhiteSpace(App.Settings.Prop.UserId))
-            {
-                App.Settings.Prop.UserId = Guid.NewGuid().ToString();
-                App.Logger.WriteLine(LOG_IDENT, $"Generated new UserId: {App.Settings.Prop.UserId}");
-            }
-
             if (App.IsStudioVisible)
                 WindowsRegistry.RegisterStudio();
 
@@ -531,13 +525,9 @@ namespace Bloxstrap
                         App.RobloxState.Prop.ModManifest = App.State.Prop.GetDeprecatedModManifest()!;
                 }
 
-                if (!(Utilities.CompareVersions(existingVer, "1.2.0.0") == VersionComparison.GreaterThan || Utilities.CompareVersions(existingVer, "1.2.0.0") == VersionComparison.Equal))
+                if (Utilities.CompareVersions(existingVer, "1.2.5.0") == VersionComparison.LessThan)
                 {
-                    if (string.IsNullOrWhiteSpace(App.Settings.Prop.UserId))
-                    {
-                        App.Settings.Prop.UserId = Guid.NewGuid().ToString();
-                        App.Logger.WriteLine(LOG_IDENT, $"Generated new UserId: {App.Settings.Prop.UserId}");
-                    }
+                    App.Settings.Prop.ShowServerUptime = false;
                 }
 
                 App.Settings.Save();

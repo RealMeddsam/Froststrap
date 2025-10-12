@@ -348,4 +348,10 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-Bloxstrap/UI/ViewModels/Settings/CommunityViewModel.cs
+Bloxstrap/Integrations/RobloxServerFetcher.cs
+Bloxstrap/Models/ServerEntry.cs
+Bloxstrap/UI/Elements/ContextMenu/RegionSelectorMenu.xaml
+Bloxstrap/UI/Elements/ContextMenu/RegionSelectorMenu.xaml.cs
+Bloxstrap/UI/Elements/Settings/Pages/RegionSelectorPage.xaml.cs
+Bloxstrap/UI/Elements/Settings/Pages/RegionSelectorPage.xaml
+Bloxstrap/UI/ViewModels/Settings/RegionSelectorViewModel.cs

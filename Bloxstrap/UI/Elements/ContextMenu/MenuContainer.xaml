@@ -63,7 +63,33 @@
                     </Grid>
                 </MenuItem.Header>
             </MenuItem>
-            
+
+            <MenuItem x:Name="RegionSelectorMenuItem" Click="RegionSelectorMenuItem_Click">
+                <MenuItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ui:SymbolIcon Grid.Column="0" Symbol="Globe24"/>
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" Text="Region Selector" />
+                    </Grid>
+                </MenuItem.Header>
+            </MenuItem>
+
+            <MenuItem x:Name="CopyPlaceIdMenuItem" Visibility="Collapsed" Click="CopyPlaceIdMenuItem_Click">
+                <MenuItem.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ui:SymbolIcon Grid.Column="0" Symbol="Copy24"/>
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" Text="Copy Place ID" />
+                    </Grid>
+                </MenuItem.Header>
+            </MenuItem>
+
             <MenuItem x:Name="ServerDetailsMenuItem" Visibility="Collapsed" Click="ServerDetailsMenuItem_Click">
                 <MenuItem.Header>
                     <Grid>

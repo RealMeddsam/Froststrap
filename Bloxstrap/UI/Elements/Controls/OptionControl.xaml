@@ -20,18 +20,18 @@
 
             <StackPanel Grid.Column="0">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock FontSize="14" FontWeight="Medium" Text="{Binding Header, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    <TextBlock FontSize="14" FontWeight="Medium" Text="{Binding Header, ElementName=Control}" />
                     <TextBlock Margin="4,0,0,0">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding HelpLink, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="{x:Null}">
+                                    <DataTrigger Binding="{Binding HelpLink, ElementName=Control}" Value="{x:Null}">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </TextBlock.Style>
-                        <Hyperlink TextDecorations="None" ToolTip="{x:Static resources:Strings.Menu_MoreInfo}" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="{Binding HelpLink, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <Hyperlink TextDecorations="None" ToolTip="{x:Static resources:Strings.Menu_MoreInfo}" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="{Binding HelpLink, ElementName=Control}">
                             <ui:SymbolIcon Symbol="QuestionCircle48" Margin="0,1,0,0">
                                 <ui:SymbolIcon.Style>
                                     <Style TargetType="ui:SymbolIcon" BasedOn="{StaticResource {x:Type ui:SymbolIcon}}">
@@ -56,11 +56,11 @@
                     </TextBlock>
                 </StackPanel>
 
-                <local:MarkdownTextBlock Margin="0,2,0,0" FontSize="12" MarkdownText="{Binding Description, RelativeSource={RelativeSource AncestorType=UserControl}}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}">
+                <local:MarkdownTextBlock Margin="0,2,0,0" FontSize="12" MarkdownText="{Binding Description, ElementName=Control}" TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}">
                     <local:MarkdownTextBlock.Style>
                         <Style TargetType="local:MarkdownTextBlock">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Description, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="{x:Null}">
+                                <DataTrigger Binding="{Binding Description, ElementName=Control}" Value="{x:Null}">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -69,7 +69,7 @@
                 </local:MarkdownTextBlock>
             </StackPanel>
 
-            <ContentPresenter Grid.Column="1" Content="{Binding InnerContent, RelativeSource={RelativeSource AncestorType=UserControl}}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="1,0,0,0"/>
+            <ContentPresenter Grid.Column="1" Content="{Binding InnerContent, ElementName=Control}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="1,0,0,0"/>
         </Grid>
     </ui:Card>
 </UserControl>

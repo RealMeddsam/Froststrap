@@ -1,53 +1,46 @@
 ﻿using Bloxstrap.PcTweaks;
-using System.Windows.Controls;
-using System.Windows;
 
 namespace Bloxstrap.UI.ViewModels.Settings
 {
     public partial class PCTweaksViewModel : NotifyPropertyChangedViewModel
     {
+        private bool _isSettingRobloxWiFiPriorityBoost = false;
+        private bool _isSettingAllowRobloxFirewall = false;
+        private bool _isSettingGeneralOptimization = false;
+        private bool _isSettingDisablePowerSavingFeatures = false;
+        private bool _isSettingIntelOptimizations = false;
+        private bool _isSettingAmdOptimizations = false;
+
+        public PCTweaksViewModel()
+        {
+            RefreshAllProperties();
+        }
+
         public bool RobloxWiFiPriorityBoost
         {
             get => QosPolicies.IsPolicyEnabled();
             set
             {
-                if (QosPolicies.IsPolicyEnabled() == value)
+                if (_isSettingRobloxWiFiPriorityBoost || QosPolicies.IsPolicyEnabled() == value)
                     return;
 
-                bool success = QosPolicies.TogglePolicy(value);
-                if (success)
+                _isSettingRobloxWiFiPriorityBoost = true;
+
+                try
                 {
-                    OnPropertyChanged(nameof(RobloxWiFiPriorityBoost));
+                    bool success = QosPolicies.TogglePolicy(value);
+                    if (success)
+                    {
+                        OnPropertyChanged(nameof(RobloxWiFiPriorityBoost));
+                    }
+                    else
+                    {
+                        OnPropertyChanged(nameof(RobloxWiFiPriorityBoost));
+                    }
                 }
-            }
-        }
-
-        public bool DisableGameDVR
-        {
-            get => GameDvrToggle.IsGameDvrDisabled();
-            set
-            {
-                if (GameDvrToggle.IsGameDvrDisabled() == value)
-                    return;
-
-                bool success = GameDvrToggle.ToggleGameDvr(value);
-                if (success)
-                    OnPropertyChanged(nameof(DisableGameDVR));
-            }
-        }
-
-        public bool NetworkAdapterOptimizationEnabled
-        {
-            get => NetworkAdapterOptimization.IsNetworkOptimizationEnabled();
-            set
-            {
-                if (NetworkAdapterOptimization.IsNetworkOptimizationEnabled() == value)
-                    return;
-
-                bool success = NetworkAdapterOptimization.ToggleNetworkOptimization(value);
-                if (success)
+                finally
                 {
-                    OnPropertyChanged(nameof(NetworkAdapterOptimizationEnabled));
+                    _isSettingRobloxWiFiPriorityBoost = false;
                 }
             }
         }
@@ -57,79 +50,157 @@ namespace Bloxstrap.UI.ViewModels.Settings
             get => FirewallRules.IsFirewallRuleEnabled();
             set
             {
-                if (FirewallRules.IsFirewallRuleEnabled() == value)
+                if (_isSettingAllowRobloxFirewall || FirewallRules.IsFirewallRuleEnabled() == value)
                     return;
 
-                bool success = FirewallRules.ToggleFirewallRule(value);
-                if (success)
-                    OnPropertyChanged(nameof(AllowRobloxFirewall));
+                _isSettingAllowRobloxFirewall = true;
+
+                try
+                {
+                    bool success = FirewallRules.ToggleFirewallRule(value);
+                    if (success)
+                    {
+                        OnPropertyChanged(nameof(AllowRobloxFirewall));
+                    }
+                    else
+                    {
+                        OnPropertyChanged(nameof(AllowRobloxFirewall));
+                    }
+                }
+                finally
+                {
+                    _isSettingAllowRobloxFirewall = false;
+                }
             }
         }
 
-        public bool TelemetryDisabled
+        public bool GeneralOptimizationsEnabled
         {
-            get => TelemetryTweaks.IsTelemetryDisabled();
+            get => GeneralOptimization.IsOptimizationEnabled();
             set
             {
-                if (TelemetryTweaks.IsTelemetryDisabled() == value)
+                if (_isSettingGeneralOptimization || GeneralOptimization.IsOptimizationEnabled() == value)
                     return;
 
-                bool success = TelemetryTweaks.ToggleTelemetrySettings(value);
-                if (success)
+                _isSettingGeneralOptimization = true;
+
+                try
                 {
-                    OnPropertyChanged(nameof(TelemetryDisabled));
+                    bool success = GeneralOptimization.ToggleOptimizations(value);
+                    if (success)
+                    {
+                        OnPropertyChanged(nameof(GeneralOptimizationsEnabled));
+                        OnPropertyChanged(nameof(RobloxWiFiPriorityBoost));
+                        OnPropertyChanged(nameof(AllowRobloxFirewall));
+                    }
+                    else
+                    {
+                        // If failed, revert the UI
+                        OnPropertyChanged(nameof(GeneralOptimizationsEnabled));
+                    }
+                }
+                finally
+                {
+                    _isSettingGeneralOptimization = false;
                 }
             }
         }
 
-        public bool DisableMitigations
+        public bool DisablePowerSavingFeature
         {
-            get => PcTweaks.DisableMitigations.AreMitigationsDisabled();
+            get => DisablePowerSavingFeatures.IsPowerSavingDisabled();
             set
             {
-                if (value != PcTweaks.DisableMitigations.AreMitigationsDisabled())
+                if (_isSettingDisablePowerSavingFeatures || DisablePowerSavingFeatures.IsPowerSavingDisabled() == value)
+                    return;
+
+                _isSettingDisablePowerSavingFeatures = true;
+
+                try
                 {
-                    _ = Task.Run(() =>
+                    bool success = DisablePowerSavingFeatures.TogglePowerSavingFeatures(value);
+                    if (success)
                     {
-                        bool result = PcTweaks.DisableMitigations.TogglePolicy(value);
-                        if (!result)
-                        {
-                            App.Current.Dispatcher.Invoke(() =>
-                                OnPropertyChanged(nameof(DisableMitigations)));
-                        }
-                        else
-                        {
-                            App.Current.Dispatcher.Invoke(() =>
-                                OnPropertyChanged(nameof(DisableMitigations)));
-                        }
-                    });
+                        OnPropertyChanged(nameof(DisablePowerSavingFeature));
+                    }
+                    else
+                    {
+                        OnPropertyChanged(nameof(DisablePowerSavingFeature));
+                    }
+                }
+                finally
+                {
+                    _isSettingDisablePowerSavingFeatures = false;
                 }
             }
         }
 
-        public bool DisableDefenderSmartScreen
+        public bool IntelOptimizationsEnabled
         {
-            get => PcTweaks.DisableDefenderSmartScreen.IsDisabled();
+            get => IntelCPUOptimization.IsIntelOptimizationEnabled();
             set
             {
-                if (value != PcTweaks.DisableDefenderSmartScreen.IsDisabled())
+                if (_isSettingIntelOptimizations || IntelCPUOptimization.IsIntelOptimizationEnabled() == value)
+                    return;
+
+                _isSettingIntelOptimizations = true;
+
+                try
                 {
-                    _ = Task.Run(() =>
+                    bool success = IntelCPUOptimization.ToggleIntelOptimizations(value);
+                    if (success)
                     {
-                        bool success = PcTweaks.DisableDefenderSmartScreen.ToggleDisableDefenderSmartScreen(value);
-                        if (!success)
-                        {
-                            App.Current.Dispatcher.Invoke(() =>
-                                OnPropertyChanged(nameof(DisableDefenderSmartScreen)));
-                        }
-                        else
-                        {
-                            App.Current.Dispatcher.Invoke(() =>
-                                OnPropertyChanged(nameof(DisableDefenderSmartScreen)));
-                        }
-                    });
+                        OnPropertyChanged(nameof(IntelOptimizationsEnabled));
+                    }
+                    else
+                    {
+                        OnPropertyChanged(nameof(IntelOptimizationsEnabled));
+                    }
+                }
+                finally
+                {
+                    _isSettingIntelOptimizations = false;
                 }
             }
+        }
+
+        public bool AmdOptimizationsEnabled
+        {
+            get => AmdCpuOptimization.IsAmdOptimizationEnabled();
+            set
+            {
+                if (_isSettingAmdOptimizations || AmdCpuOptimization.IsAmdOptimizationEnabled() == value)
+                    return;
+
+                _isSettingAmdOptimizations = true;
+
+                try
+                {
+                    bool success = AmdCpuOptimization.ToggleAmdOptimizations(value);
+                    if (success)
+                    {
+                        OnPropertyChanged(nameof(AmdOptimizationsEnabled));
+                    }
+                    else
+                    {
+                        OnPropertyChanged(nameof(AmdOptimizationsEnabled));
+                    }
+                }
+                finally
+                {
+                    _isSettingAmdOptimizations = false;
+                }
+            }
+        }
+
+        public void RefreshAllProperties()
+        {
+            OnPropertyChanged(nameof(RobloxWiFiPriorityBoost));
+            OnPropertyChanged(nameof(AllowRobloxFirewall));
+            OnPropertyChanged(nameof(GeneralOptimizationsEnabled));
+            OnPropertyChanged(nameof(DisablePowerSavingFeature));
+            OnPropertyChanged(nameof(IntelOptimizationsEnabled));
+            OnPropertyChanged(nameof(AmdOptimizationsEnabled));
         }
     }
 }

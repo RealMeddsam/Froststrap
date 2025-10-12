@@ -41,6 +41,7 @@
             <converters:HexToColorConverter x:Key="HexToColorConverter" />
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <converters:NumberAbbreviationConverter x:Key="NumberAbbreviationConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
