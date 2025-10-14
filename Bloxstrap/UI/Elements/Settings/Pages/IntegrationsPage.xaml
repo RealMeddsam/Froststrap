@@ -36,8 +36,7 @@
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_Integrations_QueryServerUptime_Title}" 
             Description="{Binding Source={x:Static resources:Strings.Menu_Integrations_QueryServerUptime_Description}, Converter={StaticResource StringFormatConverter}, ConverterParameter='https://www.rovalra.com'}"
-            IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}"
-            Visibility="Collapsed">
+            IsEnabled="{Binding InnerContent.IsChecked, ElementName=ActivityTrackingOption, Mode=OneWay}">
         <ui:ToggleSwitch IsChecked="{Binding ShowServerUptimeEnabled, Mode=TwoWay}" />
         </controls:OptionControl>
 
