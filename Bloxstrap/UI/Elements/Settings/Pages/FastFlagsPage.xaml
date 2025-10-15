@@ -65,12 +65,39 @@
         </controls:OptionControl>
 
 
-        <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_FastFlags_Presets_LowPolyMeshes_Title}" 
-            Description="{x:Static resources:Strings.Menu_FastFlags_Presets_LowPolyMeshes_Description}"
-            HelpLink="https://github.com/Meddsam/Froststrap/wiki/A-guide-to-FastFlags#low-poly-meshes">
-            <ui:ToggleSwitch IsChecked="{Binding LowPolyMeshes, Mode=TwoWay}" />
-        </controls:OptionControl>
+        <ui:CardExpander Margin="0,8,0,0" IsExpanded="{Binding Path=LowPolyMeshesEnabled, Mode=OneWay}" Style="{StaticResource NoUserExpansionCardExpanderStyle}">
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_FastFlags_Presets_LowPolyMeshes_Title}" />
+                        <TextBlock FontSize="12" Text="{x:Static resources:Strings.Menu_FastFlags_Presets_LowPolyMeshes_Description}" 
+                           Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                    </StackPanel>
+
+                    <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding LowPolyMeshesEnabled, Mode=TwoWay}" />
+                </Grid>
+            </ui:CardExpander.Header>
+
+            <StackPanel Margin="0,8,0,0">
+                <TextBlock Padding="8" Text="Adjust mesh detail levels for performance vs. quality." TextAlignment="Center" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Performance" Grid.Column="0" />
+                    <Slider Grid.Column="1" Margin="8,0,8,0" Minimum="0" Maximum="4" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding LowPolyMeshesLevel, Mode=TwoWay}" />
+                    <TextBlock Text="Quality" Grid.Column="2" />
+                </Grid>
+            </StackPanel>
+        </ui:CardExpander>
 
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_FastFlags_Presets_FixDisplayScaling_Title}" 
@@ -116,13 +143,5 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
         </controls:OptionControl>
-
-        <TextBlock Text="7"
-               x:Name="EasterEggNumber"
-               FontSize="12"
-               Opacity="0.3"
-               HorizontalAlignment="Right"
-               Margin="0,8,4,0"
-               ToolTip="Secret code digit #4" />
     </StackPanel>
 </ui:UiPage>

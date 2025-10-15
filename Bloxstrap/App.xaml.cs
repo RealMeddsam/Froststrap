@@ -68,6 +68,8 @@ namespace Bloxstrap
 
         public static readonly FastFlagManager FastFlags = new();
 
+        public static readonly GBSEditor GlobalSettings = new();
+
         public static readonly HttpClient HttpClient = new(
             new HttpClientLoggingHandler(
                 new HttpClientHandler { AutomaticDecompression = DecompressionMethods.All }
@@ -411,11 +413,13 @@ namespace Bloxstrap
                     Terminate();
                 }
 
+                Task.Run(App.RemoteData.LoadData); // ok
+
                 Settings.Load();
                 State.Load();
                 RobloxState.Load();
                 FastFlags.Load();
-                Task.Run(App.RemoteData.LoadData); // ok
+                GlobalSettings.Load();
 
                 if (!Locale.SupportedLocales.ContainsKey(Settings.Prop.Locale))
                 {

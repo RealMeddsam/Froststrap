@@ -211,12 +211,5 @@
                 </TextBlock.Style>
             </TextBlock>
         </Grid>
-        
-        <TextBlock Text="1"
-               FontSize="12"
-               Opacity="0.3"
-               HorizontalAlignment="Right"
-               Margin="0,8,4,0"
-               ToolTip="Secret code digit #1" />
     </StackPanel>
 </ui:UiPage>

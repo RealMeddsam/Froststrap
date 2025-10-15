@@ -1,4 +1,4 @@
-﻿using Wpf.Ui.Controls;
+using Wpf.Ui.Controls;
 
 namespace Bloxstrap.Models.APIs.Config
 {
@@ -16,13 +16,10 @@ namespace Bloxstrap.Models.APIs.Config
         [JsonPropertyName("packageMaps")]
         public PackageMaps PackageMaps { get; set; } = new();
 
-        [JsonPropertyName("normalRobloxSettings")]
-        public Dictionary<string, RobloxSettings> NormalRobloxSettings { get; set; } = new();
-
-        [JsonPropertyName("hiddenRobloxSettings")]
-        public Dictionary<string, RobloxSettings> HiddenRobloxSettings { get; set; } = new();
-
         [JsonPropertyName("allowedFastFlags")]
         public string AllowedFastFlags { get; set; } = null!;
+
+        [JsonPropertyName("settingsPage")]
+        public SettingsPageConfig SettingsPage { get; set; } = new();
     }
 }

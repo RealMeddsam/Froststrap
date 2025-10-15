@@ -29,15 +29,49 @@ namespace Bloxstrap.UI.ViewModels.Settings
             }
         }
 
-        public bool LowPolyMeshes
+        public bool LowPolyMeshesEnabled
         {
-            get => App.FastFlags.GetPreset("Rendering.LowPolyMeshes1") == "0";
+            get => App.FastFlags.GetPreset("Rendering.LowPolyMeshes1") != null;
             set
             {
-                App.FastFlags.SetPreset("Rendering.LowPolyMeshes1", value ? "0" : null);
-                App.FastFlags.SetPreset("Rendering.LowPolyMeshes2", value ? "0" : null);
-                App.FastFlags.SetPreset("Rendering.LowPolyMeshes3", value ? "0" : null);
-                App.FastFlags.SetPreset("Rendering.LowPolyMeshes4", value ? "0" : null);
+                if (value)
+                {
+                    LowPolyMeshesLevel = 2;
+                }
+                else
+                {
+                    App.FastFlags.SetPreset("Rendering.LowPolyMeshes1", null);
+                    App.FastFlags.SetPreset("Rendering.LowPolyMeshes2", null);
+                    App.FastFlags.SetPreset("Rendering.LowPolyMeshes3", null);
+                    App.FastFlags.SetPreset("Rendering.LowPolyMeshes4", null);
+                }
+                OnPropertyChanged(nameof(LowPolyMeshesEnabled));
+            }
+        }
+
+        public int LowPolyMeshesLevel
+        {
+            get
+            {
+                return int.TryParse(App.FastFlags.GetPreset("Rendering.LowPolyMeshes1"), out var x) ? x / 2500 : 0;
+            }
+            set
+            {
+                int clamped = Math.Clamp(value, 0, 4);
+        
+                int[] levels = new int[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    levels[i] = i < clamped ? clamped * 2500 - i * 2500 : 0;
+                }
+        
+                App.FastFlags.SetPreset("Rendering.LowPolyMeshes1", levels[0].ToString());
+                App.FastFlags.SetPreset("Rendering.LowPolyMeshes2", levels[1].ToString());
+                App.FastFlags.SetPreset("Rendering.LowPolyMeshes3", levels[2].ToString());
+                App.FastFlags.SetPreset("Rendering.LowPolyMeshes4", levels[3].ToString());
+
+                OnPropertyChanged(nameof(LowPolyMeshesLevel));
+                OnPropertyChanged(nameof(LowPolyMeshesEnabled));
             }
         }
 

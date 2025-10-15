@@ -1,48 +1,124 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Bloxstrap.Models.APIs.Config;
 
 namespace Bloxstrap.UI.ViewModels.Settings
 {
-    public class RobloxSettingsViewModel : NotifyPropertyChangedViewModel
+    public class RobloxSettingsViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<RobloxSettings> NormalRobloxSettings { get; set; } = new();
-        public ObservableCollection<RobloxSettings> HiddenRobloxSettings { get; set; } = new();
+        private readonly RemoteDataManager _remoteDataManager;
 
-        public void LoadFromRemote(RemoteDataBase remoteData)
+        public ObservableCollection<SettingsSection> Sections { get; } = new();
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public RobloxSettingsViewModel(RemoteDataManager remoteDataManager)
         {
-            NormalRobloxSettings.Clear();
-            HiddenRobloxSettings.Clear();
+            _remoteDataManager = remoteDataManager;
+            _remoteDataManager.Subscribe(OnRemoteDataLoaded);
+        }
 
-            if (remoteData.NormalRobloxSettings != null)
+        private void OnRemoteDataLoaded(object? sender, EventArgs e)
+        {
+            LoadFromRemoteConfig();
+            LoadCurrentValuesFromGBS();
+        }
+
+        public void LoadFromRemoteConfig()
+        {
+            Sections.Clear();
+            var pageConfig = _remoteDataManager.Prop.SettingsPage;
+
+            foreach (var sectionConfig in pageConfig.Sections)
             {
-                foreach (var kvp in remoteData.NormalRobloxSettings)
-                {
-                    var map = kvp.Value;
-                    NormalRobloxSettings.Add(new RobloxSettings
-                    {
-                        Name = kvp.Key,
-                        Header = map.Header,
-                        Description = map.Description,
-                        Type = map.Type,
-                        SettingName = map.SettingName
-                    });
-                }
+                Sections.Add(sectionConfig);
             }
 
-            if (remoteData.HiddenRobloxSettings != null)
+            SubscribeToControlChanges();
+            OnPropertyChanged(nameof(Sections));
+        }
+
+        private void SubscribeToControlChanges()
+        {
+            foreach (var section in Sections)
             {
-                foreach (var kvp in remoteData.HiddenRobloxSettings)
+                foreach (var control in section.Controls)
                 {
-                    var map = kvp.Value;
-                    HiddenRobloxSettings.Add(new RobloxSettings
-                    {
-                        Name = kvp.Key,
-                        Header = map.Header,
-                        Description = map.Description,
-                        Type = map.Type,
-                        SettingName = map.SettingName
-                    });
+                    control.PropertyChanged += OnControlPropertyChanged;
                 }
             }
+        }
+
+        private void OnControlPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (sender is SettingsControl control && control.GBSConfig != null)
+            {
+                IEnumerable<string> paths = control.GBSConfig.XmlPaths.Count > 0
+                    ? control.GBSConfig.XmlPaths
+                    : new[] { control.GBSConfig.XmlPath };
+
+                foreach (var path in paths)
+                {
+                    App.GlobalSettings.SetValue(path, control.GBSConfig.DataType, control.Value);
+                }
+            }
+        }
+
+        private void LoadCurrentValuesFromGBS()
+        {
+            App.GlobalSettings.Load();
+
+            foreach (var section in Sections)
+            {
+                foreach (var control in section.Controls)
+                {
+                    if (control.GBSConfig != null)
+                    {
+                        IEnumerable<string> paths = control.GBSConfig.XmlPaths.Count > 0
+                            ? control.GBSConfig.XmlPaths
+                            : new[] { control.GBSConfig.XmlPath };
+
+                        if (control.Type == ControlType.ToggleSwitch && paths.Count() > 1)
+                        {
+                            // Logical AND of all values
+                            bool allTrue = paths.All(p =>
+                                App.GlobalSettings.GetValue(p, "bool")?.ToLower() == "true"
+                            );
+
+                            control.Value = allTrue.ToString().ToLower();
+                        }
+                        else if (!string.IsNullOrEmpty(control.GBSConfig.XmlPath))
+                        {
+                            var currentValue = App.GlobalSettings.GetValue(control.GBSConfig.XmlPath, control.GBSConfig.DataType);
+                            control.Value = !string.IsNullOrEmpty(currentValue) ? currentValue : GetDefaultValueForControl(control);
+                        }
+                    }
+                }
+            }
+        }
+
+        private string GetDefaultValueForControl(SettingsControl control)
+        {
+            return control.Type switch
+            {
+                ControlType.Slider => control.MinValue.ToString(),
+                ControlType.ToggleSwitch => "false",
+                ControlType.ComboBox when control.Options.Count > 0 => control.Options[0].Value,
+                ControlType.Vector2 => "0,0",
+                _ => ""
+            };
+        }
+
+        public bool ReadOnly
+        {
+            get => App.GlobalSettings.GetReadOnly();
+            set => App.GlobalSettings.SetReadOnly(value);
+        }
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

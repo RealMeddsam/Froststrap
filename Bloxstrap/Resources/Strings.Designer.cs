@@ -1114,11 +1114,47 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear History.
+        /// </summary>
+        public static string ContextMenu_GameHistory_ClearHistory {
+            get {
+                return ResourceManager.GetString("ContextMenu_GameHistory_ClearHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy Job ID.
+        /// </summary>
+        public static string ContextMenu_GameHistory_CopyJobId {
+            get {
+                return ResourceManager.GetString("ContextMenu_GameHistory_CopyJobId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Game history is only recorded for your current Roblox session. Games will appear here as you leave them or teleport within them. Not all servers will be rejoinable..
         /// </summary>
         public static string ContextMenu_GameHistory_Description {
             get {
                 return ResourceManager.GetString("ContextMenu.GameHistory.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No game history yet{0}{0}Join some games to see them here!.
+        /// </summary>
+        public static string ContextMenu_GameHistory_NoHistory {
+            get {
+                return ResourceManager.GetString("ContextMenu_GameHistory_NoHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh.
+        /// </summary>
+        public static string ContextMenu_GameHistory_Refresh {
+            get {
+                return ResourceManager.GetString("ContextMenu_GameHistory_Refresh", resourceCulture);
             }
         }
         
@@ -4197,7 +4233,7 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reduces the quality of polygon meshes to potentially improve rendering performance or reduce memory usage..
+        ///   Looks up a localized string similar to Control the quality of meshes, by reducing or increasing its quality..
         /// </summary>
         public static string Menu_FastFlags_Presets_LowPolyMeshes_Description {
             get {
@@ -4206,7 +4242,7 @@ namespace Bloxstrap.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Low-Poly Meshes.
+        ///   Looks up a localized string similar to Meshes Details.
         /// </summary>
         public static string Menu_FastFlags_Presets_LowPolyMeshes_Title {
             get {
@@ -4490,6 +4526,33 @@ namespace Bloxstrap.Resources {
         public static string Menu_Froststrap_ExportData_Title {
             get {
                 return ResourceManager.GetString("Menu.Froststrap.ExportData.Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set in-game settings from Froststrap menu..
+        /// </summary>
+        public static string Menu_GBSEditor_Description {
+            get {
+                return ResourceManager.GetString("Menu.GBSEditor.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prevent Roblox from overriding global settings..
+        /// </summary>
+        public static string Menu_GBSEditor_ReadOnly_Description {
+            get {
+                return ResourceManager.GetString("Menu.GBSEditor.ReadOnly.Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set as Read-Only.
+        /// </summary>
+        public static string Menu_GBSEditor_ReadOnly_Title {
+            get {
+                return ResourceManager.GetString("Menu.GBSEditor.ReadOnly.Title", resourceCulture);
             }
         }
         

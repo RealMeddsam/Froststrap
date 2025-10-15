@@ -5,9 +5,6 @@ jobs:
   build:
     runs-on: windows-latest
 
-    outputs:
-      artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
-
     steps:
     - uses: actions/checkout@v4
       with:
@@ -27,10 +24,9 @@ jobs:
       run: dotnet publish -p:PublishSingleFile=true -p:CommitHash=${{ github.sha }} -p:CommitRef=${{ github.ref_type }}/${{ github.ref_name }} -r win-x64 -c Release --self-contained false .\Bloxstrap\Bloxstrap.csproj
 
     - name: Upload Artifact
-      id: upload-artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Froststrap (Release) (${{ github.sha }})
+        name: Froststrap(Release) (${{ github.sha }})
         path: .\Bloxstrap\bin\Release\net6.0-windows\win-x64\publish\*
 
   release:
@@ -41,27 +37,21 @@ jobs:
       contents: write
 
     steps:
-      - name: Sign and download artifact
-        uses: signpath/github-action-submit-signing-request@v1.1
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
-          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
-          organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
-          project-slug: 'Froststrap'
-          signing-policy-slug: 'test-signing'
-          artifact-configuration-slug: 'github-ci'
-          github-artifact-id: ${{ needs.build.outputs.artifact-id }}
-          wait-for-completion: true
-          output-artifact-directory: 'signed'
+          name: Froststrap(Release) (${{ github.sha }})
+          path: release
 
       - name: Rename binaries
-        run: mv signed/Bloxstrap.exe Froststrap-${{ github.ref_name }}.exe
+        run: mv release/Froststrap.exe Froststrap-${{ github.ref_name }}.exe
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
           files: Froststrap-${{ github.ref_name }}.exe
-          name: Froststrap ${{ github.ref_name }}
+          name: Froststrap${{ github.ref_name }}
           fail_on_unmatched_files: true
 
   release-test:
@@ -72,25 +62,19 @@ jobs:
       contents: write
 
     steps:
-      - name: Sign and download artifact
-        uses: signpath/github-action-submit-signing-request@v1.1
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
-          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
-          organization-id: '837ad744-6d64-4d44-94ef-65a9a2d09399'
-          project-slug: 'Froststrap'
-          signing-policy-slug: 'test-signing'
-          artifact-configuration-slug: 'github-ci'
-          github-artifact-id: ${{ needs.build.outputs.artifact-id }}
-          wait-for-completion: true
-          output-artifact-directory: 'signed'
+          name: Froststrap(Release) (${{ github.sha }})
+          path: release
 
       - name: Rename binaries
-        run: mv signed/Bloxstrap.exe Froststrap-${{ github.ref_name }}.exe
+        run: mv release/Froststrap.exe Froststrap-${{ github.ref_name }}.exe
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
           files: Froststrap-${{ github.ref_name }}.exe
-          name: Froststrap ${{ github.ref_name }}
+          name: Froststrap${{ github.ref_name }}
           fail_on_unmatched_files: true

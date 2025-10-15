@@ -10,6 +10,7 @@ namespace Bloxstrap.Models.Persistable
         public bool ShowServerDetails { get; set; } = true;
         public bool ShowServerUptime { get; set; } = false;
         public bool ShowGameHistoryMenu { get; set; } = true;
+        public List<ActivityData> ServerHistory { get; set; } = new List<ActivityData>();
         public bool PlaytimeCounter { get; set; } = true;
         public TrayDoubleClickAction DoubleClickAction { get; set; } = TrayDoubleClickAction.ServerInfo;
         public bool UseDisableAppPatch { get; set; } = false;
@@ -97,26 +98,5 @@ namespace Bloxstrap.Models.Persistable
         public bool ForceLocalData { get; set; } = false;
         public bool DeveloperMode { get; set; } = false;
         public WebEnvironment WebEnvironment { get; set; } = WebEnvironment.Production;
-
-        // Clicker Game Configuration
-        public string Points { get; set; } = "0";
-        public string PointsPerClick { get; set; } = "1";
-        public bool AutoClickerEnabled { get; set; } = false;
-        public decimal BonusMultiplier { get; set; } = 1.0m;
-        public int BonusMultiplierLevel { get; set; } = 0;
-        public int CriticalClickChancePercent { get; set; } = 0;
-        public int CriticalClickMultiplier { get; set; } = 2;
-        public int UpgradeDiscountPercent { get; set; } = 0;
-        public string TotalPointsSpent { get; set; } = "0";
-        public string TotalPointsEarned { get; set; } = "0";
-        public long TotalPlaytimeTicks { get; set; } = 0;
-
-        // Clicker Game Prices
-        public string DoubleClickPowerPrice { get; set; } = "50";
-        public string AutoClickerPrice { get; set; } = "50";
-        public string BonusMultiplierPrice { get; set; } = "250";
-        public string CriticalClickChancePrice { get; set; } = "2000";
-        public string CriticalClickMultiplierPrice { get; set; } = "4000";
-        public string UpgradeDiscountPrice { get; set; } = "3000";
     }
 }

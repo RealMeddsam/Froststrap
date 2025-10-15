@@ -63,24 +63,17 @@ namespace Bloxstrap.Models.Entities
 
         public UniverseDetails? UniverseDetails { get; set; }
 
-        public string GameHistoryDescription
+        public ICommand CopyJobIdCommand => new RelayCommand(CopyJobId);
+
+        private void CopyJobId()
         {
-            get
+            if (!string.IsNullOrEmpty(JobId))
             {
-                string desc = string.Format(
-                    "{0} • {1} {2} {3}", 
-                    UniverseDetails?.Data.Creator.Name,
-                    TimeJoined.ToString("t"), 
-                    Locale.CurrentCulture.Name.StartsWith("ja") ? '~' : '-',
-                    TimeLeft?.ToString("t")
-                );
-
-                if (ServerType != ServerType.Public)
-                    desc += " • " + ServerType.ToTranslatedString();
-
-                return desc;
+                Clipboard.SetText(JobId);
             }
         }
+
+        public ICommand CopyJoinLinkCommand => new RelayCommand(CopyJoinLink);
 
         public ICommand RejoinServerCommand => new RelayCommand(RejoinServer);
 
@@ -224,9 +217,113 @@ namespace Bloxstrap.Models.Entities
 
         private void RejoinServer()
         {
-            string playerPath = new RobloxPlayerData().ExecutablePath;
+            try
+            {
+                App.Logger.WriteLine("ActivityData::RejoinServer", $"Rejoining server: {PlaceId}/{JobId}");
 
-            Process.Start(playerPath, GetInviteDeeplink(false));
+                string robloxUri = $"roblox://experiences/start?placeId={PlaceId}&gameInstanceId={JobId}";
+
+                if (ServerType == ServerType.Private && !string.IsNullOrEmpty(AccessCode))
+                {
+                    robloxUri += $"&accessCode={AccessCode}";
+                }
+
+                if (!string.IsNullOrEmpty(RPCLaunchData))
+                {
+                    robloxUri += $"&launchData={HttpUtility.UrlEncode(RPCLaunchData)}";
+                }
+
+                App.Logger.WriteLine("ActivityData::RejoinServer", $"Launching Roblox URI: {robloxUri}");
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = robloxUri,
+                    UseShellExecute = true
+                });
+
+                App.Logger.WriteLine("ActivityData::RejoinServer", "Successfully launched new Roblox instance");
+
+                CloseExistingRobloxInstances();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("ActivityData::RejoinServer", ex);
+                MessageBox.Show($"Failed to rejoin server: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
+        private void CloseExistingRobloxInstances()
+        {
+            try
+            {
+                var processes = Process.GetProcessesByName("RobloxPlayerBeta");
+                int closedCount = 0;
+
+                foreach (var process in processes)
+                {
+                    try
+                    {
+                        if ((DateTime.Now - process.StartTime).TotalSeconds < 3)
+                        {
+                            App.Logger.WriteLine("ActivityData::CloseExistingRobloxInstances", $"Skipping new process (PID: {process.Id})");
+                            continue;
+                        }
+
+                        App.Logger.WriteLine("ActivityData::CloseExistingRobloxInstances", $"Instantly closing old Roblox process (PID: {process.Id})");
+                        process.Kill(); // Kill instantly, don't wait for exit
+                        closedCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine("ActivityData::CloseExistingRobloxInstances", $"Failed to close process {process.Id}: {ex.Message}");
+                    }
+                }
+
+                App.Logger.WriteLine("ActivityData::CloseExistingRobloxInstances", $"Instantly closed {closedCount} old Roblox instances");
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("ActivityData::CloseExistingRobloxInstances", $"Error closing processes: {ex.Message}");
+            }
+        }
+
+        private void CopyJoinLink()
+        {
+            try
+            {
+                string joinLink = GetInviteDeeplink();
+                Clipboard.SetText(joinLink);
+
+                App.Logger.WriteLine("ActivityData::CopyJoinLink", $"Copied join link: {joinLink}");
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("ActivityData::CopyJoinLink", ex);
+                MessageBox.Show($"Failed to copy join link: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public string ServerTypeDisplay => ServerType switch
+        {
+            ServerType.Public => "Public Server",
+            ServerType.Private => "Private Server",
+            ServerType.Reserved => "Reserved Server",
+            _ => "Unknown Server"
+        };
+
+        public string ServerIdDisplay
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(JobId))
+                    return "No Server ID";
+
+                if (JobId.Length > 12)
+                    return $"Server: {JobId[..12]}...";
+                else
+                    return $"Server: {JobId}";
+            }
+        }
+
     }
 }

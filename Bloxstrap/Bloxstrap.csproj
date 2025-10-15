@@ -7,8 +7,8 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>Bloxstrap.ico</ApplicationIcon>
-    <Version>1.2.5.0</Version>
-    <FileVersion>1.2.5.0</FileVersion>
+    <Version>1.2.6.0</Version>
+    <FileVersion>1.2.6.0</FileVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
@@ -21,7 +21,7 @@
     <Resource Include="Bloxstrap.ico" />
     <Resource Include="Resources\Checkmark.ico" />
     <Resource Include="Resources\CrossMark.ico" />
-	<Resource Include="Resources\People.png" />
+    <Resource Include="Resources\People.png" />
     <Resource Include="Resources\Froststrap Custom Background.png" />
     <Resource Include="Resources\LightEditor.xshd" />
     <Resource Include="Resources\Fonts\NotoSansThai-VariableFont_wdth,wght.ttf" />
@@ -33,12 +33,6 @@
     <Resource Include="Resources\MessageBox\Information.png" />
     <Resource Include="Resources\MessageBox\Question.png" />
     <Resource Include="Resources\MessageBox\Warning.png" />
-	<Resource Include="Resources\PCTweaks\CPU.png" />
-    <Resource Include="Resources\PCTweaks\GPU.png" />
-    <Resource Include="Resources\PCTweaks\Network.png" />
-    <Resource Include="Resources\PCTweaks\Performance.png" />
-    <Resource Include="Resources\PCTweaks\Privacy.png" />
-    <Resource Include="Resources\PCTweaks\Warning.png" />
     <EmbeddedResource Include="Resources\FroststrapPowerPlans\FroststrapLowLatency.pow" />
     <EmbeddedResource Include="Resources\FroststrapPowerPlans\FroststrapMaximumFPS.pow" />
     <EmbeddedResource Include="Resources\mappings.json" />

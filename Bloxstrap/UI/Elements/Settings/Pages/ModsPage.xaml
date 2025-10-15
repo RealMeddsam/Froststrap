@@ -76,7 +76,7 @@
         </Grid>
 
         <Separator Margin="0,8,0,0"/>
-        
+
         <TabControl Margin="0,16,0,0">
             <TabItem Header="Preset Mod" FontWeight="Bold" >
                 <StackPanel Margin="8" Height="Auto">
@@ -542,13 +542,5 @@
                 </Grid>
             </TabItem>
         </TabControl>
-
-        <TextBlock Text="9"
-               FontSize="12"
-               Opacity="0.3"
-               HorizontalAlignment="Right"
-               Margin="0,8,4,0"
-               ToolTip="Secret code digit #3" />
-
     </StackPanel>
 </ui:UiPage>

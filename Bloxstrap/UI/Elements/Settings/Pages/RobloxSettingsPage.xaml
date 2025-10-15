@@ -4,81 +4,135 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns:controls="clr-namespace:Bloxstrap.UI.Elements.Controls"
       xmlns:resources="clr-namespace:Bloxstrap.Resources"
+      xmlns:controls="clr-namespace:Bloxstrap.UI.Elements.Controls"
+      xmlns:converters="clr-namespace:Bloxstrap.UI.Converters"
+      xmlns:models="clr-namespace:Bloxstrap.Models"
       mc:Ignorable="d"
-      d:DesignHeight="900" d:DesignWidth="800"
+      d:DesignHeight="1500" d:DesignWidth="800"
       Title="RobloxSettingsPage"
-      Scrollable="True"
-      x:Name="RobloxSettingsPageControl">
+      Scrollable="True">
+
+    <ui:UiPage.Resources>
+
+        <!-- 🟠 TextBoxTemplate -->
+        <DataTemplate x:Key="TextBoxTemplate">
+            <ui:TextBox Margin="0,0,5,4"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </DataTemplate>
+
+        <!-- 🟢 SliderTemplate -->
+        <DataTemplate x:Key="SliderTemplate">
+            <Grid Margin="0,0,0,4" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Slider Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    Minimum="{Binding MinValue}"
+                    Maximum="{Binding MaxValue}"
+                    TickFrequency="{Binding Step}"
+                    IsSnapToTickEnabled="True"
+                    Value="{Binding TypedValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Grid.Column="1"
+                       Margin="4,0,0,0"
+                       Width="33"
+                       HorizontalAlignment="Right"
+                       TextAlignment="Right"
+                       Text="{Binding Value}" />
+            </Grid>
+        </DataTemplate>
+
+        <!-- ⚪ ToggleSwitchTemplate -->
+        <DataTemplate x:Key="ToggleSwitchTemplate">
+            <Grid Margin="0,0,0,4" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <ui:ToggleSwitch VerticalAlignment="Center" IsChecked="{Binding TypedValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+        </DataTemplate>
+
+        <!-- 🟣 ComboBoxTemplate -->
+        <DataTemplate x:Key="ComboBoxTemplate">
+            <ComboBox Margin="0,0,5,4"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Center"
+                  ItemsSource="{Binding Options}"
+                  SelectedValue="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  DisplayMemberPath="DisplayName"
+                  SelectedValuePath="Value" />
+        </DataTemplate>
+
+        <!-- 🔵 Vector2Template -->
+        <DataTemplate x:Key="Vector2Template">
+            <Grid Margin="0,0,0,4" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <ui:TextBox Grid.Column="0"
+                        Margin="0,0,4,0"
+                        ClearButtonEnabled="False"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        Text="{Binding VectorX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        PreviewTextInput="ValidateFloat" />
+
+                <ui:TextBox Grid.Column="1"
+                        Margin="4,0,0,0"
+                        ClearButtonEnabled="False"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        Text="{Binding VectorY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        PreviewTextInput="ValidateFloat" />
+            </Grid>
+        </DataTemplate>
+
+    </ui:UiPage.Resources>
+
 
     <StackPanel Margin="0,0,14,14">
-        <TextBlock Text="This allows you to configure some Roblox settings." FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12"/>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <ui:InfoBar Margin="0,0,0,8" Grid.Column="0" Padding="8" IsOpen="True" Message="Some of these options might not work, if it dosent then tell us on our discord server" Severity="Informational" IsClosable="False" Background="{DynamicResource PrimaryBackgroundColor}"/>
-            <Button Grid.Column="1" Padding="8" Content="Edit All Roblox Settings" Margin="4,0,0,8" Click="OpenRobloxSettingsDialog_Click"/>
-        </Grid>
+        <TextBlock Margin="0,0,0,16" Text="{x:Static resources:Strings.Menu_GBSEditor_Description}" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
 
-        <ui:CardExpander Margin="0,8,0,0" IsExpanded="False">
-            <ui:CardExpander.Header>
-                <StackPanel>
-                    <TextBlock FontSize="14" Text="Normal Roblox Settings" FontWeight="Medium"/>
-                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="These are normal settings that can be found in roblox settings page." Foreground="{DynamicResource TextFillColorTertiaryBrush}"/>
-                </StackPanel>
-            </ui:CardExpander.Header>
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding NormalRobloxSettings}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <controls:OptionControl Header="{Binding Header}" Description="{Binding Description}">
-                                <StackPanel>
-                                    <ui:ToggleSwitch IsChecked="{Binding BoolValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding IsBoolean, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    <TextBox Text="{Binding StringValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsString, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    <TextBox Text="{Binding IntValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsInt, Converter={StaticResource BooleanToVisibilityConverter}}" PreviewTextInput="ValidateInt32"/>
-                                    <TextBox Text="{Binding Int64Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsInt64, Converter={StaticResource BooleanToVisibilityConverter}}" PreviewTextInput="ValidateInt64"/>
-                                    <TextBox Text="{Binding FloatValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsFloat, Converter={StaticResource BooleanToVisibilityConverter}}" PreviewTextInput="ValidateFloat"/>
-                                    <TextBox Text="{Binding TokenValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsToken, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    <TextBox Text="{Binding SecurityCapabilitiesValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsSecurityCapabilities, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsVector2, Converter={StaticResource BooleanToVisibilityConverter}}"><TextBlock Text="X:" Padding="10,7,10,7" Margin="0,0,5,0"/><TextBox Text="{Binding Vector2XValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="95" Padding="10,7,10,7" Margin="0,0,5,0" ToolTip="X value" PreviewTextInput="ValidateFloat"/><TextBlock Text="Y:" Padding="10,7,10,7" Margin="0,0,5,0"/><TextBox Text="{Binding Vector2YValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="95" Padding="10,7,10,7" Margin="5,0,0,0" ToolTip="Y value" PreviewTextInput="ValidateFloat"/></StackPanel>
-                                </StackPanel>
-                            </controls:OptionControl>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ui:CardExpander>
+        <controls:OptionControl 
+            Header="{x:Static resources:Strings.Menu_GBSEditor_ReadOnly_Title}" 
+            Description="{x:Static resources:Strings.Menu_GBSEditor_ReadOnly_Description}">
+            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding ReadOnly}" />
+        </controls:OptionControl>
 
-        <ui:CardExpander Margin="0,8,0,0" IsExpanded="True">
-            <ui:CardExpander.Header>
-                <StackPanel>
-                    <TextBlock FontSize="14" Text="Hidden Roblox Settings" FontWeight="Medium"/>
-                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="This contains some settings hidden in roblox files." Foreground="{DynamicResource TextFillColorTertiaryBrush}"/>
-                </StackPanel>
-            </ui:CardExpander.Header>
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding HiddenRobloxSettings}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <controls:OptionControl Header="{Binding Header}" Description="{Binding Description}">
-                                <StackPanel>
-                                    <ui:ToggleSwitch IsChecked="{Binding BoolValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding IsBoolean, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    <TextBox Text="{Binding StringValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsString, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    <TextBox Text="{Binding IntValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsInt, Converter={StaticResource BooleanToVisibilityConverter}}" PreviewTextInput="ValidateInt32"/>
-                                    <TextBox Text="{Binding Int64Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsInt64, Converter={StaticResource BooleanToVisibilityConverter}}" PreviewTextInput="ValidateInt64"/>
-                                    <TextBox Text="{Binding FloatValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsFloat, Converter={StaticResource BooleanToVisibilityConverter}}" PreviewTextInput="ValidateFloat"/>
-                                    <TextBox Text="{Binding TokenValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsToken, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    <TextBox Text="{Binding SecurityCapabilitiesValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,7,10,7" Visibility="{Binding IsSecurityCapabilities, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsVector2, Converter={StaticResource BooleanToVisibilityConverter}}"><TextBlock Text="X:" Padding="10,7,10,7" Margin="0,0,5,0"/><TextBox Text="{Binding Vector2XValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="95" Padding="10,7,10,7" Margin="0,0,5,0" PreviewTextInput="ValidateFloat"/><TextBlock Text="Y:" Padding="10,7,10,7" Margin="0,0,5,0"/><TextBox Text="{Binding Vector2YValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="95" Padding="10,7,10,7" Margin="5,0,0,0" ToolTip="Y value" PreviewTextInput="ValidateFloat"/></StackPanel>
-                                </StackPanel>
-                            </controls:OptionControl>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ui:CardExpander>
+        <ItemsControl ItemsSource="{Binding Sections}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="0,8,0,0">
+
+                        <Separator Margin="0,8,0,4"/>
+
+                        <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="Bold" />
+
+                        <ItemsControl ItemsSource="{Binding Controls}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="4" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinWidth="200" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <controls:SquareCard Header="{Binding Title}" Description="{Binding Description}">
+                                        <controls:SquareCard.InnerContent>
+                                            <ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource SettingsControlSelector}"/>
+                                        </controls:SquareCard.InnerContent>
+                                    </controls:SquareCard>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </StackPanel>
 </ui:UiPage>

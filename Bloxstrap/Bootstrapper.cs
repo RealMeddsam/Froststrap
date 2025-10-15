@@ -264,6 +264,11 @@ namespace Bloxstrap
 
             if (!_noConnection)
             {
+                if (App.RemoteData.LoadedState == GenericTriState.Unknown) // we dont want it to flicker
+                    SetStatus(Strings.Bootstrapper_Status_WaitingForData);
+
+                await SetupPackageDictionaries(); // mods also require it
+
                 // we are checking if eurotrucks2 exists in client directory
                 if (
                     File.Exists(Path.Combine(AppData.Directory, App.RobloxAnselAppName))
@@ -1333,11 +1338,6 @@ namespace Bloxstrap
                 return;
             }
 
-            if (App.RemoteData.LoadedState == GenericTriState.Unknown) // we dont want it to flicker
-                SetStatus(Strings.Bootstrapper_Status_WaitingForData);
-
-            await SetupPackageDictionaries();
-
             if (String.IsNullOrEmpty(AppData.State.VersionGuid))
                 SetStatus(Strings.Bootstrapper_Status_Installing);
             else
@@ -1622,7 +1622,7 @@ namespace Bloxstrap
 
                     App.Logger.WriteLine(LOG_IDENT, $"Setting font for {jsonFilename}");
 
-                    var fontFamilyData = JsonSerializer.Deserialize<Bloxstrap.Models.FontFamily>(File.ReadAllText(jsonFilePath));
+                    var fontFamilyData = JsonSerializer.Deserialize<Models.FontFamily>(File.ReadAllText(jsonFilePath));
 
                     if (fontFamilyData is null)
                         continue;
@@ -1709,23 +1709,19 @@ namespace Bloxstrap
                 if (modFolderFiles.Contains(fileLocation))
                     continue;
 
-                if (PackageDirectoryMap == null || PackageDirectoryMap.Count == 0)
-                {
-                    App.Logger.WriteLine(LOG_IDENT, "PackageDirectoryMap is null or empty, skipping package restoration check");
-                    continue;
-                }
-
-                var packageMapEntry = PackageDirectoryMap
-                    .SingleOrDefault(x => !String.IsNullOrEmpty(x.Value) && fileLocation.StartsWith(x.Value));
-
+                var packageMapEntry = PackageDirectoryMap.SingleOrDefault(x => !String.IsNullOrEmpty(x.Value) && fileLocation.StartsWith(x.Value));
                 string packageName = packageMapEntry.Key;
 
+                // package doesn't exist, likely mistakenly placed file
                 if (String.IsNullOrEmpty(packageName))
                 {
                     App.Logger.WriteLine(LOG_IDENT, $"{fileLocation} was removed as a mod but does not belong to a package");
+
                     string versionFileLocation = Path.Combine(_latestVersionDirectory, fileLocation);
+
                     if (File.Exists(versionFileLocation))
                         File.Delete(versionFileLocation);
+
                     continue;
                 }
 
