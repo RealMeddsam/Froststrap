@@ -31,11 +31,10 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 # Key Improvements Over Bloxstrap
 
 ### Integrations
-- Player and message logs are now combined into **Logs Menu**
 - Disable Roblox’s built-in screenshot and video recording system
 - Custom Froststrap Discord RPC that shows the current page/dialog
 - Replace "Playing Roblox" with the name of the game you're playing using Custom Status Display
-- Game history logging is now toggleable
+- Game history is now toggleable
 - PlayTime Counter shows both total and session playtime
 
 ### Bootstrapper
@@ -56,25 +55,20 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 - Better Profiles
 - Press Ctrl+Z and Ctrl+Y to Undo/Redo changes
 - Built-in FastFlag lists inside of the profiles dialog
-- Remove invalid/default flags and automatically update outdated ones in one click
+- Remove flags not in the allow list using Clean List
 - Use Preset Column to help find which flags are toggleables in fastflag settings
-- FastFlag Warning system to help tell you about ban worthy fastflags
 - Select values quickly using the built-in value selector when adding flags
-- Use Find Flag feature to check all of Robloxs FastFlags
-- Publish and Use other peoples published lists in Public Flag Lists
 
 ### UI & Appearance
 - Fully customizable bootstrapper launcher
 - Change the app font to any font you want
 - Supports animated GIF, image, and gradient backgrounds themes
 - Built-in App themes
-- Use element toolbox when creating custom launchers (prob removing soon cuz its hella useless) 
 
 ### Settings
 - Disable Hardware Acceleration to lower froststrap memory usage
 - Disable Froststrap Animations to help with performance
-- Fixed auto update that wont go off randomly
-- Easily switch Roblox update channels with action presets
+- Easily switch Roblox Channels
 - Option to fully block Roblox updates
 - Quickly Reset/Import/Export all your settings in one place
 - Use the debug menu to read log files
@@ -83,9 +77,8 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 ### Extra Features
 - Remembers the last opened tab
 - Import settings from other bootstrappers easily like Fishstrap and Bloxstrap
-- Built-in PC tweaks for performance optimization
 - Create game shortcuts for faster game joining
-- Includes a hidden Easter egg page and game
+- Easily join your regions using our built-in Region Selector
 
 > Many more features are in active development.
 
