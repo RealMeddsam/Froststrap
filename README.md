@@ -82,6 +82,8 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 - Disable Hardware Acceleration to lower froststrap memory usage
 - Disable Froststrap Animations to help with performance
 - Quickly Reset/Import/Export all your settings in one place
+- Choose what save and launch opens
+- View the currently available channels you can use
 
 ### Extra Features
 - Remembers the last opened tab
