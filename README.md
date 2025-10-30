@@ -34,7 +34,8 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 - Disable Roblox’s built-in screenshot and video recording system
 - Custom Froststrap Discord RPC that shows the current page/dialog
 - Replace "Playing Roblox" with the name of the game you're playing using Custom Status Display
-- Game history is now toggleable
+- Game history is now a toggleable and you can view it within the app
+- Double click Froststrap in system tray when playing roblox to open specific window
 - PlayTime Counter shows both total and session playtime
 
 ### Bootstrapper
@@ -42,10 +43,9 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 - Change the Roblox process priority
 - Automatically close the Roblox Crash Handler to reduce memory usage
 - Integrated cleaner tool to remove leftover files (feature was made by fishstrap first not us)
-- Multi-instance launching support
 
 ### Mods
-- Generate Mods using custom gradient colors easily
+- Generate Mods using custom gradient colors with ability to add Voice chat and Emote Wheel support to your mod and way more
 - Quick use Custom Cursors and Custom Shiftlocks easily
 - Have multiple Custom Cursor Sets ready for use with the click of a button
 - Easily add custom death sounds
@@ -65,20 +65,29 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 - Supports animated GIF, image, and gradient backgrounds themes
 - Built-in App themes
 
+### Region Selector
+- Join regions near your location by selecting the region
+- Search for games using their name instead of place id
+- Choose between joinning big or small servers
+- This feature requires you to add your account to Account Manager
+
+### Account Manager (Coming Soon)
+- Add accounts via browser or quick sign in code
+- Game Information on the selected game like Currently Playing, Visits and way more
+- Join games normally and through preferred region using selected account
+- Subplace Joiner allows you to join games subplaces
+- Join your Continue Playing, Favorites and Recommendation games normally or through preferred region using selected account
+
 ### Settings
 - Disable Hardware Acceleration to lower froststrap memory usage
 - Disable Froststrap Animations to help with performance
-- Easily switch Roblox Channels
-- Option to fully block Roblox updates
 - Quickly Reset/Import/Export all your settings in one place
-- Use the debug menu to read log files
-- Easily uninstall Froststrap if its not to your liking (you totally shouldnt trust trust)
 
 ### Extra Features
 - Remembers the last opened tab
 - Import settings from other bootstrappers easily like Fishstrap and Bloxstrap
 - Create game shortcuts for faster game joining
-- Easily join your regions using our built-in Region Selector
+- Change Global Roblox Settings within the app.
 
 > Many more features are in active development.
 
