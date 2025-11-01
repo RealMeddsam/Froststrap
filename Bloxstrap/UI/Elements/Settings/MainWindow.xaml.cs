@@ -57,7 +57,7 @@ namespace Bloxstrap.UI.Elements.Settings
                 AlertBar.Severity = Data.AlertSeverity;
             });
 
-            viewModel.ApplyBackdrop(App.Settings.Prop.SelectedBackdrop);
+            App.WindowsBackdrop();
 
             var allItems = RootNavigation.Items.OfType<NavigationItem>().ToList();
             var allFooters = RootNavigation.Footer?.OfType<NavigationItem>().ToList() ?? new List<NavigationItem>();

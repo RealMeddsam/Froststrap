@@ -22,7 +22,7 @@ namespace Bloxstrap.UI.Elements.Dialogs
         {
             InitializeComponent();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Exception");
+            App.FrostRPC?.SetDialog("Exception");
 
             AddException(exception);
 

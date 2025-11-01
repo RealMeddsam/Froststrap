@@ -13,7 +13,7 @@ namespace Bloxstrap.UI.Elements.About
         {
             InitializeComponent();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: About");
+            App.FrostRPC?.SetDialog("About");
 
             App.Logger.WriteLine("MainWindow", "Initializing about window");
 

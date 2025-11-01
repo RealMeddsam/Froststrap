@@ -10,6 +10,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
             foreach (var entry in RobloxIconEx.Selections)
                 RobloxIcons.Add(new RobloxIconEntry { IconType = (RobloxIcon)entry });
+
+            App.Cookies.StateChanged += (object? _, CookieState state) => CookieLoadingFailed = state != CookieState.Success && state != CookieState.Unknown;
         }
 
         public ObservableCollection<ProcessPriorityOption> ProcessPriorityOptions { get; } =
@@ -50,6 +52,32 @@ namespace Bloxstrap.UI.ViewModels.Settings
         {
             get => App.Settings.Prop.ConfirmLaunches;
             set => App.Settings.Prop.ConfirmLaunches = value;
+        }
+
+        public bool CookieLoadingFinished => true;
+
+        public bool CookieAccess
+        {
+            get => App.Settings.Prop.AllowCookieAccess;
+            set
+            {
+                App.Settings.Prop.AllowCookieAccess = value;
+                if (value)
+                    Task.Run(App.Cookies.LoadCookies);
+
+                OnPropertyChanged(nameof(CookieAccess));
+            }
+        }
+
+        private bool _cookieLoadingFailed;
+        public bool CookieLoadingFailed
+        {
+            get => _cookieLoadingFailed;
+            set
+            {
+                _cookieLoadingFailed = value;
+                OnPropertyChanged(nameof(CookieLoadingFailed));
+            }
         }
 
         public IEnumerable<RobloxIcon> RobloxIcon { get; } = Enum.GetValues(typeof(RobloxIcon)).Cast<RobloxIcon>();

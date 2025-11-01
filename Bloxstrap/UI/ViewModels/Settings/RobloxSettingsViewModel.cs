@@ -1,7 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using Bloxstrap.Models.APIs.Config;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Bloxstrap.Models.APIs.Config;
+using System.Windows;
+using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace Bloxstrap.UI.ViewModels.Settings
 {
@@ -119,6 +123,98 @@ namespace Bloxstrap.UI.ViewModels.Settings
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private ICommand? _exportCommand;
+        private ICommand? _importCommand;
+
+        public ICommand ExportCommand => _exportCommand ??= new RelayCommand(ExportSettings);
+        public ICommand ImportCommand => _importCommand ??= new RelayCommand(ImportSettings);
+
+        private void ExportSettings()
+        {
+            if (!File.Exists(App.GlobalSettings.FileLocation))
+            {
+                Frontend.ShowMessageBox("No GBS settings file found to export.", MessageBoxImage.Warning);
+                return;
+            }
+
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "GBS Settings File (*.xml)|*.xml|All files (*.*)|*.*",
+                DefaultExt = ".xml",
+                FileName = $"FroststrapRobloxSettings.xml",
+                Title = "Export GBS Settings"
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                bool success = App.GlobalSettings.ExportSettings(saveFileDialog.FileName);
+
+                if (success)
+                {
+                    Frontend.ShowMessageBox($"Settings exported successfully to {saveFileDialog.FileName}",
+                        MessageBoxImage.Information);
+                }
+                else
+                {
+                    Frontend.ShowMessageBox("Failed to export settings. Make sure Roblox is not running and try again.",
+                        MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void ImportSettings()
+        {
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "GBS Settings File (*.xml)|*.xml|All files (*.*)|*.*",
+                DefaultExt = ".xml",
+                Title = "Import GBS Settings"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var doc = XDocument.Load(openFileDialog.FileName);
+                    if (doc.Root?.Name != "roblox")
+                    {
+                        Frontend.ShowMessageBox("The selected file does not appear to be a valid GBS settings file.",
+                            MessageBoxImage.Warning);
+                        return;
+                    }
+                }
+                catch
+                {
+                    Frontend.ShowMessageBox("The selected file is not a valid XML file.",
+                        MessageBoxImage.Warning);
+                    return;
+                }
+
+                var result = Frontend.ShowMessageBox(
+                    "This will replace all your current Roblox settings with the imported ones. Are you sure you want to continue?",
+                    MessageBoxImage.Warning,
+                    MessageBoxButton.YesNo);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    bool success = App.GlobalSettings.ImportSettings(openFileDialog.FileName);
+
+                    if (success)
+                    {
+                        LoadCurrentValuesFromGBS();
+
+                        Frontend.ShowMessageBox("Settings imported successfully!",
+                            MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        Frontend.ShowMessageBox("Failed to import settings. Make sure Roblox is not running and try again.",
+                            MessageBoxImage.Error);
+                    }
+                }
+            }
         }
     }
 }

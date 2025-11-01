@@ -216,5 +216,56 @@ namespace Bloxstrap
             if (!File.Exists(FileLocation)) return false;
             return File.GetAttributes(FileLocation).HasFlag(FileAttributes.ReadOnly);
         }
+
+        public bool ExportSettings(string exportPath)
+        {
+            if (!File.Exists(FileLocation))
+                return false;
+
+            try
+            {
+                var directory = Path.GetDirectoryName(exportPath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                File.Copy(FileLocation, exportPath, true);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("GBSEditor::ExportSettings", $"Failed to export settings: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool ImportSettings(string importPath)
+        {
+            if (!File.Exists(importPath))
+                return false;
+
+            try
+            {
+                var directory = Path.GetDirectoryName(FileLocation);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                SetReadOnly(false, true);
+
+                File.Copy(importPath, FileLocation, true);
+
+                Load();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("GBSEditor::ImportSettings", $"Failed to import settings: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

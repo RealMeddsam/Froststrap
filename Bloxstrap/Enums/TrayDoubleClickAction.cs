@@ -11,9 +11,6 @@
         [EnumName(StaticName = "Game History")]
         GameHistory,
 
-        [EnumName(StaticName = "Debug Menu")]
-        DebugMenu,
-
         [EnumName(StaticName = "None")]
         None
     }

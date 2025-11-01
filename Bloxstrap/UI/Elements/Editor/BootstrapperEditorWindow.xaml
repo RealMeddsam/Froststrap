@@ -69,7 +69,6 @@
             <ui:Button
         Grid.Column="0"
         HorizontalAlignment="Left"
-        FontWeight="Medium"
         Command="{Binding Path=OpenThemeFolderCommand, Mode=OneTime}"
         Content="{x:Static resources:Strings.CustomTheme_Editor_OpenThemeDirectory}" />
 
@@ -78,7 +77,6 @@
         Margin="10,0,0,0"
         Appearance="Primary"
         Command="{Binding Path=PreviewCommand, Mode=OneTime}"
-        FontWeight="Medium"
         Content="{x:Static resources:Strings.CustomTheme_Editor_Preview}" />
 
             <ui:Button
@@ -87,7 +85,6 @@
         MinWidth="56.587"
         Appearance="Primary"
         Command="{Binding Path=SaveCommand, Mode=OneTime}"
-        FontWeight="Medium"
         Content="{x:Static resources:Strings.CustomTheme_Editor_Save}" />
 
             <Button
@@ -95,7 +92,6 @@
         Margin="12,0,0,0"
         MinWidth="56.587"
         Content="{x:Static resources:Strings.Common_Close}"
-        FontWeight="Medium"
         IsCancel="True" />
         </Grid>
 

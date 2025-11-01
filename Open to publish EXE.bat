@@ -1,11 +1,28 @@
 @echo off
-echo Exporting to EXE...
-dotnet publish --configuration Release /p:PublishProfile=Publish-x64 --output "C:\Users\meddsam\Downloads\Froststrap Stuff\Froststrap Export"
+:menu
+cls
+echo ===================================================
+echo    Froststrap Exporting Tool ( made cuz bored )
+echo ===================================================
+echo.
+echo Type 'ex' to export
+echo Type 'q' to quit
+echo.
 
-if %ERRORLEVEL% EQU 0 (
-    echo ✅ Export completed successfully!
-) else (
-    echo ❌ Export failed!
-)
+set /p input="Enter command: "
 
-timeout /t 2 /nobreak >nul
+if /i "%input%"=="ex" goto export
+if /i "%input%"=="q" exit /b
+
+echo Invalid command. Please try again.
+timeout /t 1 >nul
+goto menu
+
+:export
+echo.
+echo Starting publish process...
+dotnet publish ./Bloxstrap/Bloxstrap.csproj --configuration Release /p:PublishProfile=Publish-x64 /p:PublishDir="C:\Users\meddsam\Downloads\Froststrap Stuff\Froststrap Export"
+
+echo.
+pause
+goto menu

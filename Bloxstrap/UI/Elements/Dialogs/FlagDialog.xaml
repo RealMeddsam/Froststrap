@@ -263,8 +263,8 @@
 
         <Border Grid.Row="2" Padding="15" Background="{DynamicResource PrimaryBackgroundColor}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="UndoButton" MinWidth="100" Content="Undo" Click="UndoButton_Click" FontWeight="Medium" Margin="0,0,10,0" />
-                <Button x:Name="CloseButton" MinWidth="100" Content="Close" IsCancel="True" FontWeight="Medium" />
+                <Button x:Name="UndoButton" MinWidth="100" Content="Undo" Click="UndoButton_Click"  Margin="0,0,10,0" />
+                <Button x:Name="CloseButton" MinWidth="100" Content="Close" IsCancel="True"  />
             </StackPanel>
         </Border>
     </Grid>

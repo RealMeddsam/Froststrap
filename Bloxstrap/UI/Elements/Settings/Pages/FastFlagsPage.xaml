@@ -28,11 +28,12 @@
             Header="{x:Static resources:Strings.Menu_FastFlags_Reset_Title}">
             <ui:ToggleSwitch IsChecked="{Binding ResetConfiguration, Mode=TwoWay}" />
         </controls:OptionControl>
+        
         <ui:InfoBar Margin="0,8,0,0" Padding="8" IsOpen="True" Title="Important" Message="Following the removal of most Roblox FastFlags, these are the only currently available FastFlags you can use." Severity="Informational" IsClosable="False" Background="{DynamicResource PrimaryBackgroundColor}" />
 
         <Separator Margin="0,8,0,4"/>
 
-        <TextBlock Text="Presets" FontSize="20" FontWeight="Bold"/>
+        <TextBlock Text="{x:Static resources:Strings.Common_Presets}" FontSize="20" FontWeight="Bold"/>
 
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_FastFlags_Presets_MSAA_Title}" 
@@ -47,14 +48,14 @@
         </controls:OptionControl>
 
         <controls:OptionControl 
-            Header="Pause Voxelizer"
-            Description="Disables baked shadows to boost performance, but may cause lighting issues like bright or dark maps in some games.">
+            Header="{x:Static resources:Strings.Menu_FastFlags_Presets_PauseVoxelizer_Title}"
+            Description="{x:Static resources:Strings.Menu_FastFlags_Presets_PauseVoxelizer_Description}">
             <ui:ToggleSwitch IsChecked="{Binding PauseVoxelizer, Mode=TwoWay}" />
         </controls:OptionControl>
 
         <controls:OptionControl 
             Header="{x:Static resources:Strings.Menu_FastFlags_Presets_GraySky_Title}"
-            Description="Replaces the game's sky with a solid gray color. This flag might not work in all games.">
+            Description="{x:Static resources:Strings.Menu_FastFlags_Presets_GraySky_Description}">
             <ui:ToggleSwitch IsChecked="{Binding GraySky, Mode=TwoWay}" />
         </controls:OptionControl>
 
@@ -84,7 +85,7 @@
             </ui:CardExpander.Header>
 
             <StackPanel Margin="0,8,0,0">
-                <TextBlock Padding="8" Text="Adjust mesh detail levels for performance vs. quality." TextAlignment="Center" />
+                <TextBlock Padding="8" Text="{x:Static resources:Strings.Menu_FastFlags_Presets_LowPolyMeshes_Information}" TextAlignment="Center" />
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -92,9 +93,9 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Performance" Grid.Column="0" />
+                    <TextBlock Text="{x:Static resources:Strings.Common_Performance}" Grid.Column="0" />
                     <Slider Grid.Column="1" Margin="8,0,8,0" Minimum="0" Maximum="4" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding LowPolyMeshesLevel, Mode=TwoWay}" />
-                    <TextBlock Text="Quality" Grid.Column="2" />
+                    <TextBlock Text="{x:Static resources:Strings.Common_Quality}" Grid.Column="2" />
                 </Grid>
             </StackPanel>
         </ui:CardExpander>

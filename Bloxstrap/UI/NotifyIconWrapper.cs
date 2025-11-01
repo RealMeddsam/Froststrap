@@ -49,10 +49,6 @@ namespace Bloxstrap.UI
                         );
                         break;
 
-                    case TrayDoubleClickAction.DebugMenu:
-                        new DebugMenu().Show();
-                        break;
-
                     case TrayDoubleClickAction.RegionSelector:
                         new RegionSelectorMenu().Show();
                         break;

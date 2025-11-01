@@ -101,7 +101,7 @@ namespace Bloxstrap.UI.Elements.Bootstrapper
 
             string version = Utilities.GetRobloxVersionStr(Bootstrapper?.IsStudioLaunch ?? false);
             string channel = Deployment.Channel;
-            _viewModel = new FluentDialogViewModel(this, aero, version, channel);
+            _viewModel = new FluentDialogViewModel(this, aero, version);
             DataContext = _viewModel;
             Title = App.Settings.Prop.BootstrapperTitle;
             Icon = App.Settings.Prop.BootstrapperIcon.GetIcon().GetImageSource();

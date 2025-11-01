@@ -20,7 +20,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private async void RobloxSettingsPage_Loaded(object sender, RoutedEventArgs e)
         {
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Roblox Settings");
+            App.FrostRPC?.SetPage("Roblox Settings");
 
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow?.ShowLoading("Loading Roblox Settings...");
@@ -45,6 +45,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private void ValidateUInt32(object sender, TextCompositionEventArgs e) => e.Handled = !uint.TryParse(e.Text, out _);
 
-        private void ValidateFloat(object sender, TextCompositionEventArgs e) => e.Handled = !float.TryParse(e.Text, out _);
+        private void ValidateFloat(object sender, TextCompositionEventArgs e) => e.Handled = !Regex.IsMatch(e.Text, @"^\d*\.?\d*$");
     }
 }

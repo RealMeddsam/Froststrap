@@ -422,21 +422,33 @@ namespace Bloxstrap
             bool ChannelFlag = App.LaunchSettings.ChannelFlag.Active && !string.IsNullOrEmpty(App.LaunchSettings.ChannelFlag.Data);
 
             // CHANNEL CHANGE MODE
-            void EnrollChannel(string Channel = "production")
-            {
-                Deployment.Channel = Channel;
-                App.Settings.Prop.Channel = Channel;
-                App.Settings.Save();
-            }
-
-            void RevertChannel()
-            {
-                Deployment.Channel = Deployment.DefaultChannel;
-                App.Settings.Prop.Channel = Deployment.DefaultChannel;
-                App.Settings.Save();
-            }
+            void EnrollChannel(string Channel = "production") => Deployment.Channel = Channel;
+            void RevertChannel() => Deployment.Channel = Deployment.DefaultChannel;
 
             string EnrolledChannel = match.Groups.Count == 2 ? match.Groups[1].Value.ToLowerInvariant() : Deployment.DefaultChannel;
+
+            // Private channels
+            if (App.Cookies.Loaded)
+            {
+                UserChannel? userChannel = await App.Cookies.GetUserChannel(Deployment.BinaryType);
+
+                if (
+                    userChannel?.Token is not null &&
+                    userChannel.AssignmentType != 1 // might need a change in the future
+                    )
+                {
+                    // prevent roblox from thinking its a different channel
+                    // we have to do it to prevent issues with channel fflags
+                    if (!string.IsNullOrEmpty(EnrolledChannel))
+                        _launchCommandLine = _launchCommandLine.Replace(
+                            $"channel:{EnrolledChannel}",
+                            $"channel:{userChannel.Channel}",
+                            StringComparison.OrdinalIgnoreCase);
+
+                    Deployment.ChannelToken = userChannel.Token;
+                    EnrolledChannel = userChannel.Channel;
+                }
+            }
 
             if (!ChannelFlag)
             {

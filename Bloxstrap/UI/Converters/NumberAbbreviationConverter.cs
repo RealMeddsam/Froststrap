@@ -17,6 +17,8 @@ namespace Bloxstrap.UI.Converters
 
             if (double.TryParse(stringValue, out double number))
             {
+                if (number >= 1_000_000_000)
+                    return (number / 1_000_000_000D).ToString("0.#") + "B";
                 if (number >= 1_000_000)
                     return (number / 1_000_000D).ToString("0.#") + "M";
                 if (number >= 1_000)

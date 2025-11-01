@@ -9,9 +9,9 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
     {
         public ShortcutsPage()
         {
-            InitializeComponent();
             DataContext = new ShortcutsViewModel();
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Shortcut");
+            InitializeComponent();
+            App.FrostRPC?.SetPage("Shortcut");
         }
     }
 }

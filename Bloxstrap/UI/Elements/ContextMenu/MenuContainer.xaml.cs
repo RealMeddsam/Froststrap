@@ -33,7 +33,6 @@ namespace Bloxstrap.UI.Elements.ContextMenu
 
             if (_activityWatcher is not null)
             {
-                _activityWatcher.OnLogOpen += ActivityWatcher_OnLogOpen;
                 _activityWatcher.OnGameJoin += ActivityWatcher_OnGameJoin;
                 _activityWatcher.OnGameLeave += ActivityWatcher_OnGameLeave;
 
@@ -133,9 +132,6 @@ namespace Bloxstrap.UI.Elements.ContextMenu
                 _serverInformationWindow.Activate();
         }
 
-        private void ActivityWatcher_OnLogOpen(object? sender, EventArgs e) =>
-            Dispatcher.Invoke(() => DebugMenuItem.Visibility = Visibility.Visible);
-
         private void ActivityWatcher_OnGameJoin(object? sender, EventArgs e)
         {
             Dispatcher.Invoke(() =>
@@ -198,12 +194,6 @@ namespace Bloxstrap.UI.Elements.ContextMenu
                 App.Logger.WriteLine("MenuContainer::RegionSelectorMenuItem_Click", $"Failed to open region selector: {ex.Message}");
                 Frontend.ShowMessageBox($"Failed to open region selector: {ex.Message}", MessageBoxImage.Error);
             }
-        }
-
-        private void DebugMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var debugMenu = new DebugMenu();
-            debugMenu.Show();
         }
 
         private void CloseRobloxMenuItem_Click(object sender, RoutedEventArgs e)

@@ -139,18 +139,8 @@ namespace Bloxstrap.UI.Elements.Dialogs
             try
             {
                 using var zipFile = ZipFile.OpenRead(_viewModel.FilePath);
-                var entries = zipFile.Entries;
-
-                bool foundThemeFile = false;
-
-                foreach (var entry in entries)
-                {
-                    if (entry.FullName == "Theme.xml")
-                    {
-                        foundThemeFile = true;
-                        break;
-                    }
-                }
+                bool foundThemeFile = zipFile.Entries.Any(entry =>
+                    Path.GetFileName(entry.FullName).Equals("Theme.xml", StringComparison.OrdinalIgnoreCase));
 
                 if (!foundThemeFile)
                 {
@@ -169,6 +159,7 @@ namespace Bloxstrap.UI.Elements.Dialogs
                 return false;
             }
         }
+
 
         private void CreateNew()
         {
@@ -199,6 +190,25 @@ namespace Bloxstrap.UI.Elements.Dialogs
 
             var fastZip = new ICSharpCode.SharpZipLib.Zip.FastZip();
             fastZip.ExtractZip(_viewModel.FilePath, directory, null);
+
+            var subDirs = Directory.GetDirectories(directory);
+            if (subDirs.Length == 1)
+            {
+                string subfolder = subDirs[0];
+
+                foreach (var file in Directory.GetFiles(subfolder))
+                    File.Move(file, Path.Combine(directory, Path.GetFileName(file)), overwrite: true);
+
+                foreach (var dir in Directory.GetDirectories(subfolder))
+                {
+                    string target = Path.Combine(directory, Path.GetFileName(dir));
+                    if (Directory.Exists(target))
+                        Directory.Delete(target, true);
+                    Directory.Move(dir, target);
+                }
+
+                Directory.Delete(subfolder, true);
+            }
 
             Created = true;
             ThemeName = name;

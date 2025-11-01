@@ -186,7 +186,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             };
 
             SetDefaultStates();
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
+            App.FrostRPC?.SetPage("FastFlag Editor");
         }
 
         private void SetDefaultStates()
@@ -257,12 +257,12 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private void ShowAddDialog()
         {
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Add FastFlag");
+            App.FrostRPC?.SetDialog("Add FastFlag");
 
             var dialog = new AddFastFlagDialog();
             dialog.ShowDialog();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
+            App.FrostRPC?.ClearDialog();
 
             if (dialog.Result != MessageBoxResult.OK)
                 return;
@@ -271,24 +271,11 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 AddSingle(dialog.FlagNameTextBox.Text.Trim(), dialog.FlagValueComboBox.Text);
             else if (dialog.Tabs.SelectedIndex == 1)
                 ImportJSON(dialog.JsonTextBox.Text);
-            else if (dialog.Tabs.SelectedIndex == 2)
-                AddWithGameId(
-                    dialog.GameFlagNameTextBox.Text.Trim(),
-                    dialog.GameFlagValueComboBox.Text,
-                    dialog.GameFlagIdTextBox.Text,
-                    dialog.AddIdFilterType
-                );
-            else if (dialog.Tabs.SelectedIndex == 3)
-                ImportGameIdJson(
-                    dialog.ImportGameIdJson,
-                    dialog.ImportGameId,
-                    dialog.ImportIdFilterType
-                );
         }
 
         private void AdvancedSettings_Click(object sender, RoutedEventArgs e)
         {
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Advanced Settings");
+            App.FrostRPC?.SetDialog("Advanced Settings");
 
             var dialog = new AdvancedSettingsDialog();
             dialog.Owner = Window.GetWindow(this);
@@ -303,7 +290,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
             dialog.ShowDialog();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
+            App.FrostRPC?.ClearDialog();
         }
 
         private MainWindow GetMainWindow() => (MainWindow)Application.Current.MainWindow;
@@ -345,7 +332,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
         {
             var mainWindow = GetMainWindow();
             mainWindow?.ShowLoading("Cleaning List...");
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Cleaning List");
+            App.FrostRPC?.SetDialog("Dialog: Cleaning List");
 
             App.FastFlags.suspendUndoSnapshot = true;
             App.FastFlags.SaveUndoSnapshot();
@@ -404,17 +391,18 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             {
                 App.FastFlags.suspendUndoSnapshot = false;
                 mainWindow?.HideLoading();
+                App.FrostRPC?.ClearDialog();
             }
         }
 
         private void ShowProfilesDialog()
         {
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Profiles");
+            App.FrostRPC?.SetDialog("Profiles");
 
             var dialog = new FlagProfilesDialog();
             dialog.ShowDialog();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
+            App.FrostRPC?.ClearDialog();
 
             if (dialog.Result != MessageBoxResult.OK)
                 return;

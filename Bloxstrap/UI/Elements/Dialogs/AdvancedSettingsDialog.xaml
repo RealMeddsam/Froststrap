@@ -53,14 +53,14 @@
                 </controls:OptionControl>
 
                 <controls:OptionControl
-                        Header="Ctrl+C Json Format" 
-                        Description="Copies selected flags as JSON using the chosen Copy Format when pressing Ctrl+C.">
+                        Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_CtrlC_Title}" 
+                        Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_CtrlC_Description}">
                     <ui:ToggleSwitch IsChecked="{Binding ShowCtrlCJsonFormatSetting, Mode=TwoWay}" />
                 </controls:OptionControl>
 
                 <controls:OptionControl
-                        Header="Use Alt Manually" 
-                        Description="Auto add the Alt Manually flag when starting Froststrap.">
+                        Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_AltManually_Title}" 
+                        Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_AltManually_Description}">
                     <ui:ToggleSwitch IsChecked="{Binding UseAltManually, Mode=TwoWay}" />
                 </controls:OptionControl>
 
@@ -77,23 +77,14 @@
                         HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#flag-count" >
                     <ui:ToggleSwitch IsChecked="{Binding ShowFlagCount, Mode=TwoWay}" />
                 </controls:OptionControl>
-
-                <controls:OptionControl
-                        Header="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_AddWithID_Title}" 
-                        Description="{x:Static resources:Strings.Menu_FastFlagsEditor_AdvancedSettings_AddWithID_Description}"
-                        HelpLink="https://github.com/Meddsam/Froststrap/wiki/Advanced-FastFlag-Editor-Settings#add-with-id" >
-                    <ui:ToggleSwitch IsChecked="{Binding ShowAddWithID, Mode=TwoWay}" />
-                </controls:OptionControl>
-
-
             </StackPanel>
         </ScrollViewer>
 
         <Border Grid.Row="2" Margin="0,10,0,0" Padding="15" Background="{DynamicResource PrimaryBackgroundColor}">
             <StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Right">
 
-                <Button MinWidth="100" Content="{x:Static resources:Strings.Menu_Save}" Click="SaveButton_Click" FontWeight="Medium" />
-                <Button MinWidth="100" Margin="12,0,0,0" Content="{x:Static resources:Strings.Common_Close}" IsCancel="True" FontWeight="Medium" />
+                <Button MinWidth="100" Content="{x:Static resources:Strings.Menu_Save}" Click="SaveButton_Click"  />
+                <Button MinWidth="100" Margin="12,0,0,0" Content="{x:Static resources:Strings.Common_Close}" IsCancel="True"  />
             </StackPanel>
         </Border>
     </Grid>

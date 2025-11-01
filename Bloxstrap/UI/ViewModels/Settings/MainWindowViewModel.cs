@@ -38,33 +38,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 App.LaunchSettings.TestModeFlag.Active = value;
             }
         }
-        public void ApplyBackdrop(UIBackgroundType value)
-        {
-            var wpfBackdrop = value switch
-            {
-                UIBackgroundType.None => BackgroundType.None,
-                UIBackgroundType.Mica => BackgroundType.Mica,
-                UIBackgroundType.Acrylic => BackgroundType.Acrylic,
-                UIBackgroundType.Aero => BackgroundType.Aero,
-                _ => BackgroundType.None
-            };
-
-            foreach (Window window in Application.Current.Windows)
-            {
-                if (window is UiWindow uiWindow)
-                {
-                    bool isTransparentBackdrop = (wpfBackdrop == BackgroundType.Acrylic || wpfBackdrop == BackgroundType.Aero);
-
-                    uiWindow.AllowsTransparency = isTransparentBackdrop;
-
-                    uiWindow.WindowStyle = isTransparentBackdrop
-                        ? WindowStyle.None
-                        : WindowStyle.SingleBorderWindow;
-
-                    uiWindow.WindowBackdropType = wpfBackdrop;
-                }
-            }
-        }
 
         public bool IsSidebarExpanded
         {
@@ -74,12 +47,11 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         private void OpenAbout()
         {
-            var app = (App.Current as App);
-            app?._froststrapRPC?.UpdatePresence("Dialog: About");
+            App.FrostRPC?.SetDialog("About");
 
             new Elements.About.MainWindow().ShowDialog();
 
-            app?._froststrapRPC?.UpdatePresence("Page: Unknown");
+            App.FrostRPC?.ClearDialog();
         }
 
         private void CloseWindow() => RequestCloseWindowEvent?.Invoke(this, EventArgs.Empty);

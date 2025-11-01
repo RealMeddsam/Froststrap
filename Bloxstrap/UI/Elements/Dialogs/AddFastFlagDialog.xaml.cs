@@ -14,14 +14,6 @@ namespace Bloxstrap.UI.Elements.Dialogs
     {
         public string? FormattedName { get; private set; }
         public string? FormattedValue { get; private set; }
-        public string? ImportGameId { get; private set; }
-        public string? ImportGameIdJson { get; private set; }
-
-        public FastFlagFilterType AddIdFilterType =>
-            (AddIdFilterTypeComboBox.SelectedIndex == 1) ? FastFlagFilterType.DataCenterFilter : FastFlagFilterType.PlaceFilter;
-
-        public FastFlagFilterType ImportIdFilterType =>
-            (ImportIdFilterTypeComboBox.SelectedIndex == 1) ? FastFlagFilterType.DataCenterFilter : FastFlagFilterType.PlaceFilter;
 
         public MessageBoxResult Result = MessageBoxResult.Cancel;
 
@@ -70,22 +62,6 @@ namespace Bloxstrap.UI.Elements.Dialogs
             CommonValuesView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(CommonValueItem.Group)));
 
             DataContext = this;
-
-            UpdateAddWithIDTabs(vm.ShowAddWithID);
-
-            vm.ShowAddWithIDChanged += (_, _) =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    UpdateAddWithIDTabs(vm.ShowAddWithID);
-                });
-            };
-        }
-
-        private void UpdateAddWithIDTabs(bool show)
-        {
-            AddWithIdTab.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
-            ImportIdJsonTab.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void ImportButton_Click(object sender, RoutedEventArgs e)
@@ -105,42 +81,6 @@ namespace Bloxstrap.UI.Elements.Dialogs
         {
             int selectedIndex = Tabs.SelectedIndex;
 
-            if (selectedIndex == 2)
-            {
-                string name = GameFlagNameTextBox.Text.Trim();
-                string value = GameFlagValueComboBox.Text.Trim();
-                string gameId = GameFlagIdTextBox.Text.Trim();
-                var filterType = AddIdFilterType;
-                if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(gameId))
-                {
-                    string suffix = filterType == FastFlagFilterType.DataCenterFilter ? "_DataCenterFilter" : "_PlaceFilter";
-                    FormattedName = $"{name}{suffix}";
-                    FormattedValue = $"{value};{gameId}";
-                    ImportGameId = null;
-                    ImportGameIdJson = null;
-                    Result = MessageBoxResult.OK;
-                    DialogResult = true;
-                    Close();
-                }
-                else
-                {
-                    MessageBox.Show("Please fill in all fields.");
-                }
-                return;
-            }
-            else if (selectedIndex == 3)
-            {
-                var filterType = ImportIdFilterType;
-                ImportGameId = ImportGameIdTextBox.Text.Trim();
-                ImportGameIdJson = GameIdJsonTextBox.Text.Trim();
-                FormattedName = null;
-                FormattedValue = null;
-                Result = MessageBoxResult.OK;
-                DialogResult = true;
-                Close();
-                return;
-            }
-
             if (selectedIndex == 0)
             {
                 string name = FlagNameTextBox.Text.Trim();
@@ -149,8 +89,6 @@ namespace Bloxstrap.UI.Elements.Dialogs
                 {
                     FormattedName = name;
                     FormattedValue = value;
-                    ImportGameId = null;
-                    ImportGameIdJson = null;
                     Result = MessageBoxResult.OK;
                     DialogResult = true;
                     Close();
@@ -165,8 +103,6 @@ namespace Bloxstrap.UI.Elements.Dialogs
 
             FormattedName = null;
             FormattedValue = null;
-            ImportGameId = null;
-            ImportGameIdJson = null;
             Result = MessageBoxResult.OK;
             DialogResult = true;
             Close();
@@ -175,28 +111,6 @@ namespace Bloxstrap.UI.Elements.Dialogs
         private void FlagValueComboBox_Loaded(object sender, RoutedEventArgs e)
         {
             if (FlagValueComboBox.Template.FindName("PART_EditableTextBox", FlagValueComboBox) is TextBox tb)
-            {
-                tb.GotFocus += (_, _) =>
-                {
-                    if (tb.Text == "Enter or select a value")
-                        tb.Text = "";
-                };
-
-                tb.LostFocus += (_, _) =>
-                {
-                    if (string.IsNullOrWhiteSpace(tb.Text))
-                    {
-                        tb.Text = "Enter or select a value";
-                    }
-                };
-
-                tb.Text = "Enter or select a value";
-            }
-        }
-
-        private void GameFlagValueComboBox_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (GameFlagValueComboBox.Template.FindName("PART_EditableTextBox", GameFlagValueComboBox) is TextBox tb)
             {
                 tb.GotFocus += (_, _) =>
                 {

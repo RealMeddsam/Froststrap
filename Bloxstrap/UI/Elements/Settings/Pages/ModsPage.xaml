@@ -36,18 +36,44 @@
             </Grid.ColumnDefinitions>
 
             <!--  Open Mods Folder Card  -->
-            <ui:CardAction Grid.Row="0" Grid.Column="1" x:Name="OpenModFolderCardAction" Margin="4,0,0,0" Icon="Folder24" Command="{Binding OpenModsFolderCommand}">
+            <ui:CardAction
+                x:Name="OpenModFolderCardAction"
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="4,0,0,0"
+                Command="{Binding OpenModsFolderCommand}"
+                Icon="Folder24">
                 <StackPanel>
-                    <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Mods_OpenModsFolder_Title}" TextWrapping="Wrap" FontWeight="Medium" />
-                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Mods_OpenModsFolder_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" />
+                    <TextBlock
+                        FontSize="14"
+                        Text="{x:Static resources:Strings.Menu_Mods_OpenModsFolder_Title}"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        Margin="0,2,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="{x:Static resources:Strings.Menu_Mods_OpenModsFolder_Description}"
+                        TextWrapping="Wrap" />
                 </StackPanel>
             </ui:CardAction>
 
             <!--  Help Card  -->
-            <ui:CardAction Grid.Row="0" Grid.Column="0" Margin="0,0,4,0" Icon="BookQuestionMark24" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="https://github.com/bloxstraplabs/bloxstrap/wiki/Adding-custom-mods">
+            <ui:CardAction
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="0,0,4,0"
+                Command="models:GlobalViewModel.OpenWebpageCommand"
+                CommandParameter="https://github.com/bloxstraplabs/bloxstrap/wiki/Adding-custom-mods"
+                Icon="BookQuestionMark24">
                 <StackPanel>
-                    <TextBlock FontSize="14" Text="{x:Static resources:Strings.Common_Help}" FontWeight="Medium" />
-                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Mods_Help_Description}" Padding="0,0,16,0"  Foreground="{DynamicResource TextFillColorTertiaryBrush}" TextWrapping="Wrap" />
+                    <TextBlock FontSize="14" Text="{x:Static resources:Strings.Common_Help}" />
+                    <TextBlock
+                        Margin="0,2,0,0"
+                        Padding="0,0,16,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                        Text="{x:Static resources:Strings.Menu_Mods_Help_Description}"
+                        TextWrapping="Wrap" />
                 </StackPanel>
             </ui:CardAction>
 
@@ -64,7 +90,7 @@
                     <TextBlock
                         FontSize="14"
                         Text="{x:Static resources:Strings.Menu_Mods_Misc_CompatibilitySettings_Title}"
-                        TextWrapping="Wrap" FontWeight="Medium" />
+                        TextWrapping="Wrap" />
                     <controls:MarkdownTextBlock
                         Margin="0,2,0,0"
                         FontSize="12"
@@ -75,14 +101,17 @@
             </ui:CardAction>
         </Grid>
 
-        <Separator Margin="0,8,0,0"/>
+        <Separator Margin="0,8,0,0" />
 
         <TabControl Margin="0,16,0,0">
-            <TabItem Header="Preset Mod" FontWeight="Bold" >
-                <StackPanel Margin="8" Height="Auto">
+            <TabItem FontWeight="Bold" Header="Preset Mod">
+                <StackPanel Height="Auto" Margin="8">
 
                     <!--  Presets Section  -->
-                    <TextBlock FontSize="20" FontWeight="Bold" Text="{x:Static resources:Strings.Common_Presets}" />
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Text="{x:Static resources:Strings.Common_Presets}" />
 
                     <!--  Option Controls  -->
                     <controls:OptionControl Description="{x:Static resources:Strings.Menu_Mods_Presets_OldAvatarEditor_Description}" Header="{x:Static resources:Strings.Menu_Mods_Presets_OldAvatarEditor_Title}">
@@ -95,11 +124,11 @@
 
                     <controls:OptionControl Description="{x:Static resources:Strings.Menu_Mods_Presets_MouseCursor_Description}" Header="{x:Static resources:Strings.Menu_Mods_Presets_MouseCursor_Title}">
                         <ComboBox
-                Width="200"
-                Margin="5,0,0,0"
-                Padding="10,5,10,5"
-                ItemsSource="{Binding CursorTypeTask.Selections, Mode=OneTime}"
-                Text="{Binding CursorTypeTask.NewState, Mode=TwoWay}">
+                            Width="200"
+                            Margin="5,0,0,0"
+                            Padding="10,5,10,5"
+                            ItemsSource="{Binding CursorTypeTask.Selections, Mode=OneTime}"
+                            Text="{Binding CursorTypeTask.NewState, Mode=TwoWay}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Path=., Converter={StaticResource EnumNameConverter}}" />
@@ -110,11 +139,11 @@
 
                     <controls:OptionControl Description="{x:Static resources:Strings.Menu_Mods_Presets_EmojiType_Description}" Header="{x:Static resources:Strings.Menu_Mods_Presets_EmojiType_Title}">
                         <ComboBox
-                Width="220"
-                Margin="5,0,0,0"
-                Padding="10,5,10,5"
-                ItemsSource="{Binding EmojiFontTask.Selections, Mode=OneTime}"
-                Text="{Binding EmojiFontTask.NewState, Mode=TwoWay}">
+                            Width="220"
+                            Margin="5,0,0,0"
+                            Padding="10,5,10,5"
+                            ItemsSource="{Binding EmojiFontTask.Selections, Mode=OneTime}"
+                            Text="{Binding EmojiFontTask.NewState, Mode=TwoWay}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Path=., Converter={StaticResource EnumNameConverter}}" />
@@ -123,46 +152,54 @@
                         </ComboBox>
                     </controls:OptionControl>
 
-                    <Separator Margin="0,8,0,8"/>
+                    <Separator Margin="0,8,0,8" />
 
                     <!--  Miscellaneous Section  -->
-                    <TextBlock FontSize="20" FontWeight="Bold" Text="{x:Static resources:Strings.Common_Miscellaneous}" />
+                    <TextBlock
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Text="{x:Static resources:Strings.Common_Miscellaneous}" />
 
                     <!--  Custom Font Option  -->
                     <controls:OptionControl Description="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Description}" Header="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Title}">
                         <StackPanel>
                             <ui:Button
-                    Command="{Binding ManageCustomFontCommand}"
-                    Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Choose}"
-                    Icon="DocumentAdd16"
-                    Visibility="{Binding ChooseCustomFontVisibility, Mode=OneWay}" />
+                                Command="{Binding ManageCustomFontCommand}"
+                                Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Choose}"
+                                Icon="DocumentAdd16"
+                                Visibility="{Binding ChooseCustomFontVisibility, Mode=OneWay}" />
                             <ui:Button
-                    Appearance="Danger"
-                    Command="{Binding ManageCustomFontCommand}"
-                    Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Remove}"
-                    Icon="Delete16"
-                    Visibility="{Binding DeleteCustomFontVisibility, Mode=OneWay}" />
+                                Appearance="Danger"
+                                Command="{Binding ManageCustomFontCommand}"
+                                Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomFont_Remove}"
+                                Icon="Delete16"
+                                Visibility="{Binding DeleteCustomFontVisibility, Mode=OneWay}" />
                         </StackPanel>
                     </controls:OptionControl>
 
                     <!--  Custom Death Sound Option  -->
-                    <controls:OptionControl Header="Custom Death Sound" Description="Replaces the death sound with your own audio.">
+                    <controls:OptionControl 
+                        Description="{x:Static resources:Strings.Menu_Mods_Misc_CustomDeathSound_Description}" 
+                        Header="{x:Static resources:Strings.Menu_Mods_Misc_CustomDeathSound_Title}">
                         <StackPanel>
                             <ui:Button
-                    Command="{Binding AddCustomDeathSoundCommand}"
-                    Content="Choose Sound..."
-                    Icon="DocumentAdd16"
-                    Visibility="{Binding ChooseCustomDeathSoundVisibility, Mode=OneWay}" />
+                                Command="{Binding AddCustomDeathSoundCommand}"
+                                Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomDeathSound_Choose}"
+                                Icon="DocumentAdd16"
+                                Visibility="{Binding ChooseCustomDeathSoundVisibility, Mode=OneWay}" />
                             <ui:Button
-                    Appearance="Danger"
-                    Command="{Binding RemoveCustomDeathSoundCommand}"
-                    Content="Remove Custom Death Sound"
-                    Icon="Delete16"
-                    Visibility="{Binding DeleteCustomDeathSoundVisibility, Mode=OneWay}" />
+                                Appearance="Danger"
+                                Command="{Binding RemoveCustomDeathSoundCommand}"
+                                Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomDeathSound_Remove}"
+                                Icon="Delete16"
+                                Visibility="{Binding DeleteCustomDeathSoundVisibility, Mode=OneWay}" />
                         </StackPanel>
                     </controls:OptionControl>
 
-                    <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False">
+                    <ui:CardExpander
+                        Grid.Row="1"
+                        Margin="0,8,0,0"
+                        IsExpanded="False">
                         <ui:CardExpander.Header>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -170,8 +207,8 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock FontSize="14" Text="Custom Cursor Features" FontWeight="Medium" />
-                                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="All of the Custom Cursor features you need." Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
+                                    <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Mods_Misc_CardExpander_CustomCursors_Title}" />
+                                    <TextBlock FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{x:Static resources:Strings.Menu_Mods_Misc_CardExpander_CustomCursors_Descriptions}" />
                                 </StackPanel>
                             </Grid>
                         </ui:CardExpander.Header>
@@ -181,37 +218,43 @@
                             <controls:OptionControl Description="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursor_Description}" Header="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursor_Title}">
                                 <StackPanel>
                                     <ui:Button
-                            Command="{Binding AddCustomCursorModCommand}"
-                            Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursor_Choose}"
-                            Icon="DocumentAdd16"
-                            Visibility="{Binding ChooseCustomCursorVisibility, Mode=OneWay}" />
+                                        Command="{Binding AddCustomCursorModCommand}"
+                                        Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursor_Choose}"
+                                        Icon="DocumentAdd16"
+                                        Visibility="{Binding ChooseCustomCursorVisibility, Mode=OneWay}" />
                                     <ui:Button
-                            Appearance="Danger"
-                            Command="{Binding RemoveCustomCursorModCommand}"
-                            Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursor_Remove}"
-                            Icon="Delete16"
-                            Visibility="{Binding DeleteCustomCursorVisibility, Mode=OneWay}" />
+                                        Appearance="Danger"
+                                        Command="{Binding RemoveCustomCursorModCommand}"
+                                        Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursor_Remove}"
+                                        Icon="Delete16"
+                                        Visibility="{Binding DeleteCustomCursorVisibility, Mode=OneWay}" />
                                 </StackPanel>
                             </controls:OptionControl>
 
                             <!--  Custom Shiftlock Option  -->
-                            <controls:OptionControl Description="Use your own Shiftlock in Roblox." Header="Custom Shiftlock">
+                            <controls:OptionControl 
+                                Description="{x:Static resources:Strings.Menu_Mods_Misc_CustomShiftLock_Description}" 
+                                Header="{x:Static resources:Strings.Menu_Mods_Misc_CustomShiftLock_Title}">
                                 <StackPanel>
                                     <ui:Button
-                        Command="{Binding AddCustomShiftlockModCommand}"
-                        Content="Choose Custom Shiftlock"
-                        Icon="DocumentAdd16"
-                        Visibility="{Binding ChooseCustomShiftlockVisibility, Mode=OneWay}" />
+                                        Command="{Binding AddCustomShiftlockModCommand}"
+                                        Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomShiftLock_Choose}"
+                                        Icon="DocumentAdd16"
+                                        Visibility="{Binding ChooseCustomShiftlockVisibility, Mode=OneWay}" />
                                     <ui:Button
-                        Appearance="Danger"
-                        Command="{Binding RemoveCustomShiftlockModCommand}"
-                        Content="Remove Custom Shiftlock"
-                        Icon="Delete16"
-                        Visibility="{Binding DeleteCustomShiftlockVisibility, Mode=OneWay}" />
+                                        Appearance="Danger"
+                                        Command="{Binding RemoveCustomShiftlockModCommand}"
+                                        Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomShiftLock_Remove}"
+                                        Icon="Delete16"
+                                        Visibility="{Binding DeleteCustomShiftlockVisibility, Mode=OneWay}" />
                                 </StackPanel>
                             </controls:OptionControl>
 
-                            <ui:CardExpander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False" x:Name="RobloxMenuExpander" >
+                            <ui:CardExpander
+                                x:Name="RobloxMenuExpander"
+                                Grid.Row="1"
+                                Margin="0,8,0,0"
+                                IsExpanded="False">
                                 <ui:CardExpander.Header>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -219,13 +262,16 @@
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0">
-                                            <TextBlock FontSize="14" Text="Custom Cursor Set" FontWeight="Medium" />
-                                            <TextBlock Margin="0,2,0,0" FontSize="12" Text="Have multiple cursor sets ready to go for use." Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
+                                            <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursorSet_Title}" />
+                                            <TextBlock FontSize="12" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursorSet_Description}" />
                                         </StackPanel>
                                     </Grid>
                                 </ui:CardExpander.Header>
 
-                                <Grid Margin="-8,4,-8,0"  MinHeight="300" MaxHeight="500">
+                                <Grid
+                                    MinHeight="300"
+                                    MaxHeight="500"
+                                    Margin="-8,4,-8,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="300" />
                                         <RowDefinition Height="Auto" />
@@ -235,19 +281,50 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Left: List and buttons -->
-                                    <ListBox x:Name="CustomThemesListBox" Grid.Row="0" Grid.Column="0" Margin="0,0,4,0" ItemsSource="{Binding CustomCursorSets}" DisplayMemberPath="Name" SelectedIndex="{Binding SelectedCustomCursorSetIndex, Mode=TwoWay}" />
+                                    <!--  Left: List and buttons  -->
+                                    <ListBox
+                                        x:Name="CustomThemesListBox"
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Margin="0,0,4,0"
+                                        DisplayMemberPath="Name"
+                                        ItemsSource="{Binding CustomCursorSets}"
+                                        SelectedIndex="{Binding SelectedCustomCursorSetIndex, Mode=TwoWay}" />
 
-                                    <Grid Grid.Row="1" Grid.Column="0" Margin="0,8,4,0">
+                                    <Grid
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Margin="0,8,4,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <ui:Button Grid.Column="0" Margin="0,0,4,0" Height="32" VerticalAlignment="Center" Icon="Add28" Content="{x:Static resources:Strings.Common_New}" HorizontalAlignment="Stretch" FontWeight="Medium" Command="{Binding AddCustomCursorSetCommand}" />
-                                        <ui:Button Grid.Column="1" Margin="4,0,0,0" Height="32" VerticalAlignment="Center" Icon="Delete28" Content="{x:Static resources:Strings.Common_Delete}" HorizontalAlignment="Stretch" FontWeight="Medium" IsEnabled="{Binding IsCustomCursorSetSelected}" Appearance="Danger" Command="{Binding DeleteCustomCursorSetCommand}" />
+                                        <ui:Button
+                                            Grid.Column="0"
+                                            Height="32"
+                                            Margin="0,0,4,0"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center"
+                                            Command="{Binding AddCustomCursorSetCommand}"
+                                            Content="{x:Static resources:Strings.Common_New}"
+                                            Icon="Add28" />
+                                        <ui:Button
+                                            Grid.Column="1"
+                                            Height="32"
+                                            Margin="4,0,0,0"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center"
+                                            Appearance="Danger"
+                                            Command="{Binding DeleteCustomCursorSetCommand}"
+                                            Content="{x:Static resources:Strings.Common_Delete}"
+                                            Icon="Delete28"
+                                            IsEnabled="{Binding IsCustomCursorSetSelected}" />
                                     </Grid>
 
-                                    <StackPanel Grid.RowSpan="2" Grid.Column="1" Margin="4,0,0,0">
+                                    <StackPanel
+                                        Grid.RowSpan="2"
+                                        Grid.Column="1"
+                                        Margin="4,0,0,0">
                                         <StackPanel.Style>
                                             <Style TargetType="StackPanel">
                                                 <Style.Triggers>
@@ -271,95 +348,271 @@
                                                 <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
 
-                                            <Grid Grid.Row="0" Grid.ColumnSpan="4" Margin="0,16,0,0">
+                                            <Grid
+                                                Grid.Row="0"
+                                                Grid.ColumnSpan="4"
+                                                Margin="0,16,0,0">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <ui:TextBox Grid.Column="0" PlaceholderText="Custom Cursor Set 1" Text="{Binding SelectedCustomCursorSetName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" />
-                                                <ui:Button Grid.Column="1" Margin="4,0,0,0" Icon="Edit28" Content="Rename" Command="{Binding RenameCustomCursorSetCommand}" FontWeight="Medium" />
+                                                <ui:TextBox
+                                                    Grid.Column="0"
+                                                    HorizontalAlignment="Stretch"
+                                                    PlaceholderText="Custom Cursor Set 1"
+                                                    Text="{Binding SelectedCustomCursorSetName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                <ui:Button
+                                                    Grid.Column="1"
+                                                    Margin="4,0,0,0"
+                                                    Command="{Binding RenameCustomCursorSetCommand}"
+                                                    Content="{x:Static resources:Strings.Common_Rename}"
+                                                    Icon="Edit28" />
                                             </Grid>
 
-                                            <!-- ShiftLock -->
-                                            <Grid Grid.Row="2" Grid.Column="0" Margin="4,16,8,16">
+                                            <!--  ShiftLock  -->
+                                            <Grid
+                                                Grid.Row="2"
+                                                Grid.Column="0"
+                                                Margin="4,16,8,16">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto" />
                                                     <RowDefinition Height="*" />
                                                     <RowDefinition Height="Auto" />
                                                 </Grid.RowDefinitions>
-                                                <TextBlock Grid.Row="0" Margin="0,0,0,8" Text="ShiftLock" FontSize="14" TextAlignment="Center" />
-                                                <Border Grid.Row="1" Background="#33000000" CornerRadius="16" Margin="0,0,0,8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="200" MaxHeight="200" MinHeight="100" MinWidth="100">
+                                                <TextBlock
+                                                    Grid.Row="0"
+                                                    Margin="0,0,0,8"
+                                                    FontSize="14"
+                                                    Text="ShiftLock"
+                                                    TextAlignment="Center" />
+                                                <Border
+                                                    Grid.Row="1"
+                                                    MinWidth="100"
+                                                    MinHeight="100"
+                                                    MaxWidth="200"
+                                                    MaxHeight="200"
+                                                    Margin="0,0,0,8"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"
+                                                    Background="#33000000"
+                                                    CornerRadius="16">
                                                     <Viewbox Stretch="Uniform">
-                                                        <Image Source="{Binding ShiftlockCursorPreview}" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <Image
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            Source="{Binding ShiftlockCursorPreview}"
+                                                            Stretch="Uniform" />
                                                     </Viewbox>
                                                 </Border>
-                                                <StackPanel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Orientation="Vertical" Margin="0,8,0,0" >
-                                                    <ui:Button Content="Browse" Icon="Folder28" Command="{Binding AddShiftlockCursorCommand}" Visibility="{Binding AddShiftlockCursorVisibility}" HorizontalAlignment="Stretch" Height="32" />
-                                                    <ui:Button Content="Remove" Icon="Delete28" Command="{Binding DeleteShiftlockCursorCommand}" Visibility="{Binding DeleteShiftlockCursorVisibility}" Appearance="Danger" HorizontalAlignment="Stretch" Height="32" />
+                                                <StackPanel
+                                                    Grid.Row="2"
+                                                    Margin="0,8,0,0"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Top"
+                                                    Orientation="Vertical">
+                                                    <ui:Button
+                                                        Height="32"
+                                                        HorizontalAlignment="Stretch"
+                                                        Command="{Binding AddShiftlockCursorCommand}"
+                                                        Content="{x:Static resources:Strings.Common_Browse}"
+                                                        Icon="Folder28"
+                                                        Visibility="{Binding AddShiftlockCursorVisibility}" />
+                                                    <ui:Button
+                                                        Height="32"
+                                                        HorizontalAlignment="Stretch"
+                                                        Appearance="Danger"
+                                                        Command="{Binding DeleteShiftlockCursorCommand}"
+                                                        Content="{x:Static resources:Strings.Common_Remove}"
+                                                        Icon="Delete28"
+                                                        Visibility="{Binding DeleteShiftlockCursorVisibility}" />
                                                 </StackPanel>
                                             </Grid>
 
-                                            <!-- Arrow Cursor -->
-                                            <Grid Grid.Row="2" Grid.Column="1" Margin="8,16,8,16">
+                                            <!--  Arrow Cursor  -->
+                                            <Grid
+                                                Grid.Row="2"
+                                                Grid.Column="1"
+                                                Margin="8,16,8,16">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto" />
                                                     <RowDefinition Height="*" />
                                                     <RowDefinition Height="Auto" />
                                                 </Grid.RowDefinitions>
-                                                <TextBlock Grid.Row="0" Margin="0,0,0,8" Text="Arrow Cursor" FontSize="14" TextAlignment="Center" />
-                                                <Border Grid.Row="1" Background="#33000000" CornerRadius="16" Margin="0,0,0,8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="200" MaxHeight="200" MinHeight="100" MinWidth="100">
+                                                <TextBlock
+                                                    Grid.Row="0"
+                                                    Margin="0,0,0,8"
+                                                    FontSize="14"
+                                                    Text="Arrow Cursor"
+                                                    TextAlignment="Center" />
+                                                <Border
+                                                    Grid.Row="1"
+                                                    MinWidth="100"
+                                                    MinHeight="100"
+                                                    MaxWidth="200"
+                                                    MaxHeight="200"
+                                                    Margin="0,0,0,8"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"
+                                                    Background="#33000000"
+                                                    CornerRadius="16">
                                                     <Viewbox Stretch="Uniform">
-                                                        <Image Source="{Binding ArrowCursorPreview}" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <Image
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            Source="{Binding ArrowCursorPreview}"
+                                                            Stretch="Uniform" />
                                                     </Viewbox>
                                                 </Border>
-                                                <StackPanel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Orientation="Vertical" Margin="0,8,0,0" >
-                                                    <ui:Button Content="Browse" Icon="Folder28" Command="{Binding AddArrowCursorCommand}" Visibility="{Binding AddArrowCursorVisibility}" HorizontalAlignment="Stretch" Height="32" />
-                                                    <ui:Button Content="Remove" Icon="Delete28" Command="{Binding DeleteArrowCursorCommand}" Visibility="{Binding DeleteArrowCursorVisibility}" Appearance="Danger" HorizontalAlignment="Stretch" Height="32" />
+                                                <StackPanel
+                                                    Grid.Row="2"
+                                                    Margin="0,8,0,0"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Top"
+                                                    Orientation="Vertical">
+                                                    <ui:Button
+                                                        Height="32"
+                                                        HorizontalAlignment="Stretch"
+                                                        Command="{Binding AddArrowCursorCommand}"
+                                                        Content="{x:Static resources:Strings.Common_Browse}"
+                                                        Icon="Folder28"
+                                                        Visibility="{Binding AddArrowCursorVisibility}" />
+                                                    <ui:Button
+                                                        Height="32"
+                                                        HorizontalAlignment="Stretch"
+                                                        Appearance="Danger"
+                                                        Command="{Binding DeleteArrowCursorCommand}"
+                                                        Content="{x:Static resources:Strings.Common_Remove}"
+                                                        Icon="Delete28"
+                                                        Visibility="{Binding DeleteArrowCursorVisibility}" />
                                                 </StackPanel>
                                             </Grid>
 
-                                            <!-- Arrow Far Cursor -->
-                                            <Grid Grid.Row="2" Grid.Column="2" Margin="8,16,8,16">
+                                            <!--  Arrow Far Cursor  -->
+                                            <Grid
+                                                Grid.Row="2"
+                                                Grid.Column="2"
+                                                Margin="8,16,8,16">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto" />
                                                     <RowDefinition Height="*" />
                                                     <RowDefinition Height="Auto" />
                                                 </Grid.RowDefinitions>
-                                                <TextBlock Grid.Row="0" Margin="0,0,0,8" Text="ArrowFar Cursor" FontSize="14" TextAlignment="Center" />
-                                                <Border Grid.Row="1" Background="#33000000" CornerRadius="16" Margin="0,0,0,8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="200" MaxHeight="200" MinHeight="100" MinWidth="100">
+                                                <TextBlock
+                                                    Grid.Row="0"
+                                                    Margin="0,0,0,8"
+                                                    FontSize="14"
+                                                    Text="ArrowFar Cursor"
+                                                    TextAlignment="Center" />
+                                                <Border
+                                                    Grid.Row="1"
+                                                    MinWidth="100"
+                                                    MinHeight="100"
+                                                    MaxWidth="200"
+                                                    MaxHeight="200"
+                                                    Margin="0,0,0,8"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"
+                                                    Background="#33000000"
+                                                    CornerRadius="16">
                                                     <Viewbox Stretch="Uniform">
-                                                        <Image Source="{Binding ArrowFarCursorPreview}" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <Image
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            Source="{Binding ArrowFarCursorPreview}"
+                                                            Stretch="Uniform" />
                                                     </Viewbox>
                                                 </Border>
-                                                <StackPanel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Orientation="Vertical" Margin="0,8,0,0" >
-                                                    <ui:Button Content="Browse" Icon="Folder28" Command="{Binding AddArrowFarCursorCommand}" Visibility="{Binding AddArrowFarCursorVisibility}" HorizontalAlignment="Stretch" Height="32" />
-                                                    <ui:Button Content="Remove" Icon="Delete28" Command="{Binding DeleteArrowFarCursorCommand}" Visibility="{Binding DeleteArrowFarCursorVisibility}" Appearance="Danger" HorizontalAlignment="Stretch" Height="32" />
+                                                <StackPanel
+                                                    Grid.Row="2"
+                                                    Margin="0,8,0,0"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Top"
+                                                    Orientation="Vertical">
+                                                    <ui:Button
+                                                        Height="32"
+                                                        HorizontalAlignment="Stretch"
+                                                        Command="{Binding AddArrowFarCursorCommand}"
+                                                        Content="{x:Static resources:Strings.Common_Browse}"
+                                                        Icon="Folder28"
+                                                        Visibility="{Binding AddArrowFarCursorVisibility}" />
+                                                    <ui:Button
+                                                        Height="32"
+                                                        HorizontalAlignment="Stretch"
+                                                        Appearance="Danger"
+                                                        Command="{Binding DeleteArrowFarCursorCommand}"
+                                                        Content="{x:Static resources:Strings.Common_Remove}"
+                                                        Icon="Delete28"
+                                                        Visibility="{Binding DeleteArrowFarCursorVisibility}" />
                                                 </StackPanel>
                                             </Grid>
 
-                                            <!-- IBeam Cursor -->
-                                            <Grid Grid.Row="2" Grid.Column="3" Margin="8,16,4,16">
+                                            <!--  IBeam Cursor  -->
+                                            <Grid
+                                                Grid.Row="2"
+                                                Grid.Column="3"
+                                                Margin="8,16,4,16">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto" />
                                                     <RowDefinition Height="*" />
                                                     <RowDefinition Height="Auto" />
                                                 </Grid.RowDefinitions>
-                                                <TextBlock Grid.Row="0" Margin="0,0,0,8" Text="IBeam Cursor" FontSize="14" TextAlignment="Center" />
-                                                <Border Grid.Row="1" Background="#33000000" CornerRadius="16" Margin="0,0,0,8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxWidth="200" MaxHeight="200" MinHeight="100" MinWidth="100">
+                                                <TextBlock
+                                                    Grid.Row="0"
+                                                    Margin="0,0,0,8"
+                                                    FontSize="14"
+                                                    Text="IBeam Cursor"
+                                                    TextAlignment="Center" />
+                                                <Border
+                                                    Grid.Row="1"
+                                                    MinWidth="100"
+                                                    MinHeight="100"
+                                                    MaxWidth="200"
+                                                    MaxHeight="200"
+                                                    Margin="0,0,0,8"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"
+                                                    Background="#33000000"
+                                                    CornerRadius="16">
                                                     <Viewbox Stretch="Uniform">
-                                                        <Image Source="{Binding IBeamCursorPreview}" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        <Image
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            Source="{Binding IBeamCursorPreview}"
+                                                            Stretch="Uniform" />
                                                     </Viewbox>
                                                 </Border>
-                                                <StackPanel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Orientation="Vertical" Margin="0,8,0,0" >
-                                                    <ui:Button Content="Browse" Icon="Folder28" Command="{Binding AddIBeamCursorCommand}" Visibility="{Binding AddIBeamCursorVisibility}" HorizontalAlignment="Stretch" Height="32" />
-                                                    <ui:Button Content="Remove" Icon="Delete28" Command="{Binding DeleteIBeamCursorCommand}" Visibility="{Binding DeleteIBeamCursorVisibility}" Appearance="Danger" HorizontalAlignment="Stretch" Height="32" />
+                                                <StackPanel
+                                                    Grid.Row="2"
+                                                    Margin="0,8,0,0"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Top"
+                                                    Orientation="Vertical">
+                                                    <ui:Button
+                                                        Height="32"
+                                                        HorizontalAlignment="Stretch"
+                                                        Command="{Binding AddIBeamCursorCommand}"
+                                                        Content="{x:Static resources:Strings.Common_Browse}"
+                                                        Icon="Folder28"
+                                                        Visibility="{Binding AddIBeamCursorVisibility}" />
+                                                    <ui:Button
+                                                        Height="32"
+                                                        HorizontalAlignment="Stretch"
+                                                        Appearance="Danger"
+                                                        Command="{Binding DeleteIBeamCursorCommand}"
+                                                        Content="{x:Static resources:Strings.Common_Remove}"
+                                                        Icon="Delete28"
+                                                        Visibility="{Binding DeleteIBeamCursorVisibility}" />
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
                                     </StackPanel>
 
-                                    <!-- Bottom toolbar buttons -->
-                                    <Grid Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Height="36">
+                                    <!--  Bottom toolbar buttons  -->
+                                    <Grid
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Height="36"
+                                        Margin="0,8,0,0">
                                         <Grid.Style>
                                             <Style TargetType="Grid">
                                                 <Style.Triggers>
@@ -375,13 +628,47 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <ui:Button Grid.Column="0" Height="32" Content="Apply Set" Icon="Checkmark20" Command="{Binding ApplyCursorSetCommand}" FontWeight="Medium" HorizontalAlignment="Stretch" Margin="4,0,0,0" ToolTip="This will apply your cursors into your Mods Folder." />
-                                        <ui:Button Grid.Column="1" Height="32" Content="Fetch Set" Icon="CollectionsAdd24" Command="{Binding GetCurrentCursorSetCommand}" FontWeight="Medium" HorizontalAlignment="Stretch" Margin="4,0,0,0" ToolTip="This will copy the cursors from your Mods folder." />
-                                        <ui:Button Grid.Column="2" Height="32" Content="Import Set" Icon="FolderZip24" Command="{Binding ImportCursorSetCommand}" FontWeight="Medium" HorizontalAlignment="Stretch" Margin="4,0,0,0" ToolTip="Allows you to Import Cursor from others easily." />
-                                        <ui:Button Grid.Column="3" Height="32" Content="Export Set" Icon="ArrowExportRtl24" Command="{Binding ExportCursorSetCommand}" FontWeight="Medium" HorizontalAlignment="Stretch" Margin="4,0,0,0" ToolTip="Allows you to export your Cursor to other people or save somewhere." />
+                                        <ui:Button
+                                            Grid.Column="0"
+                                            Height="32"
+                                            Margin="4,0,0,0"
+                                            HorizontalAlignment="Stretch"
+                                            Command="{Binding ApplyCursorSetCommand}"
+                                            Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursorSet_ApplySet}"
+                                            Icon="Checkmark20" />
+                                        <ui:Button
+                                            Grid.Column="1"
+                                            Height="32"
+                                            Margin="4,0,0,0"
+                                            HorizontalAlignment="Stretch"
+                                            Command="{Binding GetCurrentCursorSetCommand}"
+                                            Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursorSet_FetchSet}"
+                                            Icon="CollectionsAdd24" />
+                                        <ui:Button
+                                            Grid.Column="2"
+                                            Height="32"
+                                            Margin="4,0,0,0"
+                                            HorizontalAlignment="Stretch"
+                                            Command="{Binding ImportCursorSetCommand}"
+                                            Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursorSet_ImportSet}"
+                                            Icon="FolderZip24" />
+                                        <ui:Button
+                                            Grid.Column="3"
+                                            Height="32"
+                                            Margin="4,0,0,0"
+                                            HorizontalAlignment="Stretch"
+                                            Command="{Binding ExportCursorSetCommand}"
+                                            Content="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursorSet_ExportSet}"
+                                            Icon="ArrowExportRtl24" />
                                     </Grid>
 
-                                    <TextBlock Grid.RowSpan="2" Grid.Column="1" Text="No Custom Cursor Set selected." FontWeight="Medium" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock
+                                        Grid.RowSpan="2"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Text="{x:Static resources:Strings.Menu_Mods_Misc_CustomCursorSet_NoneSelected}"
+                                        TextAlignment="Center">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Style.Triggers>
@@ -399,95 +686,187 @@
                 </StackPanel>
             </TabItem>
 
-            <TabItem Header="Mod Generator" FontWeight="Bold">
+            <TabItem FontWeight="Bold" Header="{x:Static resources:Strings.Menu_Mods_ModGenerator_Title}">
                 <Grid Margin="8,12">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="320"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="320" />
                         </Grid.ColumnDefinitions>
 
-                        <Border Grid.Column="0" CornerRadius="12" Background="{DynamicResource NormalDarkAndLightBackground}" Padding="12" Margin="0,0,12,0">
+                        <Border
+                            Grid.Column="0"
+                            Margin="0,0,12,0"
+                            Padding="12"
+                            Background="{DynamicResource NormalDarkAndLightBackground}"
+                            CornerRadius="12">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Text="Sheet Preview" FontSize="14" FontWeight="Medium" Margin="0,0,0,8"/>
-                                <Border Grid.Row="1" CornerRadius="8" Background="{DynamicResource NormalDarkAndLightBackground}" Padding="8">
-                                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                                        <Image x:Name="SheetPreview" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock
+                                    Margin="0,0,0,8"
+                                    FontSize="14"
+                                    Text="{x:Static resources:Strings.Menu_Mods_ModGenerator_SheetPreview}" />
+                                <Border
+                                    Grid.Row="1"
+                                    Padding="8"
+                                    Background="{DynamicResource NormalDarkAndLightBackground}"
+                                    CornerRadius="8">
+                                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                        <Image
+                                            x:Name="SheetPreview"
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            Stretch="Uniform" />
                                     </ScrollViewer>
                                 </Border>
                             </Grid>
                         </Border>
 
-                        <Border Grid.Column="1" CornerRadius="12" Background="{DynamicResource NormalDarkAndLightBackground}" Padding="12">
+                        <Border
+                            Grid.Column="1"
+                            Padding="12"
+                            Background="{DynamicResource NormalDarkAndLightBackground}"
+                            CornerRadius="12">
                             <StackPanel>
 
-                                <TextBlock Text="Preview Single Sprite" FontSize="13" FontWeight="Medium" Margin="0,0,0,8"/>
-                                <StackPanel VerticalAlignment="Center" Margin="0,0,0,12">
-                                    <ComboBox x:Name="SpriteSelector" Margin="0,0,0,8" SelectionChanged="OnSpriteSelectorChanged" FontWeight="Medium" HorizontalAlignment="Stretch"/>
-                                    <Border Height="88" Width="88" CornerRadius="10" Background="{DynamicResource NormalDarkAndLightBackground}" Padding="6" HorizontalAlignment="Center">
-                                        <Image x:Name="SpritePreview" Width="72" Height="72" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock
+                                    Margin="0,0,0,8"
+                                    FontSize="13"
+                                    Text="{x:Static resources:Strings.Menu_Mods_ModGenerator_SheetPreviewSingle}" />
+                                <StackPanel Margin="0,0,0,12" VerticalAlignment="Center">
+                                    <ComboBox
+                                        x:Name="SpriteSelector"
+                                        Margin="0,0,0,8"
+                                        HorizontalAlignment="Stretch"
+                                        SelectionChanged="OnSpriteSelectorChanged" />
+                                    <Border
+                                        Width="88"
+                                        Height="88"
+                                        Padding="6"
+                                        HorizontalAlignment="Center"
+                                        Background="{DynamicResource NormalDarkAndLightBackground}"
+                                        CornerRadius="10">
+                                        <Image
+                                            x:Name="SpritePreview"
+                                            Width="72"
+                                            Height="72"
+                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                            Stretch="Uniform" />
                                     </Border>
                                 </StackPanel>
 
-                                <Separator Margin="0,8"/>
+                                <Separator Margin="0,8" />
 
-                                <TextBlock Text="Mod Generation Options" FontSize="13" FontWeight="Medium" Margin="0,0,0,8"/>
+                                <TextBlock
+                                    Margin="0,0,0,8"
+                                    FontSize="13"
+                                    Text="{x:Static resources:Strings.Menu_Mods_ModGenerator_GenerationOptions}" />
                                 <StackPanel Margin="0,0,0,8">
-                                    <CheckBox x:Name="CursorsCheckBox" Content="Color Cursors" Margin="0,4"/>
-                                    <CheckBox x:Name="ShiftlockCheckBox" Content="Color Shiftlock Cursor" Margin="0,4"/>
-                                    <CheckBox x:Name="VoiceChatCheckBox" Content="Color Voice Chat Icons" Margin="0,4"/>
-                                    <CheckBox x:Name="EmoteWheelCheckBox" Content="Color Emote Wheel" Margin="0,4"/>
+                                    <CheckBox
+                                        x:Name="CursorsCheckBox"
+                                        Margin="0,4"
+                                        Content="{x:Static resources:Strings.Menu_Mods_ModGenerator_GenerationOptions_Cursor}" />
+                                    <CheckBox
+                                        x:Name="ShiftlockCheckBox"
+                                        Margin="0,4"
+                                        Content="{x:Static resources:Strings.Menu_Mods_ModGenerator_GenerationOptions_Shiftlock}" />
+                                    <CheckBox
+                                        x:Name="VoiceChatCheckBox"
+                                        Margin="0,4"
+                                        Content="{x:Static resources:Strings.Menu_Mods_ModGenerator_GenerationOptions_VoiceChat}" />
+                                    <CheckBox
+                                        x:Name="EmoteWheelCheckBox"
+                                        Margin="0,4"
+                                        Content="{x:Static resources:Strings.Menu_Mods_ModGenerator_GenerationOptions_EmoteWheel}" />
                                 </StackPanel>
 
-                                <Separator Margin="0,8"/>
+                                <Separator Margin="0,8" />
 
-                                <TextBlock Text="Quick Actions" FontSize="13" FontWeight="Medium" Margin="0,8,0,6"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,8">
-                                    <Button x:Name="GenerateModButton" Content="Generate Mod" Click="ModGenerator_Click"/>
-                                    <CheckBox x:Name="IncludeModificationsCheckBox" Content="Copy to Mods folder" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                <TextBlock
+                                    Margin="0,8,0,6"
+                                    FontSize="13"
+                                    Text="{x:Static resources:Strings.Menu_Mods_ModGenerator_QuickActions}" />
+                                <StackPanel
+                                    Margin="0,0,0,8"
+                                    HorizontalAlignment="Left"
+                                    Orientation="Horizontal">
+                                    <Button
+                                        x:Name="GenerateModButton"
+                                        Click="ModGenerator_Click"
+                                        Content="{x:Static resources:Strings.Menu_Mods_ModGenerator_QuickActions_GenerateMod}" />
+                                    <CheckBox
+                                        x:Name="IncludeModificationsCheckBox"
+                                        Margin="8,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Content="{x:Static resources:Strings.Menu_Mods_ModGenerator_QuickActions_CopyToModsFolder}" />
                                 </StackPanel>
 
-                                <TextBlock x:Name="DownloadStatusText" TextWrapping="Wrap" Margin="0,6,0,0" FontWeight="Bold"/>
+                                <TextBlock
+                                    x:Name="DownloadStatusText"
+                                    Margin="0,6,0,0"
+                                    FontWeight="Bold"
+                                    TextWrapping="Wrap" />
                             </StackPanel>
                         </Border>
                     </Grid>
 
-                    <Border Grid.Row="1" CornerRadius="12" Background="{DynamicResource NormalDarkAndLightBackground}" Padding="12" MinHeight="340">
+                    <Border
+                        Grid.Row="1"
+                        MinHeight="340"
+                        Padding="12"
+                        Background="{DynamicResource NormalDarkAndLightBackground}"
+                        CornerRadius="12">
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel Margin="0,0,16,0" VerticalAlignment="Top">
-                                    <TextBlock Text="Custom Roblox Logo" FontSize="14" FontWeight="Medium" Margin="0,0,0,6"/>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                        <Button x:Name="SelectLogoButton" Content="Choose" Click="OnSelectCustomLogo_Click"/>
-                                        <Button x:Name="ClearLogoButton" Content="Clear" Click="OnClearCustomLogo_Click" Margin="8,0,0,0"/>
-                                        <TextBlock x:Name="SelectedLogoText" Text="No custom logo selected" VerticalAlignment="Center" Margin="12,0,0,0" FontWeight="Medium"/>
+                                    <TextBlock
+                                        Margin="0,0,0,6"
+                                        FontSize="14"
+                                        Text="{x:Static resources:Strings.Menu_Mods_ModGenerator_RobloxLOGO}" />
+                                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                                        <Button
+                                            x:Name="SelectLogoButton"
+                                            Click="OnSelectCustomLogo_Click"
+                                            Content="{x:Static resources:Strings.Common_Choose}" />
+                                        <Button
+                                            x:Name="ClearLogoButton"
+                                            Margin="8,0,0,0"
+                                            Click="OnClearCustomLogo_Click"
+                                            Content="{x:Static resources:Strings.Common_Remove}" />
                                     </StackPanel>
                                 </StackPanel>
 
                                 <StackPanel VerticalAlignment="Top">
-                                    <TextBlock Text="Custom Loading Spinner" FontSize="14" FontWeight="Medium" Margin="0,0,0,6"/>
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                        <Button x:Name="SelectSpinnerButton" Content="Choose" Click="OnSelectCustomSpinner_Click"/>
-                                        <Button x:Name="ClearSpinnerButton" Content="Clear" Click="OnClearCustomSpinner_Click" Margin="8,0,0,0"/>
-                                        <TextBlock x:Name="SelectedSpinnerText" Text="No custom spinner selected" VerticalAlignment="Center" Margin="12,0,0,0" FontWeight="Medium"/>
+                                    <TextBlock
+                                        Margin="0,0,0,6"
+                                        FontSize="14"
+                                        Text="{x:Static resources:Strings.Menu_Mods_ModGenerator_Spinner}" />
+                                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                                        <Button
+                                            x:Name="SelectSpinnerButton"
+                                            Click="OnSelectCustomSpinner_Click"
+                                            Content="{x:Static resources:Strings.Common_Choose}" />
+                                        <Button
+                                            x:Name="ClearSpinnerButton"
+                                            Margin="8,0,0,0"
+                                            Click="OnClearCustomSpinner_Click"
+                                            Content="{x:Static resources:Strings.Common_Remove}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
                                 <Grid Grid.Row="0" Margin="0,0,0,8">
@@ -496,40 +875,120 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Text="Gradient Colors" FontSize="14" FontWeight="Medium" VerticalAlignment="Center" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        FontSize="14"
+                                        Text="{x:Static resources:Strings.Menu_Mods_ModGenerator_GradientColors}" />
 
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                        <TextBlock Text="Gradient Angle:" FontSize="12" FontWeight="Medium" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                        <TextBox x:Name="GradientAngleTextBox" FontWeight="Medium" Width="80" VerticalContentAlignment="Center" ToolTip="Enter angle in degrees (0 - 360). Press Enter or leave the box to apply." PreviewTextInput="GradientAngleTextBox_PreviewTextInput" KeyDown="GradientAngleTextBox_KeyDown" LostFocus="GradientAngleTextBox_LostFocus" DataObject.Pasting="GradientAngleTextBox_Pasting" Margin="0,0,8,0"/>
-                                        <Button x:Name="AddStopButton" Content="Add Gradient Color" Width="160" Click="OnAddGradientStop_Click"/>
+                                    <StackPanel
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0,0,8,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="12"
+                                            Text="{x:Static resources:Strings.Menu_Mods_ModGenerator_GradientAngle}" />
+                                        <TextBox
+                                            x:Name="GradientAngleTextBox"
+                                            Width="80"
+                                            Margin="0,0,8,0"
+                                            VerticalContentAlignment="Center"
+                                            DataObject.Pasting="GradientAngleTextBox_Pasting"
+                                            KeyDown="GradientAngleTextBox_KeyDown"
+                                            LostFocus="GradientAngleTextBox_LostFocus"
+                                            PreviewTextInput="GradientAngleTextBox_PreviewTextInput"
+                                            ToolTip="Enter angle in degrees (0 - 360). Press Enter or leave the box to apply." />
+                                        <Button
+                                            x:Name="AddStopButton"
+                                            Width="160"
+                                            Click="OnAddGradientStop_Click"
+                                            Content="{x:Static resources:Strings.Menu_Mods_ModGenerator_GradientColors}" />
                                     </StackPanel>
                                 </Grid>
 
 
-                                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="340">
+                                <ScrollViewer
+                                    Grid.Row="2"
+                                    MaxHeight="340"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
                                     <ItemsControl ItemsSource="{Binding GradientStops}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Grid Margin="0,2" HorizontalAlignment="Stretch">
                                                     <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="140"/>
-                                                        <ColumnDefinition Width="80"/>
-                                                        <ColumnDefinition Width="100"/>
-                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="140" />
+                                                        <ColumnDefinition Width="80" />
+                                                        <ColumnDefinition Width="100" />
+                                                        <ColumnDefinition Width="Auto" />
                                                     </Grid.ColumnDefinitions>
 
-                                                    <TextBlock Text="Offset:" VerticalAlignment="Center" Margin="4,0,4,0" FontWeight="Medium" Grid.Column="0"/>
-                                                    <Slider Minimum="0" Maximum="1" Value="{Binding Offset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TickFrequency="0.01" IsSnapToTickEnabled="True" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="2" Margin="4,8,4,0" ValueChanged="OnGradientOffsetChanged" Grid.Column="1"/>
-                                                    <TextBlock Text="{Binding Offset, StringFormat=F2}" FontWeight="Medium" VerticalAlignment="Center" Margin="8,0,8,0" Width="30" Grid.Column="2"/>
-                                                    <TextBox Text="{Binding ColorHex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontWeight="Medium" Width="130" Margin="0,0,4,0" VerticalAlignment="Center" Grid.Column="3" MinWidth="100" TextChanged="OnGradientColorHexChanged"/>
-                                                    <Button Content="Color" Width="75" Margin="0,0,4,0" Tag="{Binding}" Click="OnChangeGradientColor_Click" Grid.Column="4"/>
-                                                    <Button Content="Remove" Width="95" Margin="0,0,4,0" Tag="{Binding}" Click="OnRemoveGradientStop_Click" Grid.Column="5"/>
+                                                    <TextBlock
+                                                        Grid.Column="0"
+                                                        Margin="4,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Text="Offset:" />
+                                                    <Slider
+                                                        Grid.Column="1"
+                                                        Margin="4,8,4,0"
+                                                        AutoToolTipPlacement="TopLeft"
+                                                        AutoToolTipPrecision="2"
+                                                        IsSnapToTickEnabled="True"
+                                                        Maximum="1"
+                                                        Minimum="0"
+                                                        TickFrequency="0.01"
+                                                        ValueChanged="OnGradientOffsetChanged"
+                                                        Value="{Binding Offset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                    <TextBlock
+                                                        Grid.Column="2"
+                                                        Width="30"
+                                                        Margin="8,0,8,0"
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding Offset, StringFormat=F2}" />
+                                                    <TextBox
+                                                        Grid.Column="3"
+                                                        Width="130"
+                                                        MinWidth="100"
+                                                        Margin="0,0,4,0"
+                                                        VerticalAlignment="Center"
+                                                        Text="{Binding ColorHex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                        TextChanged="OnGradientColorHexChanged" />
+                                                    <Button
+                                                        Grid.Column="4"
+                                                        Width="75"
+                                                        Margin="0,0,4,0"
+                                                        Click="OnChangeGradientColor_Click"
+                                                        Content="{x:Static resources:Strings.Common_Color}"
+                                                        Tag="{Binding}" />
+                                                    <Button
+                                                        Grid.Column="5"
+                                                        Width="95"
+                                                        Margin="0,0,4,0"
+                                                        Click="OnRemoveGradientStop_Click"
+                                                        Content="{x:Static resources:Strings.Common_Remove}"
+                                                        Tag="{Binding}" />
                                                     <StackPanel Grid.Column="6" Orientation="Horizontal">
-                                                        <Button Content="▲" Width="28" Margin="0,0,4,0" Padding="0" Tag="{Binding}" Click="OnMoveUpGradientStop_Click" ToolTip="Move Up"/>
-                                                        <Button Content="▼" Width="28" Margin="0,0,4,0" Padding="0" Tag="{Binding}" Click="OnMoveDownGradientStop_Click" ToolTip="Move Down"/>
+                                                        <Button
+                                                            Width="28"
+                                                            Margin="0,0,4,0"
+                                                            Padding="0"
+                                                            Click="OnMoveUpGradientStop_Click"
+                                                            Content="▲"
+                                                            Tag="{Binding}"
+                                                            ToolTip="Move Up" />
+                                                        <Button
+                                                            Width="28"
+                                                            Margin="0,0,4,0"
+                                                            Padding="0"
+                                                            Click="OnMoveDownGradientStop_Click"
+                                                            Content="▼"
+                                                            Tag="{Binding}"
+                                                            ToolTip="Move Down" />
                                                     </StackPanel>
                                                 </Grid>
                                             </DataTemplate>

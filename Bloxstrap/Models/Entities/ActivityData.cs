@@ -1,9 +1,7 @@
-﻿using Bloxstrap.AppData;
-using Bloxstrap.Models.APIs;
-using Bloxstrap.Models.APIs.RoValra;
+﻿using Bloxstrap.Models.APIs;
 using CommunityToolkit.Mvvm.Input;
-using System.DirectoryServices.ActiveDirectory;
-using System.Runtime.InteropServices;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Web;
 using System.Windows;
 using System.Windows.Input;
@@ -12,23 +10,18 @@ namespace Bloxstrap.Models.Entities
 {
     public class ActivityData
     {
-
         private long _universeId = 0;
 
         /// <summary>
         /// If the current activity stems from an in-universe teleport, then this will be
         /// set to the activity that corresponds to the initial game join
         /// </summary>
-        public ActivityData? RootActivity;
+        public ActivityData? RootActivity { get; set; }
 
         public long UniverseId
         {
             get => _universeId;
-            set
-            {
-                _universeId = value;
-                UniverseDetails.LoadFromCache(value);
-            }
+            set => _universeId = value;
         }
 
         public long PlaceId { get; set; } = 0;
@@ -39,7 +32,7 @@ namespace Bloxstrap.Models.Entities
         /// This will be empty unless the server joined is a private server
         /// </summary>
         public string AccessCode { get; set; } = string.Empty;
-        
+
         public long UserId { get; set; } = 0;
 
         public string MachineAddress { get; set; } = string.Empty;
@@ -54,6 +47,14 @@ namespace Bloxstrap.Models.Entities
 
         public DateTime? TimeLeft { get; set; }
 
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
         // everything below here is optional strictly for bloxstraprpc, discord rich presence, or game history
 
         /// <summary>
@@ -63,28 +64,37 @@ namespace Bloxstrap.Models.Entities
 
         public UniverseDetails? UniverseDetails { get; set; }
 
-        public ICommand CopyJobIdCommand => new RelayCommand(CopyJobId);
-
-        private void CopyJobId()
+        public string GameHistoryDescription
         {
-            if (!string.IsNullOrEmpty(JobId))
+            get
             {
-                Clipboard.SetText(JobId);
+                string desc = string.Format(
+                    "{0} • {1} {2} {3}",
+                    UniverseDetails?.Data.Creator.Name ?? "Unknown",
+                    TimeJoined.ToString("t"),
+                    Locale.CurrentCulture.Name.StartsWith("ja") ? '~' : '-',
+                    TimeLeft?.ToString("t") ?? "?"
+                );
+
+                if (ServerType != ServerType.Public)
+                    desc += " • " + ServerType.ToTranslatedString();
+
+                return desc;
             }
         }
 
-        public ICommand CopyJoinLinkCommand => new RelayCommand(CopyJoinLink);
-
         public ICommand RejoinServerCommand => new RelayCommand(RejoinServer);
+        public ICommand CopyDeeplinkCommand => new RelayCommand(CopyDeeplink);
+        public ICommand CopyServerIdCommand => new RelayCommand(CopyServerId);
 
         private SemaphoreSlim serverQuerySemaphore = new(1, 1);
         private SemaphoreSlim serverTimeSemaphore = new(1, 1);
 
         public string GetInviteDeeplink(bool launchData = true)
         {
-            string deeplink = $"https://www.roblox.com/games/start?placeId={PlaceId}";
+            string deeplink = $"roblox://experiences/start?placeId={PlaceId}";
 
-            if (ServerType == ServerType.Private) // thats not going to work
+            if (ServerType == ServerType.Private)
                 deeplink += "&accessCode=" + AccessCode;
             else
                 deeplink += "&gameInstanceId=" + JobId;
@@ -287,43 +297,40 @@ namespace Bloxstrap.Models.Entities
             }
         }
 
-        private void CopyJoinLink()
+        private async void CopyDeeplink()
         {
             try
             {
-                string joinLink = GetInviteDeeplink();
-                Clipboard.SetText(joinLink);
+                string deeplink = GetInviteDeeplink();
+                Clipboard.SetText(deeplink);
 
-                App.Logger.WriteLine("ActivityData::CopyJoinLink", $"Copied join link: {joinLink}");
+                App.Logger.WriteLine("ActivityData::CopyDeeplink", $"Copied deeplink to clipboard: {deeplink}");
             }
             catch (Exception ex)
             {
-                App.Logger.WriteException("ActivityData::CopyJoinLink", ex);
-                MessageBox.Show($"Failed to copy join link: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                App.Logger.WriteException("ActivityData::CopyDeeplink", ex);
+                MessageBox.Show($"Failed to copy deeplink: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        public string ServerTypeDisplay => ServerType switch
+        private async void CopyServerId()
         {
-            ServerType.Public => "Public Server",
-            ServerType.Private => "Private Server",
-            ServerType.Reserved => "Reserved Server",
-            _ => "Unknown Server"
-        };
-
-        public string ServerIdDisplay
-        {
-            get
+            try
             {
                 if (string.IsNullOrEmpty(JobId))
-                    return "No Server ID";
+                {
+                    MessageBox.Show("No server ID available to copy", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
 
-                if (JobId.Length > 12)
-                    return $"Server: {JobId[..12]}...";
-                else
-                    return $"Server: {JobId}";
+                Clipboard.SetText(JobId);
+                App.Logger.WriteLine("ActivityData::CopyServerId", $"Copied server ID to clipboard: {JobId}");
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("ActivityData::CopyServerId", ex);
+                MessageBox.Show($"Failed to copy server ID: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
     }
 }

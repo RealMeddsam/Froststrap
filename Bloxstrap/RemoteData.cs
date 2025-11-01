@@ -41,10 +41,18 @@ namespace Bloxstrap
 
         public async Task WaitUntilDataFetched()
         {
-            while (LoadedState == GenericTriState.Unknown)
-                await Task.Delay(100);
+            const int delay = 100;
+            const int maxTries = 30; // 3 seconds
+            int tries = 0;
 
-            return;
+            while (LoadedState == GenericTriState.Unknown)
+            {
+                await Task.Delay(delay);
+                tries++;
+
+                if (tries >= maxTries)
+                    break;
+            }
         }
 
         // remember that our data isnt necessary, we can fetch it in the background 

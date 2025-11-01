@@ -355,3 +355,10 @@ Bloxstrap/UI/Elements/ContextMenu/RegionSelectorMenu.xaml.cs
 Bloxstrap/UI/Elements/Settings/Pages/RegionSelectorPage.xaml.cs
 Bloxstrap/UI/Elements/Settings/Pages/RegionSelectorPage.xaml
 Bloxstrap/UI/ViewModels/Settings/RegionSelectorViewModel.cs
+Bloxstrap/Integrations/AccountManager.cs
+Bloxstrap/UI/Elements/Settings/Pages/AccountManagerPage.xaml.cs
+Bloxstrap/UI/Elements/Settings/Pages/AccountManagerPage.xaml
+Bloxstrap/UI/ViewModels/Settings/AccountManagerViewModel.cs
+Bloxstrap/UI/Elements/Dialogs/QuickSignCodeDialog.xaml
+Bloxstrap/UI/Elements/Dialogs/QuickSignCodeDialog.xaml.cs
+Bloxstrap/Models/GameSearching.cs

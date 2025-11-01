@@ -186,14 +186,18 @@ namespace Bloxstrap
             {
                 bool showAlreadyRunningWarning = Process.GetProcessesByName(App.ProjectName).Length > 1;
 
+                if (App.Settings.Prop.ShowUsingFroststrapRPC && App.FrostRPC == null)
+                {
+                    App.FrostRPC = new FroststrapRichPresence();
+                }
+
                 var window = new UI.Elements.Settings.MainWindow(showAlreadyRunningWarning);
 
-                (Application.Current as App)?.CreateFroststrapRpcIfNeeded();
+                App.FrostRPC?.SetPage("Settings");
 
-                // typically we'd use Show(), but we need to block to ensure IPL stays in scope
                 window.ShowDialog();
 
-                (Application.Current as App)?._froststrapRPC?.Dispose();
+                App.FrostRPC?.ResetPresence();
             }
             else
             {
@@ -210,17 +214,20 @@ namespace Bloxstrap
 
         public static void LaunchMenu()
         {
+            if (App.Settings.Prop.ShowUsingFroststrapRPC && App.FrostRPC == null)
+            {
+                App.FrostRPC = new FroststrapRichPresence();
+            }
+
             var dialog = new LaunchMenuDialog();
 
-            (Application.Current as App)?.CreateFroststrapRpcIfNeeded();
-
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Launch Menu");
+            App.FrostRPC?.SetPage("Launch Menu");
 
             dialog.ShowDialog();
 
             ProcessNextAction(dialog.CloseAction);
 
-            (Application.Current as App) ? ._froststrapRPC?.Dispose();
+            App.FrostRPC?.ResetPresence();
         }
 
         public static void LaunchRoblox(LaunchMode launchMode)

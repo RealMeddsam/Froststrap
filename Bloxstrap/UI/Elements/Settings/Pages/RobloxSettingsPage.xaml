@@ -1,94 +1,106 @@
-﻿<ui:UiPage x:Class="Bloxstrap.UI.Elements.Settings.Pages.RobloxSettingsPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns:resources="clr-namespace:Bloxstrap.Resources"
-      xmlns:controls="clr-namespace:Bloxstrap.UI.Elements.Controls"
-      xmlns:converters="clr-namespace:Bloxstrap.UI.Converters"
-      xmlns:models="clr-namespace:Bloxstrap.Models"
-      mc:Ignorable="d"
-      d:DesignHeight="1500" d:DesignWidth="800"
-      Title="RobloxSettingsPage"
-      Scrollable="True">
+﻿<ui:UiPage
+    x:Class="Bloxstrap.UI.Elements.Settings.Pages.RobloxSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Bloxstrap.UI.Elements.Controls"
+    xmlns:converters="clr-namespace:Bloxstrap.UI.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Bloxstrap.Models"
+    xmlns:resources="clr-namespace:Bloxstrap.Resources"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="RobloxSettingsPage"
+    d:DesignHeight="1500"
+    d:DesignWidth="800"
+    Scrollable="True"
+    mc:Ignorable="d">
 
     <ui:UiPage.Resources>
 
-        <!-- 🟠 TextBoxTemplate -->
         <DataTemplate x:Key="TextBoxTemplate">
-            <ui:TextBox Margin="0,0,5,4"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <ui:TextBox
+                Margin="0,0,5,4"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </DataTemplate>
 
-        <!-- 🟢 SliderTemplate -->
         <DataTemplate x:Key="SliderTemplate">
-            <Grid Margin="0,0,0,4" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+            <Grid
+                Margin="0,0,0,4"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <Slider Grid.Column="0"
+                <Slider
+                    Grid.Column="0"
                     HorizontalAlignment="Stretch"
-                    Minimum="{Binding MinValue}"
-                    Maximum="{Binding MaxValue}"
-                    TickFrequency="{Binding Step}"
                     IsSnapToTickEnabled="True"
+                    Maximum="{Binding MaxValue}"
+                    Minimum="{Binding MinValue}"
+                    TickFrequency="{Binding Step}"
                     Value="{Binding TypedValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                <TextBlock Grid.Column="1"
-                       Margin="4,0,0,0"
-                       Width="33"
-                       HorizontalAlignment="Right"
-                       TextAlignment="Right"
-                       Text="{Binding Value}" />
+                <TextBlock
+                    Grid.Column="1"
+                    Width="33"
+                    Margin="4,0,0,0"
+                    HorizontalAlignment="Right"
+                    Text="{Binding Value}"
+                    TextAlignment="Right" />
             </Grid>
         </DataTemplate>
 
-        <!-- ⚪ ToggleSwitchTemplate -->
         <DataTemplate x:Key="ToggleSwitchTemplate">
-            <Grid Margin="0,0,0,4" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+            <Grid
+                Margin="0,0,0,4"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center">
                 <ui:ToggleSwitch VerticalAlignment="Center" IsChecked="{Binding TypedValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
         </DataTemplate>
 
-        <!-- 🟣 ComboBoxTemplate -->
         <DataTemplate x:Key="ComboBoxTemplate">
-            <ComboBox Margin="0,0,5,4"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Center"
-                  ItemsSource="{Binding Options}"
-                  SelectedValue="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                  DisplayMemberPath="DisplayName"
-                  SelectedValuePath="Value" />
+            <ComboBox
+                Margin="0,0,5,4"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                DisplayMemberPath="DisplayName"
+                ItemsSource="{Binding Options}"
+                SelectedValue="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                SelectedValuePath="Value" />
         </DataTemplate>
 
-        <!-- 🔵 Vector2Template -->
         <DataTemplate x:Key="Vector2Template">
-            <Grid Margin="0,0,0,4" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+            <Grid
+                Margin="0,0,0,4"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <ui:TextBox Grid.Column="0"
-                        Margin="0,0,4,0"
-                        ClearButtonEnabled="False"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Center"
-                        Text="{Binding VectorX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        PreviewTextInput="ValidateFloat" />
+                <ui:TextBox
+                    Grid.Column="0"
+                    Margin="0,0,4,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    ClearButtonEnabled="False"
+                    PreviewTextInput="ValidateFloat"
+                    Text="{Binding VectorX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                <ui:TextBox Grid.Column="1"
-                        Margin="4,0,0,0"
-                        ClearButtonEnabled="False"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Center"
-                        Text="{Binding VectorY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        PreviewTextInput="ValidateFloat" />
+                <ui:TextBox
+                    Grid.Column="1"
+                    Margin="4,0,0,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    ClearButtonEnabled="False"
+                    PreviewTextInput="ValidateFloat"
+                    Text="{Binding VectorY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
         </DataTemplate>
 
@@ -96,35 +108,60 @@
 
 
     <StackPanel Margin="0,0,14,14">
-        <TextBlock Margin="0,0,0,16" Text="{x:Static resources:Strings.Menu_GBSEditor_Description}" FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+        <TextBlock
+            Margin="0,0,0,16"
+            FontSize="14"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="{x:Static resources:Strings.Menu_GBSEditor_Description}" />
 
-        <controls:OptionControl 
-            Header="{x:Static resources:Strings.Menu_GBSEditor_ReadOnly_Title}" 
-            Description="{x:Static resources:Strings.Menu_GBSEditor_ReadOnly_Description}">
-            <ui:ToggleSwitch Margin="5,0,0,0" Padding="10,5,10,5" IsChecked="{Binding ReadOnly}" />
+        <controls:OptionControl Description="{x:Static resources:Strings.Menu_GBSEditor_ReadOnly_Description}" Header="{x:Static resources:Strings.Menu_GBSEditor_ReadOnly_Title}">
+            <ui:ToggleSwitch
+                Margin="5,0,0,0"
+                Padding="10,5,10,5"
+                IsChecked="{Binding ReadOnly}" />
         </controls:OptionControl>
+
+        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+            <ui:Button
+                Margin="0,0,8,0"
+                Content="Export Roblox Settings"
+                Icon="Save24"
+                Command="{Binding ExportCommand}" />
+            <ui:Button
+                Margin="0,0,8,0"
+                Content="Import Roblox Settings"
+                Icon="FolderAdd24"
+                Command="{Binding ImportCommand}" />
+        </StackPanel>
 
         <ItemsControl ItemsSource="{Binding Sections}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="0,8,0,0">
 
-                        <Separator Margin="0,8,0,4"/>
+                        <Separator Margin="0,8,0,4" />
 
-                        <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="Bold" />
+                        <TextBlock
+                            FontSize="20"
+                            FontWeight="Bold"
+                            Text="{Binding Title}" />
 
                         <ItemsControl ItemsSource="{Binding Controls}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <UniformGrid Columns="4" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinWidth="200" />
+                                    <UniformGrid
+                                        MinWidth="200"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Top"
+                                        Columns="4" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
 
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <controls:SquareCard Header="{Binding Title}" Description="{Binding Description}">
+                                    <controls:SquareCard Description="{Binding Description}" Header="{Binding Title}">
                                         <controls:SquareCard.InnerContent>
-                                            <ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource SettingsControlSelector}"/>
+                                            <ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource SettingsControlSelector}" />
                                         </controls:SquareCard.InnerContent>
                                     </controls:SquareCard>
                                 </DataTemplate>

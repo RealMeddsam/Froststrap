@@ -8,7 +8,7 @@ namespace Bloxstrap.UI.ViewModels.Dialogs
 {
     public class ChannelListsViewModel : NotifyPropertyChangedViewModel
     {
-        private const string ChannelsJsonUrl = "https://raw.githubusercontent.com/SCR00M/gsagsssssssagdsgadgsgds/refs/heads/main/Channels.json";
+        private const string ChannelsJsonUrl = "https://raw.githubusercontent.com/RealMeddsam/config/refs/heads/main/Channels.json";
 
         private readonly Dictionary<string, ClientVersion> _channelInfoCache = new();
 

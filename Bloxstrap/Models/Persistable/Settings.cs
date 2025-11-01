@@ -5,6 +5,9 @@ namespace Bloxstrap.Models.Persistable
 {
     public class Settings
     {
+        // uh
+        public bool AllowCookieAccess { get; set; } = false;
+
         // Integration Page
         public bool EnableActivityTracking { get; set; } = true;
         public bool ShowServerDetails { get; set; } = true;
@@ -46,7 +49,6 @@ namespace Bloxstrap.Models.Persistable
         public bool CtrlCJsonFormat { get; set; } = false;
         public bool ShowPresetColumn { get; set; } = false;
         public bool ShowFlagCount { get; set; } = true;
-        public bool ShowAddWithID { get; set; } = false;
         public bool UseAltManually { get; set; } = true;
 
         // Appearance Page

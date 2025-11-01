@@ -564,31 +564,31 @@ If not, then please report this exception through a [GitHub issue]({1}) along wi
   </data>
   <data name="CustomTheme.Errors.ElementAttributeMultipleChildren" xml:space="preserve">
     <value>{0}.{1} can only have one child</value>
-	<comment>{0}.{1} is the element &amp; attribute name (e.g. Button.Text)</comment>
+    <comment>{0}.{1} is the element &amp; attribute name (e.g. Button.Text)</comment>
   </data>
   <data name="CustomTheme.Errors.ElementMultipleChildren" xml:space="preserve">
     <value>{0} can only have one child</value>
-	<comment>{0} is the element name (e.g. Button)</comment>
+    <comment>{0} is the element name (e.g. Button)</comment>
   </data>
   <data name="CustomTheme.Errors.ElementAttributeMissingChild" xml:space="preserve">
     <value>{0}.{1} is missing its child</value>
-	<comment>{0}.{1} is the element &amp; attribute name (e.g. Button.Text)</comment>
+    <comment>{0}.{1} is the element &amp; attribute name (e.g. Button.Text)</comment>
   </data>
   <data name="CustomTheme.Errors.ElementAttributeParseError" xml:space="preserve">
     <value>{0}.{1} could not be parsed into a {2}</value>
-	<comment>{0}.{1} is the element &amp; attribute name (e.g. Button.Text), {2} is the type name (e.g. string)</comment>
+    <comment>{0}.{1} is the element &amp; attribute name (e.g. Button.Text), {2} is the type name (e.g. string)</comment>
   </data>
   <data name="CustomTheme.Errors.ElementAttributeParseErrorNull" xml:space="preserve">
     <value>{0}.{1} {2} is null</value>
-	<comment>{0}.{1} is the element &amp; attribute name (e.g. Button.Text), {2} is the type name (e.g. string)</comment>
+    <comment>{0}.{1} is the element &amp; attribute name (e.g. Button.Text), {2} is the type name (e.g. string)</comment>
   </data>
   <data name="CustomTheme.Errors.ElementAttributeBlacklistedUriScheme" xml:space="preserve">
     <value>{0}.{1} uses blacklisted scheme {2}</value>
-	<comment>{0}.{1} is the element &amp; attribute name (e.g. Button.Text), {2} is the URI scheme (e.g. http)</comment>
+    <comment>{0}.{1} is the element &amp; attribute name (e.g. Button.Text), {2} is the URI scheme (e.g. http)</comment>
   </data>
   <data name="CustomTheme.Errors.ElementTypeCreationFailed" xml:space="preserve">
     <value>{0} failed to create {1}: {2}</value>
-	<comment>{0} is the element name (e.g. Button), {1} is the attribute name (e.g. Text), {2} is the error reason</comment>
+    <comment>{0} is the element name (e.g. Button), {1} is the attribute name (e.g. Text), {2} is the error reason</comment>
   </data>
   <data name="CustomTheme.Editor.Title" xml:space="preserve">
     <value>Editing "{0}"</value>
@@ -777,7 +777,7 @@ Would you like to upgrade your currently installed version?</value>
   <data name="Menu.Appearance.Launcher.Description" xml:space="preserve">
     <value>Choose a launch screen style. Note: dark theme isn’t supported for Legacy or Vista.
 For more custom launchers, visit the official Bloxstrap Discord server.</value>
-  </data>	
+  </data>
   <data name="Menu.Appearance.Launcher.Title" xml:space="preserve">
     <value>Launcher</value>
   </data>
@@ -1240,11 +1240,11 @@ Some text might not be translated to preferred language.</value>
   <data name="Menu.FastFlags.Presets.GraySky.Title" xml:space="preserve">
     <value>Gray Sky</value>
   </data>
-  <data name="Menu.FastFlags.Presets.GraySky.Description" xml:space="preserve">
-    <value>Sets the sky to gray in certain games. Note: this setting does not affect games that use custom skyboxes.</value>
-  </data>
   <data name="Common.SearchBy" xml:space="preserve">
     <value>Search By</value>
+  </data>
+  <data name="Common.Search" xml:space="preserve">
+    <value>Search</value>
   </data>
   <data name="Common.ModType" xml:space="preserve">
     <value>Type: Mod</value>
@@ -1257,12 +1257,6 @@ Some text might not be translated to preferred language.</value>
   </data>
   <data name="Menu.FastFlagsEditor.AdvancedSettings.ToggleFlagCount.Title" xml:space="preserve">
     <value>Flag Count</value>
-  </data>
-  <data name="Menu.FastFlagsEditor.AdvancedSettings.AddWithID.Description" xml:space="preserve">
-    <value>Enable to show 'Add with ID' and 'Import ID JSON' tabs in Add New dialog.</value>
-  </data>
-  <data name="Menu.FastFlagsEditor.AdvancedSettings.AddWithID.Title" xml:space="preserve">
-    <value>Add With ID</value>
   </data>
   <data name="Menu.FastFlagsEditor.AdvancedSettings.PresetColumn.Title" xml:space="preserve">
     <value>Preset Column</value>
@@ -1827,6 +1821,9 @@ For more information join Bloxshade discord server.</value>
   <data name="Common.CopyAll" xml:space="preserve">
     <value>Copy All</value>
   </data>
+  <data name="Common.Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
   <data name="Common.DeleteAll" xml:space="preserve">
     <value>Delete All</value>
   </data>
@@ -1968,19 +1965,19 @@ You can no longer use Bloxshade with Froststrap.</value>
     <value>Waiting for data...</value>
   </data>
   <data name="Menu.Integrations.QueryServerUptime.Description" xml:space="preserve">
-    <value>Displays the server’s estimated uptime using data from [RoValra's APIs]({0}), This could make the notification take longer to show. [RoValra's privacy policy]({0}/privacy) applies. (Feature Made By Fishstrap)</value>
+    <value>Displays the server’s estimated uptime using data from [RoValra's APIs]({0}), [RoValra's privacy policy]({0}/privacy) applies. (Feature Made By Fishstrap)</value>
   </data>
   <data name="Menu.RegionSelector.Description" xml:space="preserve">
-  <value>Join servers near your location easily, if nothing shows up when searching, spam load more, if still nothing, switch the region. made using [RoValra's APIs]({0}), [RoValra's privacy policy]({0}/privacy) applies.</value>
+    <value>Join servers near your location easily, This uses the account selected in Account Manager. made using [RoValra's APIs]({0}), [RoValra's privacy policy]({0}/privacy) applies.</value>
   </data>
   <data name="Menu.Integrations.QueryServerUptime.Title" xml:space="preserve">
-    <value>Query server uptime</value>
+    <value>Query Server Uptime</value>
   </data>
   <data name="Common.UnknownStatus" xml:space="preserve">
-	  <value>Unknown status</value>
+    <value>Unknown status</value>
   </data>
   <data name="ContextMenu.ServerInformation.Notification.ServerNotTracked" xml:space="preserve">
-	  <value>Not tracked</value>
+    <value>Not tracked</value>
   </data>
   <data name="Menu.GBSEditor.Description" xml:space="preserve">
     <value>Set in-game settings from Froststrap menu.</value>
@@ -2005,5 +2002,320 @@ You can no longer use Bloxshade with Froststrap.</value>
   </data>
   <data name="Common.Refresh" xml:space="preserve">
     <value>Refresh</value>
+  </data>
+  <data name="Common.Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Menu.Behaviour.AllowCookieAccess.Title" xml:space="preserve">
+    <value>Allow Froststrp to access your Roblox account</value>
+  </data>
+  <data name="Menu.Behaviour.AllowCookieAccess.Description" xml:space="preserve">
+    <value>Provide access to Roblox APIs using your authentication cookie. [What will Froststrap access?]({0})</value>
+  </data>
+  <data name="Menu.Appearance.WindowsBackdrop.Title" xml:space="preserve">
+    <value>Window Backdrop</value>
+  </data>
+  <data name="Menu.Appearance.WindowsBackdrop.Description" xml:space="preserve">
+    <value>Select the window backdrop effect. Note: you must use dark theme, Mica only works on windows 11, you have to restart after selecting one.</value>
+  </data>
+  <data name="Menu.Appearance.CustomAppFont.Title" xml:space="preserve">
+    <value>Custom App Font</value>
+  </data>
+  <data name="Menu.Appearance.CustomAppFont.Description" xml:space="preserve">
+    <value>Choose a custom font to override Froststrap default UI font.</value>
+  </data>
+  <data name="Menu.Appearance.MenuAdjustment.Title" xml:space="preserve">
+    <value>Menu Adjustment</value>
+  </data>
+  <data name="Menu.Appearance.MenuAdjustment.Description" xml:space="preserve">
+    <value>Reorder the navigation menu items to your preference. Changes will be saved automatically.</value>
+  </data>
+  <data name="Menu.Appearance.MenuAdjustment.MoveUp" xml:space="preserve">
+    <value>Move Up</value>
+  </data>
+  <data name="Menu.Appearance.MenuAdjustment.MoveDown" xml:space="preserve">
+    <value>Move Down</value>
+  </data>
+  <data name="Menu.Appearance.MenuAdjustment.ResetToDefault" xml:space="preserve">
+    <value>Reset To Default</value>
+  </data>
+  <data name="Menu.Appearance.MenuAdjustment.LockOrder" xml:space="preserve">
+    <value>Lock Order</value>
+  </data>
+  <data name="Menu.Behaviour.CloseCrashHandler.Description" xml:space="preserve">
+    <value>Automatically closes the RobloxCrashHandler.exe that launches with roblox to save on resources.</value>
+  </data>
+  <data name="Menu.Behaviour.CloseCrashHandler.Title" xml:space="preserve">
+    <value>Auto Close Roblox Crash Handler</value>
+  </data>
+  <data name="Menu.Behaviour.ProcessPriority.Description" xml:space="preserve">
+    <value>Select the CPU priority for Roblox.</value>
+  </data>
+  <data name="Menu.Behaviour.ProcessPriority.Title" xml:space="preserve">
+    <value>Roblox Process Priority</value>
+  </data>
+  <data name="Menu.Channel.SaveAndLaunchOption.Description" xml:space="preserve">
+    <value>Change what the Save and Launch button launches.</value>
+  </data>
+  <data name="Menu.Channel.SaveAndLaunchOption.Title" xml:space="preserve">
+    <value>Save And Launch Options</value>
+  </data>
+  <data name="Menu.ChannelChanger.AvailableChannels" xml:space="preserve">
+    <value>Available Channels</value>
+  </data>
+  <data name="Menu.ChannelChanger.AvailableChannels.Description" xml:space="preserve">
+    <value>Check the large majority of the current available channels to use</value>
+  </data>
+  <data name="Menu.BottomButtons.Uninstall" xml:space="preserve">
+    <value>Uninstall Froststrap</value>
+  </data>
+  <data name="Menu.BottomButtons.ResetSettingsToDefault" xml:space="preserve">
+    <value>Reset Settings To Default</value>
+  </data>
+  <data name="Menu.BottomButtons.ImportSettings" xml:space="preserve">
+    <value>Import Settings</value>
+  </data>
+  <data name="Menu.BottomButtons.ExportSettings" xml:space="preserve">
+    <value>Export Settings</value>
+  </data>
+  <data name="Menu.FastFlagEditor.CleanList" xml:space="preserve">
+    <value>Clean FastFlag List</value>
+  </data>
+  <data name="Common.LookingFor" xml:space="preserve">
+    <value>Looking For</value>
+  </data>
+  <data name="Menu.FastFlagEditor.NoFlags" xml:space="preserve">
+    <value>Wow this is so empty, how about adding a fastflag ?</value>
+  </data>
+  <data name="Menu.FastFlagEditor.DropJson.Title" xml:space="preserve">
+    <value>📂 Drop your JSON or TXT here</value>
+  </data>
+  <data name="Menu.FastFlagEditor.DropJson.Description" xml:space="preserve">
+    <value>Only .json and .txt files are supported</value>
+  </data>
+  <data name="Menu.FastFlags.Presets.PauseVoxelizer.Description" xml:space="preserve">
+    <value>Disables baked shadows to boost performance, but may cause lighting issues like bright or dark maps in some games.</value>
+  </data>
+  <data name="Menu.FastFlags.Presets.PauseVoxelizer.Title" xml:space="preserve">
+    <value>Pause Voxelizer</value>
+  </data>
+  <data name="Menu.FastFlags.Presets.GraySky.Description" xml:space="preserve">
+    <value>Replaces the game's sky with a solid gray color. This flag might not work in all games.</value>
+  </data>
+  <data name="Menu.FastFlags.Presets.LowPolyMeshes.Information" xml:space="preserve">
+    <value>Adjust mesh detail levels for performance vs. quality.</value>
+  </data>
+  <data name="Common.Performance" xml:space="preserve">
+    <value>Performance</value>
+  </data>
+  <data name="Common.Quality" xml:space="preserve">
+    <value>Quality</value>
+  </data>
+  <data name="Menu.Integrations.PlaytimeCounter.Description" xml:space="preserve">
+    <value>Display your total playtime and game session playtime.</value>
+  </data>
+  <data name="Menu.Integrations.PlaytimeCounter.Title" xml:space="preserve">
+    <value>Playtime Counter</value>
+  </data>
+  <data name="Menu.Integrations.GameHistory.Description" xml:space="preserve">
+    <value>Display the game you've played in your session and allows you to join them back.</value>
+  </data>
+  <data name="Menu.Integrations.GameHistoryMenu.Title" xml:space="preserve">
+    <value>Game History Menu</value>
+  </data>
+  <data name="Menu.Integrations.GameHistoryMenu.Description" xml:space="preserve">
+    <value>Open up the game history menu to quickly join your server back.</value>
+  </data>
+  <data name="Menu.Integrations.DoubleClickAction.Title" xml:space="preserve">
+    <value>Double Click Action</value>
+  </data>
+  <data name="Menu.Integrations.DoubleClickAction.Description" xml:space="preserve">
+    <value>Allows you to open a specific window when you double click Froststrap in system tray when launching roblox.</value>
+  </data>
+  <data name="Menu.Integrations.FroststrapRPC.Title" xml:space="preserve">
+    <value>Froststrap RPC</value>
+  </data>
+  <data name="Menu.Integrations.FroststrapRPC.Description" xml:space="preserve">
+    <value>Enable this to display a custom 'Playing Froststrap' RPC in your Discord profile while the app is open.</value>
+  </data>
+  <data name="Menu.Integrations.CustomStatusDisplay.Title" xml:space="preserve">
+    <value>Custom Status Display</value>
+  </data>
+  <data name="Menu.Integrations.CustomStatusDisplay.Description" xml:space="preserve">
+    <value>Show custom status message instead of the default 'Playing Roblox' text.</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomDeathSound.Title" xml:space="preserve">
+    <value>Custom Death Sound.</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomDeathSound.Description" xml:space="preserve">
+    <value>Replaces the death sound with your own audio.</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomDeathSound.Choose" xml:space="preserve">
+    <value>Choose Sound...</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomDeathSound.Remove" xml:space="preserve">
+    <value>Remove Custom Death Sound</value>
+  </data>
+  <data name="Menu.Mods.Misc.CardExpander.CustomCursors.Title" xml:space="preserve">
+    <value>Custom Cursor Features</value>
+  </data>
+  <data name="Menu.Mods.Misc.CardExpander.CustomCursors.Descriptions" xml:space="preserve">
+    <value>All of the Custom Cursor features you need.</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomShiftLock.Title" xml:space="preserve">
+    <value>Custom Shiftlock</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomShiftLock.Description" xml:space="preserve">
+    <value>Use your own Shiftlock in Roblox.</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomShiftLock.Choose" xml:space="preserve">
+    <value>Choose ShiftLock...</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomShiftLock.Remove" xml:space="preserve">
+    <value>Remove Custom Shiftlock</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomCursorSet.Title" xml:space="preserve">
+    <value>Custom Cursor Set</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomCursorSet.Description" xml:space="preserve">
+    <value>Have multiple cursor sets ready to go for use.</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomCursorSet.ApplySet" xml:space="preserve">
+    <value>Apply Set</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomCursorSet.FetchSet" xml:space="preserve">
+    <value>Fetch Set</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomCursorSet.ImportSet" xml:space="preserve">
+    <value>Import Set</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomCursorSet.ExportSet" xml:space="preserve">
+    <value>Export Set</value>
+  </data>
+  <data name="Menu.Mods.Misc.CustomCursorSet.NoneSelected" xml:space="preserve">
+    <value>No Custom Cursor Set selected.</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.Title" xml:space="preserve">
+    <value>Mod Generator</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.SheetPreview" xml:space="preserve">
+    <value>Sprite Sheet Preview</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.SheetPreviewSingle" xml:space="preserve">
+    <value>Preview Single Sprite</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.GenerationOptions" xml:space="preserve">
+    <value>Mod Generation Options</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.GenerationOptions.Cursor" xml:space="preserve">
+    <value>Color Cursors</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.GenerationOptions.Shiftlock" xml:space="preserve">
+    <value>Color Shiftlock Cursor</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.GenerationOptions.VoiceChat" xml:space="preserve">
+    <value>Color Voice Chat Icons</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.GenerationOptions.EmoteWheel" xml:space="preserve">
+    <value>Color Emote Wheel</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.QuickActions" xml:space="preserve">
+    <value>Quick Actions</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.QuickActions.GenerateMod" xml:space="preserve">
+    <value>Generate Mod</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.QuickActions.CopyToModsFolder" xml:space="preserve">
+    <value>Copy to Mods folder</value>
+  </data>
+  <data name="Common.Choose" xml:space="preserve">
+    <value>Choose</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.GradientColors" xml:space="preserve">
+    <value>Gradient Colors</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.GradientAngle" xml:space="preserve">
+    <value>Gradient Angle:</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.AddGradientColor" xml:space="preserve">
+    <value>Add Gradient Color</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.RobloxLOGO" xml:space="preserve">
+    <value>Custom Roblox Logo</value>
+  </data>
+  <data name="Menu.Mods.ModGenerator.Spinner" xml:space="preserve">
+    <value>Custom Loading Spinner</value>
+  </data>
+  <data name="Menu.RegionSelector.FindGame" xml:space="preserve">
+    <value>Find by Name or Place ID:</value>
+  </data>
+  <data name="Menu.RegionSelector.ServerSize" xml:space="preserve">
+    <value>Server Size:</value>
+  </data>
+  <data name="Menu.RegionSelector.Region" xml:space="preserve">
+    <value>Region:</value>
+  </data>
+  <data name="Menu.RegionSelector.LoadMore" xml:space="preserve">
+    <value>Load More</value>
+  </data>
+  <data name="Menu.RegionSelector.ClearServerList" xml:space="preserve">
+    <value>Clear Server List</value>
+  </data>
+  <data name="Menu.RegionSelector.Servers.ServerID" xml:space="preserve">
+    <value>Server ID</value>
+  </data>
+  <data name="Menu.RegionSelector.Servers.ServerUptime" xml:space="preserve">
+    <value>Server Uptime</value>
+  </data>
+  <data name="Menu.RegionSelector.Servers.Players" xml:space="preserve">
+    <value>Players</value>
+  </data>
+  <data name="Menu.RegionSelector.Servers.Region" xml:space="preserve">
+    <value>Region</value>
+  </data>
+  <data name="Menu.RegionSelector.Servers.Join" xml:space="preserve">
+    <value>Join</value>
+  </data>
+  <data name="Menu.Shortcut.GameShortcut.Create" xml:space="preserve">
+    <value>Create Game Shortcut</value>
+  </data>
+  <data name="Menu.Shortcut.GameShortcut.GameIcon" xml:space="preserve">
+    <value>Use Game Icon</value>
+  </data>
+  <data name="Menu.Shortcut.GameShortcut.Empty" xml:space="preserve">
+    <value>Select a shortcut to edit it.</value>
+  </data>
+  <data name="Menu.Shortcut.GameShortcut.Title" xml:space="preserve">
+    <value>Game Shortcuts</value>
+  </data>
+  <data name="Menu.Shortcut.GameShortcut.Description" xml:space="preserve">
+    <value>This allows you to create shortcuts which let you join specific games quickly.</value>
+  </data>
+  <data name="Menu.AccountManager.Title" xml:space="preserve">
+    <value>Account Manager</value>
+  </data>
+  <data name="Menu.RegionSelector.Title" xml:space="preserve">
+    <value>Region Selector</value>
+  </data>
+  <data name="Menu.RobloxSettings.Title" xml:space="preserve">
+    <value>Roblox Settings</value>
+  </data>
+  <data name="Menu.Restart" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="Menu.FastFlagsEditor.AdvancedSettings.CtrlC.Description" xml:space="preserve">
+    <value>Copies selected flags as JSON using the chosen Copy Format when pressing Ctrl+C.</value>
+  </data>
+  <data name="Menu.FastFlagsEditor.AdvancedSettings.CtrlC.Title" xml:space="preserve">
+    <value>Ctrl+C Json Format</value>
+  </data>
+  <data name="Menu.FastFlagsEditor.AdvancedSettings.AltManually.Description" xml:space="preserve">
+    <value>Auto add the Alt Manually flag when starting Froststrap.</value>
+  </data>
+  <data name="Menu.FastFlagsEditor.AdvancedSettings.AltManually.Title" xml:space="preserve">
+    <value>Use Alt Manually</value>
+  </data>
+  <data name="Menu.Dialog.QuickSignIn.Title" xml:space="preserve">
+    <value>Quick Sign In</value>
   </data>
 </root>

@@ -41,7 +41,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="Froststrap" Margin="0,0,4,0" FontSize="24" FontWeight="Bold" />
                 </Grid>
-                <TextBlock Text="{x:Static resources:Strings.Menu_About_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontWeight="Medium" />
+                <TextBlock Text="{x:Static resources:Strings.Menu_About_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
             </StackPanel>
         </Grid>
 
@@ -67,20 +67,20 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,4,16,4" FontSize="14" FontWeight="Medium" Text="Timestamp" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,4,16,4" FontSize="14"  Text="Timestamp" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,0,4" VerticalAlignment="Bottom" Text="{Binding BuildTimestamp, Mode=OneTime}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
                 
-                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,1,16,-21" FontSize="14" FontWeight="Medium" Text="Version" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,1,16,-21" FontSize="14"  Text="Version" />
                 <TextBlock Grid.Row="3" Margin="86,3,0,0" VerticalAlignment="Top" Text="{Binding Version, Mode=OneTime}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Grid.ColumnSpan="2" />
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,4,16,4" FontSize="14" FontWeight="Medium" Text="Commit Hash" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,4,16,4" FontSize="14"  Text="Commit Hash" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}" />
                 <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,0,0,4" VerticalAlignment="Bottom" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}">
                   <Hyperlink Foreground="{DynamicResource TextFillColorTertiaryBrush}" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="{Binding BuildCommitHashUrl, Mode=OneTime}">
                     <TextBlock Text="{Binding BuildMetadata.CommitHash, Mode=OneTime}" />
                   </Hyperlink>
                 </TextBlock>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,4,16,4" FontSize="14" FontWeight="Medium" Text="Commit Ref" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,4,16,4" FontSize="14"  Text="Commit Ref" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}" />
                 <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,0,0,4" VerticalAlignment="Bottom" Text="{Binding BuildMetadata.CommitRef, Mode=OneTime}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}" />
             </Grid>
         </StackPanel>
@@ -119,6 +119,7 @@
                     <controls:MarkdownTextBlock MarkdownText="[Ghiram](https://discord.com/users/1208558834273095712)" />
                     <controls:MarkdownTextBlock MarkdownText="[Alex](https://discord.com/users/1275186734367506523)" />
                     <controls:MarkdownTextBlock MarkdownText="[Valra](https://github.com/NotValra)" />
+                    <controls:MarkdownTextBlock MarkdownText="[SunGod (Polaris)](https://www.roblox.com/users/1484207733/profile)" />
                 </StackPanel>
             </controls:Expander>
 

@@ -16,7 +16,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
         {
             DataContext = new ChannelViewModel();
             InitializeComponent();
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Settings");
+            App.FrostRPC?.SetPage("Settings");
         }
 
         private void ResetSettings_Click(object sender, RoutedEventArgs e)
@@ -94,18 +94,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             }
         }
 
-        private void OpenDebugMenu_Click(object sender, RoutedEventArgs e)
-        {
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Debug Menu");
-
-            var dialog = new DebugMenu();
-            dialog.Owner = Window.GetWindow(this);
-
-            dialog.ShowDialog();
-
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Settings Page");
-        }
-
         private void UninstallButton_Click(object sender, RoutedEventArgs e)
         {
             LaunchHandler.LaunchUninstaller();
@@ -139,14 +127,14 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private void OpenChannelListDialog_Click(object sender, RoutedEventArgs e)
         {
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Channel List");
+            App.FrostRPC?.SetDialog("Channel List");
 
             var dialog = new ChannelListsDialog();
             dialog.Owner = Window.GetWindow(this);
 
             dialog.ShowDialog();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Settings Page");
+            App.FrostRPC?.ClearDialog();
         }
     }
 }

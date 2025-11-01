@@ -34,9 +34,6 @@ namespace Bloxstrap.UI.ViewModels.Editor
 
             try
             {
-                var app = (App.Current as App);
-                app?._froststrapRPC?.UpdatePresence("Dialog: Custom Launcher Preview");
-
                 CustomDialog dialog = new CustomDialog();
                 dialog.ApplyCustomTheme(Name, Code);
 
@@ -46,8 +43,6 @@ namespace Bloxstrap.UI.ViewModels.Editor
                 dialog.Message = Strings.Bootstrapper_StylePreview_TextCancel;
                 dialog.CancelEnabled = true;
                 dialog.ShowBootstrapper();
-
-                app?._froststrapRPC?.UpdatePresence("Dialog: Custom Launcher Editor");
             }
             catch (Exception ex)
             {

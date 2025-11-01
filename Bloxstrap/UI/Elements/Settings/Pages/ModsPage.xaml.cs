@@ -31,7 +31,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             InitializeComponent();
             ViewModel = new ModsViewModel();
             DataContext = ViewModel;
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Mods");
+            App.FrostRPC?.SetPage("Mods");
 
             InitializePreview();
 
@@ -392,7 +392,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             if (dlg.ShowDialog() == true)
             {
                 CustomLogoPath = dlg.FileName;
-                SelectedLogoText.Text = $"Selected: {Path.GetFileName(dlg.FileName)}";
 
                 _ = UpdatePreviewAsync();
             }
@@ -401,7 +400,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
         private void OnClearCustomLogo_Click(object sender, RoutedEventArgs e)
         {
             CustomLogoPath = null;
-            SelectedLogoText.Text = "No custom logo selected";
 
             _ = UpdatePreviewAsync();
         }
@@ -417,14 +415,12 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             if (dlg.ShowDialog() == true)
             {
                 CustomSpinnerPath = dlg.FileName;
-                SelectedSpinnerText.Text = $"Selected: {Path.GetFileName(dlg.FileName)}";
             }
         }
 
         private void OnClearCustomSpinner_Click(object sender, RoutedEventArgs e)
         {
             CustomSpinnerPath = null;
-            SelectedSpinnerText.Text = "No custom spinner selected";
         }
 
         private Bitmap? _sheetOriginalBitmap = null;

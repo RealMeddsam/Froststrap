@@ -7,7 +7,6 @@ namespace Bloxstrap.UI.ViewModels.Dialogs
         public static event EventHandler? ShowPresetColumnChanged;
         public static event EventHandler? CtrlCJsonFormatChanged;
         public static event EventHandler? ShowFlagCountChanged;
-        public event EventHandler? ShowAddWithIDChanged;
 
         public CopyFormatMode SelectedCopyFormat
         {
@@ -62,20 +61,6 @@ namespace Bloxstrap.UI.ViewModels.Dialogs
                     App.Settings.Prop.ShowFlagCount = value;
                     OnPropertyChanged(nameof(ShowFlagCount));
                     ShowFlagCountChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
-        }
-
-        public bool ShowAddWithID
-        {
-            get => App.Settings.Prop.ShowAddWithID;
-            set
-            {
-                if (App.Settings.Prop.ShowAddWithID != value)
-                {
-                    App.Settings.Prop.ShowAddWithID = value;
-                    OnPropertyChanged(nameof(ShowAddWithID));
-                    ShowAddWithIDChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }

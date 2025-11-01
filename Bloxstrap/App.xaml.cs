@@ -1,13 +1,15 @@
+using Bloxstrap.Integrations;
+using Microsoft.Win32;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Windows;
-using System.Windows.Shell;
-using System.Windows.Threading;
-using Microsoft.Win32;
-using Wpf.Ui.Hardware;
-using Bloxstrap.Integrations;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Shell;
+using System.Windows.Threading;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Hardware;
 
 namespace Bloxstrap
 {
@@ -45,7 +47,8 @@ namespace Bloxstrap
 
         public static Bootstrapper? Bootstrapper { get; set; } = null!;
 
-        public FroststrapRichPresence? _froststrapRPC;
+        public FroststrapRichPresence RichPresence { get; private set; } = null!;
+
         public static bool IsActionBuild => !String.IsNullOrEmpty(BuildMetadata.CommitRef);
 
         public static bool IsProductionBuild => IsActionBuild && BuildMetadata.CommitRef.StartsWith("tag", StringComparison.Ordinal);
@@ -58,7 +61,9 @@ namespace Bloxstrap
 
         public static readonly Dictionary<string, BaseTask> PendingSettingTasks = new();
 
-        public static readonly JsonManager<Settings> Settings = new();
+        // Disambiguate Settings so we use the persistable Settings (Bloxstrap.Models.Persistable.Settings),
+        // not the auto-generated Properties.Settings which doesn't contain the clicker fields.
+        public static readonly JsonManager<Bloxstrap.Models.Persistable.Settings> Settings = new();
 
         public static readonly JsonManager<State> State = new();
 
@@ -70,11 +75,9 @@ namespace Bloxstrap
 
         public static readonly GBSEditor GlobalSettings = new();
 
-        public static readonly HttpClient HttpClient = new(
-            new HttpClientLoggingHandler(
-                new HttpClientHandler { AutomaticDecompression = DecompressionMethods.All }
-            )
-        );
+        public static readonly CookiesManager Cookies = new();
+
+        public static readonly HttpClient HttpClient = new(new HttpClientLoggingHandler(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.All }));
 
 
         private static bool _showingExceptionDialog = false;
@@ -100,14 +103,6 @@ namespace Bloxstrap
             Logger.WriteLine("App::Terminate", $"Terminating with exit code {exitCodeNum} ({exitCode})");
 
             Environment.Exit(exitCodeNum);
-        }
-
-        public void CreateFroststrapRpcIfNeeded()
-        {
-            if (Settings.Prop.ShowUsingFroststrapRPC && _froststrapRPC == null)
-            {
-                _froststrapRPC = new FroststrapRichPresence();
-            }
         }
 
         public static void SoftTerminate(ErrorCode exitCode = ErrorCode.ERROR_SUCCESS)
@@ -159,6 +154,78 @@ namespace Bloxstrap
             Frontend.ShowExceptionDialog(ex);
 
             Terminate(ErrorCode.ERROR_INSTALL_FAILURE);
+        }
+
+        public static FroststrapRichPresence? FrostRPC
+        {
+            get => (Current as App)?.RichPresence;
+            set
+            {
+                if (Current is App app)
+                    app.RichPresence = value!;
+            }
+        }
+
+        private async Task PreloadAccountManagerAsync()
+        {
+            const string LOG_IDENT = "App::PreloadAccountManager";
+
+            try
+            {
+                Logger.WriteLine(LOG_IDENT, "Preloading account manager data...");
+
+                var accountManager = new AccountManager();
+
+                if (accountManager.ActiveAccount != null)
+                {
+                    Logger.WriteLine(LOG_IDENT, $"Preloaded active account: {accountManager.ActiveAccount.Username}");
+
+                    AccountManager.PreloadedInstance = accountManager;
+                }
+
+                Logger.WriteLine(LOG_IDENT, "Account manager preloading completed");
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteException(LOG_IDENT, ex);
+            }
+        }
+
+        public static void WindowsBackdrop()
+        {
+            Current.Dispatcher.Invoke(() =>
+            {
+                var backdropType = App.Settings.Prop.SelectedBackdrop;
+                ApplyBackdropToAllWindows(backdropType);
+            });
+        }
+
+        private static void ApplyBackdropToAllWindows(UIBackgroundType backdropType)
+        {
+            var wpfBackdrop = backdropType switch
+            {
+                UIBackgroundType.None => BackgroundType.None,
+                UIBackgroundType.Mica => BackgroundType.Mica,
+                UIBackgroundType.Acrylic => BackgroundType.Acrylic,
+                UIBackgroundType.Aero => BackgroundType.Aero,
+                _ => BackgroundType.None
+            };
+
+            foreach (Window window in Current.Windows)
+            {
+                if (window is UiWindow uiWindow)
+                {
+                    bool isTransparentBackdrop = (wpfBackdrop == BackgroundType.Acrylic || wpfBackdrop == BackgroundType.Aero);
+
+                    uiWindow.AllowsTransparency = isTransparentBackdrop;
+
+                    uiWindow.WindowStyle = isTransparentBackdrop
+                        ? WindowStyle.None
+                        : WindowStyle.SingleBorderWindow;
+
+                    uiWindow.WindowBackdropType = wpfBackdrop;
+                }
+            }
         }
 
         public void ApplyCustomFontToWindow(Window window)
@@ -421,6 +488,11 @@ namespace Bloxstrap
                 FastFlags.Load();
                 GlobalSettings.Load();
 
+                _ = PreloadAccountManagerAsync();
+
+                if (Settings.Prop.AllowCookieAccess)
+                    Task.Run(Cookies.LoadCookies);
+
                 if (!Locale.SupportedLocales.ContainsKey(Settings.Prop.Locale))
                 {
                     Settings.Prop.Locale = "nil";
@@ -444,7 +516,7 @@ namespace Bloxstrap
 
         protected override void OnExit(ExitEventArgs e)
         {
-            _froststrapRPC?.Dispose();
+            RichPresence?.Dispose();
             base.OnExit(e);
         }
     }
