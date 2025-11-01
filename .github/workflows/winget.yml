@@ -10,5 +10,5 @@ jobs:
     steps:
       - uses: vedantmgoyal9/winget-releaser@main
         with:
-          identifier: pizzaboxer.Bloxstrap
+          identifier: Froststrap.Froststrap
           token: ${{ secrets.WINGET_TOKEN }}
