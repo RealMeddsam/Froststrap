@@ -71,7 +71,7 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 - Choose between joinning big or small servers
 - This feature requires you to add your account to Account Manager
 
-### Account Manager (Coming Soon)
+### Account Manager
 - Add accounts via browser or quick sign in code
 - Game Information on the selected game like Currently Playing, Visits and way more
 - Join games normally and through preferred region using selected account
