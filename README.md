@@ -73,6 +73,7 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 
 ### Account Manager
 - Add accounts via browser or quick sign in code
+- View Account Pressence, aka Offline, Website and Online
 - Game Information on the selected game like Currently Playing, Visits and way more
 - Join games normally and through preferred region using selected account
 - Subplace Joiner allows you to join games subplaces
