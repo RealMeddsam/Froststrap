@@ -1,6 +1,6 @@
 <p align="center">
-    <img src="./Images/Bloxstrap-full-dark.png#gh-dark-mode-only" width="700">
-    <img src="./Images/Bloxstrap-full-light.png#gh-light-mode-only" width="700">
+    <img src="./resources/Bloxstrap-full-dark.png#gh-dark-mode-only" width="700">
+    <img src="./resources/Bloxstrap-full-light.png#gh-light-mode-only" width="700">
 </p>
 
 <div align="center">
