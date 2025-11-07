@@ -1,20 +1,13 @@
-> [!CAUTION]
-> This repository, [Meddsam/Froststrap](https://github.com/Meddsam/Froststrap) and our [Official Website](https://realmeddsam.github.io/Froststrap-Website/) are the **Only Official Sources** for downloading Froststrap.  
-> Any other websites (e.g., `Froststrap.com`) claiming to own Froststrap are not **affiliated** with us and potentially unsafe.  
-> Downloading from unofficial sources is not recommended.
->
-> This repository was created after losing access to a previous GitHub account.
-
 <p align="center">
-    <img src="https://github.com/RealMeddsam/Froststrap/raw/main/Images/Bloxstrap-full-dark.png#gh-dark-mode-only" width="700">
-    <img src="https://github.com/RealMeddsam/Froststrap/raw/main/Images/Bloxstrap-full-light.png#gh-light-mode-only" width="700">
+    <img src="./Images/Bloxstrap-full-dark.png#gh-dark-mode-only" width="700">
+    <img src="./Images/Bloxstrap-full-light.png#gh-light-mode-only" width="700">
 </p>
 
 <div align="center">
 
-**Froststrap** is a fork of [Bloxstrap](https://github.com/pizzaboxer/bloxstrap) and [Fishstrap](https://github.com/fishstrap/Fishstrap), focused on performance and customization.
+**Froststrap** is a fork of [Fishstrap](https://github.com/fishstrap/Fishstrap), focused on performance and customization.
 
-Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Froststrap/issues/new/choose) or report it on our [Discord server](https://discord.gg/KdR9vpRcUN), we mainly suggest reporting it to our discord server.
+Have you encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Froststrap/issues/new/choose) or report it on our [Discord server](https://discord.gg/KdR9vpRcUN), we mainly suggest reporting it to our discord server.
 
 [![License][badge-repo-license]][repo-license]
 [![Downloads (Total)][badge-repo-downloads-total]][repo-releases]
@@ -23,12 +16,17 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 [![Stars][badge-repo-stars]][repo-stargazer]
 [![Discord][badge-discord]][discord-invite]
 
-
 </div>
+
+> [!CAUTION]
+> This repo, [RealMeddsam/Froststrap](./) and the [official website](https://realmeddsam.github.io/Froststrap-Website) and **THE ONLY** correct
+> sources for which you should get the binary, and source-code forms of Froststrap.
+>
+> Downloading from not one of the sources above may cause harm to your system.
 
 ---
 
-# Key Improvements Over Bloxstrap
+## Key Improvements Over Bloxstrap
 
 ### Integrations
 - Disable Roblox’s built-in screenshot and video recording system
@@ -110,7 +108,7 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 [badge-repo-stars]:           https://img.shields.io/github/stars/RealMeddsam/Froststrap?style=flat&color=37add9
 [badge-discord]:              https://img.shields.io/discord/1364660238963179520?style=flat&label=discord&color=5865f2
 
-[repo-license]:  https://github.com/RealMeddsam/Froststrap/blob/main/LICENSE
+[repo-license]:  ./LICENSE
 [repo-actions]:  https://github.com/RealMeddsam/Froststrap/actions
 [repo-releases]: https://github.com/RealMeddsam/Froststrap/releases
 [repo-latest]:   https://github.com/RealMeddsam/Froststrap/releases/latest
