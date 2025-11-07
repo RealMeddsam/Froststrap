@@ -22,7 +22,7 @@ Have you encountered a bug or issue? [Submit an issue](https://github.com/RealMe
 > This repo, [RealMeddsam/Froststrap](./) and the [official website](https://realmeddsam.github.io/Froststrap-Website) and **THE ONLY** correct
 > sources for which you should get the binary (executable), and source-code forms of Froststrap.
 >
-> Downloading from not one of the sources above may cause harm to your system.
+> Downloading from a source not specified above may cause harm to your system.
 
 ---
 
