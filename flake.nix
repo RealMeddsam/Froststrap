@@ -50,7 +50,7 @@
         devShells.default = pkgs.mkShell {
           meta.license = pkgs.lib.licenses.unlicense;
           buildInputs = with pkgs; [
-            dotnetCorePackages.sdk_8_0-bin
+            dotnetCorePackages.sdk_10_0-bin
             csharp-language-server
           ];
 
