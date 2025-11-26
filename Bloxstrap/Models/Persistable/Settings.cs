@@ -34,6 +34,8 @@ namespace Bloxstrap.Models.Persistable
         public List<string> CleanerDirectories { get; set; } = new List<string>();
         public bool BackgroundUpdatesEnabled { get; set; } = false;
         public bool MultiInstanceLaunching { get; set; } = false;
+        public int MultibloxInstanceCount { get; set; } = 2;
+        public int MultibloxDelayMs { get; set; } = 1500;
         public RobloxIcon SelectedRobloxIcon { get; set; } = RobloxIcon.Default;
         public ProcessPriorityOption SelectedProcessPriority { get; set; } = ProcessPriorityOption.Normal;
 

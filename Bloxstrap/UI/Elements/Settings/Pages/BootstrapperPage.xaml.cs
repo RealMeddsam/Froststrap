@@ -1,4 +1,6 @@
-﻿using Bloxstrap.UI.ViewModels.Settings;
+using System.Windows;
+using Bloxstrap.UI.Elements.Dialogs;
+using Bloxstrap.UI.ViewModels.Settings;
 
 namespace Bloxstrap.UI.Elements.Settings.Pages
 {
@@ -12,6 +14,15 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             DataContext = new BehaviourViewModel();
             InitializeComponent();
             App.FrostRPC?.SetPage("Bootstrapper");
+        }
+
+        private void OpenMultiblox_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new MultibloxWindow
+            {
+                Owner = Window.GetWindow(this)
+            };
+            window.ShowDialog();
         }
     }
 }

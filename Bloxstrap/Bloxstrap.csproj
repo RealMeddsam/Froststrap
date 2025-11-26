@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>True</UseWindowsForms>
@@ -91,8 +91,8 @@
     </PackageReference>
 	<PackageReference Include="AvalonEdit" Version="6.3.1.120" />
 	<PackageReference Include="Microsoft.Windows.SDK.Win32Metadata" Version="66.0.5-preview" />
+	<PackageReference Include="MiniMutex" Version="1.2.3" />
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-	<PackageReference Include="PuppeteerExtraSharp" Version="3.0.1" />
 	<PackageReference Include="PuppeteerSharp" Version="20.2.4" />
     <PackageReference Include="securifybv.ShellLink" Version="0.1.0" />
     <PackageReference Include="SharpZipLib" Version="1.4.2" />

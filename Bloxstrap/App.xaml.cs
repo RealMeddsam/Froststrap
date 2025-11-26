@@ -7,6 +7,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shell;
 using System.Windows.Threading;
+using MiniMutex;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Hardware;
@@ -240,6 +241,11 @@ namespace Bloxstrap
                 window.FontFamily = font;
             }
         }
+        
+        public static void InitMutex() {
+            MiniMutexGate.Init();
+
+        }
 
         public static string ConstructBloxstrapWebUrl()
         {
@@ -338,7 +344,7 @@ namespace Bloxstrap
             const string LOG_IDENT = "App::OnStartup";
 
             Locale.Initialize();
-
+            InitMutex();
             base.OnStartup(e);
 
             if (Settings.Prop.DisableAnimations)
