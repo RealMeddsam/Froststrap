@@ -100,7 +100,7 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 ## Licensing
 
 This project is under **dual licensing**.
-Everything **Nix related** (managed by Invra) is licensed by **Unlicense**, whilst all **other code** is **AGPLv3**.
+Everything is licensed under the [**GNU Affero General Public License 3.0 or later**](./LICENSE).
 
 ---
 
