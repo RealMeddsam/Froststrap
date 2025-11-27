@@ -340,13 +340,12 @@ namespace Bloxstrap
                 }
 
                 StartRoblox();
-
-                if (_launchMode == LaunchMode.Player)
-                {
-                    _ = Task.Run(async () => await HandlePostLaunchOperations());
-                }
             }
 
+            if (_launchMode == LaunchMode.Player)
+            {
+                _ = Task.Run(async () => await HandlePostLaunchOperations());
+            }
 
             await mutex.ReleaseAsync();
 
@@ -788,30 +787,74 @@ namespace Bloxstrap
                 App.Logger.WriteLine(LOG_IDENT, "Did not receive the initialisation finished signal, continuing.");
         }
 
-        // Cleanup starts in launch handler not here
+        // Cleanup starts in watcher not here
         public void CleanupMultiInstanceResources()
         {
             const string LOG_IDENT = "Bootstrapper::CleanupMultiInstanceResources";
 
+            bool processesStillRunning = false;
             try
             {
-                if (_multiInstanceMutex1 != null)
+                int robloxProcessCount = Process.GetProcesses().Count(x => x.ProcessName == "RobloxPlayerBeta");
+
+                bool bloxstrapMutexExists = false;
+                try
                 {
-                    _multiInstanceMutex1.Dispose();
-                    _multiInstanceMutex1 = null;
-                    App.Logger.WriteLine(LOG_IDENT, "Disposed ROBLOX_singletonMutex");
+                    using (var mutex = Mutex.OpenExisting(MutexName))
+                    {
+                        bloxstrapMutexExists = true;
+                    }
+                }
+                catch (WaitHandleCannotBeOpenedException)
+                {
+                    bloxstrapMutexExists = false;
+                }
+                catch (Exception mutexEx)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Error checking for launching mutex: {mutexEx.Message}");
+                    bloxstrapMutexExists = true;
                 }
 
-                if (_multiInstanceMutex2 != null)
+                processesStillRunning = (robloxProcessCount > 0) || bloxstrapMutexExists;
+
+                if (processesStillRunning)
                 {
-                    _multiInstanceMutex2.Dispose();
-                    _multiInstanceMutex2 = null;
-                    App.Logger.WriteLine(LOG_IDENT, "Disposed ROBLOX_singletonEvent");
+                    string reason = bloxstrapMutexExists ? "Launching mutex exists" : $"Roblox processes still running ({robloxProcessCount} instances)";
+                    App.Logger.WriteLine(LOG_IDENT, $"{reason}, skipping mutex disposal");
+                }
+                else
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "No Roblox processes running and no launching mutex found, proceeding with mutex disposal");
                 }
             }
             catch (Exception ex)
             {
-                App.Logger.WriteLine(LOG_IDENT, $"Error disposing mutexes: {ex.Message}");
+                App.Logger.WriteLine(LOG_IDENT, $"Error checking for running processes: {ex.Message}");
+                processesStillRunning = true;
+            }
+
+            if (!processesStillRunning)
+            {
+                try
+                {
+                    if (_multiInstanceMutex1 != null)
+                    {
+                        _multiInstanceMutex1.Dispose();
+                        _multiInstanceMutex1 = null;
+                        App.Logger.WriteLine(LOG_IDENT, "Disposed ROBLOX_singletonMutex");
+                    }
+
+                    if (_multiInstanceMutex2 != null)
+                    {
+                        _multiInstanceMutex2.Dispose();
+                        _multiInstanceMutex2 = null;
+                        App.Logger.WriteLine(LOG_IDENT, "Disposed ROBLOX_singletonEvent");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Error disposing mutexes: {ex.Message}");
+                }
             }
 
             if (App.Settings.Prop.Error773Fix)
