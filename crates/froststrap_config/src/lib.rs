@@ -189,7 +189,10 @@ impl Config {
   pub fn load_from_path<P: AsRef<std::path::Path>>(path: P) -> Result<Self, ConfigError> {
     let config_path = path.as_ref();
 
-    log::info!("Loading config from: {}", config_path.display());
+    log::info!(
+      "Loading config from: \x1b]8;;file://{0}\x1b\\{0}\x1b]8;;\x1b\\",
+      config_path.display()
+    );
 
     if !config_path.exists() {
       log::warning!("Config missing, loading defaults");
