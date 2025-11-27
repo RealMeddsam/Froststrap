@@ -2,6 +2,16 @@ name: Bug Report
 title: "[BUG] "
 description: Report a problem you're having
 body:
+  - type: checkboxes
+    id: check
+    attributes:
+      label: I recognize the following:
+      description: Tick these once you can confirm them.
+      options:
+        - label: I am writing an issue that doesn't exist.
+          required: true
+        - label: I am on the latest version
+          required: true
   - type: input
     id: version
     attributes:
