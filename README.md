@@ -99,8 +99,7 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 
 ## Licensing
 
-This project is under **dual licensing**.
-Everything is licensed under the [**GNU Affero General Public License 3.0 or later**](./LICENSE).
+Everything is licensed under the [**GNU Affero General Public License 3.0 or later**](./LICENSE) see more at <https://www.gnu.org/licenses/agpl-3.0.en.html>.
 
 ---
 
