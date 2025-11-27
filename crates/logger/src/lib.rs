@@ -7,7 +7,7 @@
  *
  *  SPDX-License-Identifier: AGPL-3.0-or-later
  *
- *  Description: Epoch for the logging actions, whcih is seperated into 2 modules,
+ *  Description: Epoch for the logging actions, which is separated into 2 modules,
  *               the colorizer, which is used by the other one, log
  */
 
