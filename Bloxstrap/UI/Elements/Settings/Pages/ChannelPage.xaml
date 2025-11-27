@@ -80,8 +80,8 @@
         </controls:OptionControl>
 
         <controls:OptionControl
-            Header="Save And Launch Options"
-            Description="Change what the Save and Launch button launches.">
+            Header="{x:Static resources:Strings.Menu_Channel_SaveAndLaunchOption_Title}" 
+            Description="{x:Static resources:Strings.Menu_Channel_SaveAndLaunchOption_Description}">
             <ComboBox
                 Width="200"
                 Margin="5,0,0,0"
@@ -109,7 +109,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Common_Channel}" FontWeight="Medium" />
+                        <TextBlock FontSize="14" Text="{x:Static resources:Strings.Common_Channel}" />
                         <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_ChannelChanger_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
                     </StackPanel>
                     <ui:TextBox Grid.Column="1" Grid.Row="0" Margin="8,0,8,0" Padding="10,5,10,5" Width="200" Text="{Binding ViewChannel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=250}" />
@@ -141,13 +141,13 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Center" Text="{x:Static resources:Strings.Common_Version}" FontWeight="Medium" />
-                    <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ChannelDeployInfo.Version, Mode=OneWay}" FontWeight="Medium" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Center" Text="{x:Static resources:Strings.Common_Version}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ChannelDeployInfo.Version, Mode=OneWay}" />
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Center" Text="{x:Static resources:Strings.Common_VersionGuid}" FontWeight="Medium" />
-                    <TextBlock Grid.Row="1" Grid.Column="1" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ChannelDeployInfo.VersionGuid, Mode=OneWay}" FontWeight="Medium" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,0,16,8" VerticalAlignment="Center" Text="{x:Static resources:Strings.Common_VersionGuid}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{Binding ChannelDeployInfo.VersionGuid, Mode=OneWay}" />
 
-                    <Button Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Content="Available Channels" Click="OpenChannelListDialog_Click" />
+                    <Button Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Content="{x:Static resources:Strings.Menu_ChannelChanger_AvailableChannels}" Click="OpenChannelListDialog_Click" />
 
                     <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,16,0,0" Orientation="Horizontal">
                         <StackPanel.Style>
@@ -213,29 +213,24 @@
             </StackPanel>
         </ui:CardExpander>
 
-        <ui:CardControl Margin="0,8,0,0">
-            <ui:CardControl.Header>
-                <StackPanel>
-                    <TextBlock FontSize="14" Text="{x:Static resources:Strings.Menu_Channel_ChangeAction_Title}" FontWeight="Medium" />
-                    <TextBlock Margin="0,2,0,0" FontSize="12" Text="{x:Static resources:Strings.Menu_Channel_ChangeAction_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
-                </StackPanel>
-            </ui:CardControl.Header>
+        <controls:OptionControl 
+            Header="{x:Static resources:Strings.Menu_Channel_ChangeAction_Title}" 
+            Description="{x:Static resources:Strings.Menu_Channel_ChangeAction_Description}">
             <ComboBox Margin="5,0,0,0" Padding="10,5,10,5" Width="200" ItemsSource="{Binding ChannelChangeModes.Keys, Mode=OneTime}" Text="{Binding SelectedChannelChangeMode, Mode=TwoWay}" />
-        </ui:CardControl>
+        </controls:OptionControl>
+
         <Grid Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <ui:Button Content="Debug Menu" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,4,0" Click="OpenDebugMenu_Click" />
-            <ui:Button Content="Uninstall Froststrap" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,0,4,0" Click="UninstallButton_Click" />
-            <ui:Button Content="Reset Settings to Default" Grid.Column="2" HorizontalAlignment="Stretch" Margin="0,0,4,0" Click="ResetSettings_Click" />
-            <ui:Button Content="Import Settings" Grid.Column="3" HorizontalAlignment="Stretch" Margin="0,0,4,0" Click="ImportSettings_Click" />
-            <ui:Button Content="Export Settings" Grid.Column="4" HorizontalAlignment="Stretch" Margin="0,0,0,0" Click="ExportSettings_Click" />
+            <ui:Button Content="{x:Static resources:Strings.Menu_BottomButtons_Uninstall}" Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,4,0" Click="UninstallButton_Click" />
+            <ui:Button Content="{x:Static resources:Strings.Menu_BottomButtons_ResetSettingsToDefault}" Grid.Column="1" HorizontalAlignment="Stretch" Margin="0,0,4,0" Click="ResetSettings_Click" />
+            <ui:Button Content="{x:Static resources:Strings.Menu_BottomButtons_ImportSettings}" Grid.Column="2" HorizontalAlignment="Stretch" Margin="0,0,4,0" Click="ImportSettings_Click" />
+            <ui:Button Content="{x:Static resources:Strings.Menu_BottomButtons_ExportSettings}" Grid.Column="3" HorizontalAlignment="Stretch" Margin="0,0,0,0" Click="ExportSettings_Click" />
 
         </Grid>
     </StackPanel>

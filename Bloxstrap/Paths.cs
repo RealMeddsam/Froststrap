@@ -15,7 +15,6 @@
 
         public static string TempUpdates => Path.Combine(Temp, "Updates");
         public static string TempLogs => Path.Combine(Temp, "Logs");
-        public static string RobloxGlobal => Path.Combine(LocalAppData, "Roblox");
 
         public static string Base { get; private set; } = "";
         public static string Downloads { get; private set; } = "";
@@ -46,9 +45,9 @@
             Integrations = Path.Combine(Base, "Integrations");
             Versions = Path.Combine(Base, "Versions");
             Modifications = Path.Combine(Base, "Modifications");
+            Roblox = Path.Combine(LocalAppData, "Roblox");
             RobloxLogs = Path.Combine(Roblox, "logs");
             RobloxCache = Path.Combine(Path.GetTempPath(), "Roblox");
-            Roblox = Path.Combine(Base, "Roblox");
             CustomThemes = Path.Combine(Base, "CustomThemes");
             CustomCursors = Path.Combine(Base, "CustomCursorsSets");
             Cache = Path.Combine(Base, "Cache");

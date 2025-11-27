@@ -17,6 +17,7 @@ namespace Bloxstrap.UI.Elements.ContextMenu
         private ActivityWatcher? _activityWatcher => _watcher.ActivityWatcher;
 
         private ServerInformation? _serverInformationWindow;
+        private GameInformation? _gameInformationWindow;
         private ServerHistory? _gameHistoryWindow;
 
         private Stopwatch _totalPlaytimeStopwatch = new Stopwatch();
@@ -32,7 +33,6 @@ namespace Bloxstrap.UI.Elements.ContextMenu
 
             if (_activityWatcher is not null)
             {
-                _activityWatcher.OnLogOpen += ActivityWatcher_OnLogOpen;
                 _activityWatcher.OnGameJoin += ActivityWatcher_OnGameJoin;
                 _activityWatcher.OnGameLeave += ActivityWatcher_OnGameLeave;
 
@@ -55,6 +55,15 @@ namespace Bloxstrap.UI.Elements.ContextMenu
             else
             {
                 PlaytimeMenuItem.Visibility = Visibility.Collapsed;
+            }
+
+            if (App.Settings.Prop.MemoryCleanerInterval != MemoryCleanerInterval.Never)
+            {
+                CleanMemoryMenuItem.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                CleanMemoryMenuItem.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -90,12 +99,12 @@ namespace Bloxstrap.UI.Elements.ContextMenu
 
             if (_activityWatcher is null || !_activityWatcher.InGame)
             {
-                PlaytimeTextBlock.Text = $"Playtime: Total {FormatTimeSpan(totalElapsed)}";
+                PlaytimeTextBlock.Text = $"Total: {FormatTimeSpan(totalElapsed)}";
             }
             else
             {
                 TimeSpan sessionElapsed = DateTime.Now - _activityWatcher!.Data.TimeJoined;
-                PlaytimeTextBlock.Text = $"Playtime: Game {FormatTimeSpan(sessionElapsed)} | Total {FormatTimeSpan(totalElapsed)}";
+                PlaytimeTextBlock.Text = $"Total: {FormatTimeSpan(totalElapsed)} | Game: {FormatTimeSpan(sessionElapsed)}";
             }
         }
 
@@ -121,8 +130,19 @@ namespace Bloxstrap.UI.Elements.ContextMenu
                 _serverInformationWindow.Activate();
         }
 
-        private void ActivityWatcher_OnLogOpen(object? sender, EventArgs e) =>
-            Dispatcher.Invoke(() => DebugMenuItem.Visibility = Visibility.Visible);
+        public void ShowGameInformationWindow()
+        {
+            if (_gameInformationWindow is null)
+            {
+                _gameInformationWindow = new(_watcher);
+                _gameInformationWindow.Closed += (_, _) => _gameInformationWindow = null;
+            }
+
+            if (!_gameInformationWindow.IsVisible)
+                _gameInformationWindow.ShowDialog();
+            else
+                _gameInformationWindow.Activate();
+        }
 
         private void ActivityWatcher_OnGameJoin(object? sender, EventArgs e)
         {
@@ -132,7 +152,7 @@ namespace Bloxstrap.UI.Elements.ContextMenu
                     InviteDeeplinkMenuItem.Visibility = Visibility.Visible;
 
                 ServerDetailsMenuItem.Visibility = Visibility.Visible;
-
+                GameInformationMenuItem.Visibility = Visibility.Visible;
             });
         }
 
@@ -142,6 +162,7 @@ namespace Bloxstrap.UI.Elements.ContextMenu
             {
                 InviteDeeplinkMenuItem.Visibility = Visibility.Collapsed;
                 ServerDetailsMenuItem.Visibility = Visibility.Collapsed;
+                GameInformationMenuItem.Visibility = Visibility.Collapsed;
 
                 _serverInformationWindow?.Close();
             });
@@ -159,14 +180,28 @@ namespace Bloxstrap.UI.Elements.ContextMenu
 
         private void RichPresenceMenuItem_Click(object sender, RoutedEventArgs e) => _watcher.RichPresence?.SetVisibility(((MenuItem)sender).IsChecked);
 
-        private void InviteDeeplinkMenuItem_Click(object sender, RoutedEventArgs e) => Clipboard.SetDataObject(_activityWatcher?.Data.GetInviteDeeplink());
+        private void InviteDeeplinkMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            string deeplink = _activityWatcher?.Data?.GetInviteDeeplink() ?? "No activity data available";
+            Clipboard.SetDataObject(deeplink);
+        }
 
         private void ServerDetailsMenuItem_Click(object sender, RoutedEventArgs e) => ShowServerInformationWindow();
+        private void GameInformaionMenuItem_Click(object sender, RoutedEventArgs e) => ShowGameInformationWindow();
 
-        private void DebugMenuItem_Click(object sender, RoutedEventArgs e)
+        private void CleanMemoryMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            var debugMenu = new DebugMenu();
-            debugMenu.Show();
+            const string LOG_IDENT = "MenuContainer::CleanMemoryMenuItem_Click";
+
+            try
+            {
+                _watcher.MemoryCleaner?.CleanMemory();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Exception during manual cleanup: {ex.Message}");
+                Frontend.ShowMessageBox($"Failed to clean memory: {ex.Message}", MessageBoxImage.Error);
+            }
         }
 
         private void CloseRobloxMenuItem_Click(object sender, RoutedEventArgs e)
@@ -219,6 +254,5 @@ namespace Bloxstrap.UI.Elements.ContextMenu
                 Frontend.ShowMessageBox($"Failed to close Froststrap: {ex.Message}", MessageBoxImage.Error);
             }
         }
-
     }
 }

@@ -2,17 +2,14 @@
 using Bloxstrap.RobloxInterfaces;
 using Bloxstrap.UI.ViewModels.Settings;
 using Microsoft.Win32;
-using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Windows;
 using System.IO.Compression;
+using System.Reflection;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Windows.Input;
+using System.Drawing.Drawing2D;
 
 namespace Bloxstrap.UI.Elements.Settings.Pages
 {
@@ -21,41 +18,36 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
     /// </summary>
     public partial class ModsPage
     {
-        private string? CustomLogoPath = null;
-        private string? CustomSpinnerPath = null;
-
         private ModsViewModel ViewModel;
+        private Color _solidColor = Color.White;
 
         public ModsPage()
         {
             InitializeComponent();
             ViewModel = new ModsViewModel();
             DataContext = ViewModel;
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Mods");
+            App.FrostRPC?.SetPage("Mods");
 
             InitializePreview();
-
-            GradientAngleTextBox.Text = "0.0";
-
             IncludeModificationsCheckBox.IsChecked = true;
 
-            ViewModel.GradientStops.Add(new GradientStopViewModel { Offset = 0, ColorHex = "#FFFFFF" });
+            SolidColorTextBox.Text = "#FFFFFF";
         }
 
+
+        // Preserve the font files in mappings.json so they dont get deleting after generating the mod, its in resources
         private async void ModGenerator_Click(object sender, RoutedEventArgs e)
         {
             const string LOG_IDENT = "UI::ModGenerator";
             var overallSw = Stopwatch.StartNew();
 
             GenerateModButton.IsEnabled = false;
-            AddStopButton.IsEnabled = false;
 
             DownloadStatusText.Text = "Starting mod generation...";
             App.Logger?.WriteLine(LOG_IDENT, "Mod generation started.");
 
             try
             {
-
                 var (luaPackagesZip, extraTexturesZip, contentTexturesZip, versionHash, version) =
                     await Deployment.DownloadForModGenerator();
 
@@ -118,53 +110,27 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 }
                 App.Logger?.WriteLine(LOG_IDENT, $"Loaded mappings.json with {mappings.Count} top-level entries.");
 
-                string foundationImagesDir = Path.Combine(froststrapTemp, @"ExtraContent\LuaPackages\Packages\_Index\FoundationImages\FoundationImages");
-                string? getImageSetDataPath = Directory.EnumerateFiles(foundationImagesDir, "GetImageSetData.lua", SearchOption.AllDirectories).FirstOrDefault();
-
-                if (getImageSetDataPath != null)
-                    App.Logger?.WriteLine(LOG_IDENT, $"Found GetImageSetData.lua at {getImageSetDataPath}");
-                else
-                    App.Logger?.WriteLine(LOG_IDENT, $"No GetImageSetData.lua found under {foundationImagesDir}");
-
                 DownloadStatusText.Text = "Recoloring images...";
-
-                Color? solidColor = null;
-                List<ModGenerator.GradientStop>? gradient = null;
-
-                if (ViewModel.GradientStops.Count == 1)
-                {
-                    solidColor = ViewModel.GradientStops[0].Color;
-                    App.Logger?.WriteLine(LOG_IDENT, $"Using solid color for recolor: {solidColor}");
-                }
-                else
-                {
-                    gradient = ViewModel.GradientStops.Select(s => new ModGenerator.GradientStop(s.Offset, s.Color)).ToList();
-                    App.Logger?.WriteLine(LOG_IDENT, $"Using gradient with {gradient.Count} stops for recolor.");
-                }
 
                 bool colorCursors = CursorsCheckBox?.IsChecked == true;
                 bool colorShiftlock = ShiftlockCheckBox?.IsChecked == true;
                 bool colorEmoteWheel = EmoteWheelCheckBox?.IsChecked == true;
                 bool colorVoiceChat = VoiceChatCheckBox?.IsChecked == true;
 
+                App.Logger?.WriteLine(LOG_IDENT, $"Using solid color for recolor: {_solidColor}");
+
                 App.Logger?.WriteLine(LOG_IDENT, "Starting RecolorAllPngs...");
-                ModGenerator.RecolorAllPngs(froststrapTemp, solidColor, gradient, getImageSetDataPath ?? string.Empty, CustomLogoPath, CustomSpinnerPath, (float)_gradientAngle, colorCursors, colorShiftlock, colorEmoteWheel, colorVoiceChat);
+                ModGenerator.RecolorAllPngs(froststrapTemp, _solidColor, colorCursors, colorShiftlock, colorEmoteWheel, colorVoiceChat);
                 App.Logger?.WriteLine(LOG_IDENT, "RecolorAllPngs finished.");
 
                 DownloadStatusText.Text = "Cleaning up unnecessary files...";
-                var preservePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-                {
-                    Path.Combine(froststrapTemp, @"ExtraContent\LuaPackages\Packages\_Index\FoundationImages\FoundationImages\SpriteSheets")
-                };
+                var preservePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                 foreach (var entry in mappings.Values)
                 {
                     string fullPath = Path.Combine(froststrapTemp, Path.Combine(entry));
                     preservePaths.Add(fullPath);
                 }
-
-                if (getImageSetDataPath != null)
-                    preservePaths.Add(getImageSetDataPath);
 
                 if (colorCursors)
                 {
@@ -226,9 +192,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                         ["New"] = (
                             @"content\textures\ui\VoiceChat\New",
                             new[]
-                            {
-                        "Error.png","Error@2x.png","Error@3x.png",
-                        "Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png","Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png","Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png","Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png","Blank.png","Blank@2x.png","Blank@3x.png"}
+                            {"Error.png","Error@2x.png","Error@3x.png", "Unmuted0.png","Unmuted0@2x.png","Unmuted0@3x.png","Unmuted20.png","Unmuted20@2x.png","Unmuted20@3x.png","Unmuted40.png","Unmuted40@2x.png","Unmuted40@3x.png","Unmuted60.png","Unmuted60@2x.png","Unmuted60@3x.png","Unmuted80.png","Unmuted80@2x.png","Unmuted80@3x.png","Unmuted100.png","Unmuted100@2x.png","Unmuted100@3x.png","Blank.png","Blank@2x.png","Blank@3x.png"}
                         ),
                         ["MicLight"] = (
                             @"content\textures\ui\VoiceChat\MicLight",
@@ -282,27 +246,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 if (Directory.Exists(contentTexturesDir)) DeleteExcept(contentTexturesDir);
 
                 string infoPath = Path.Combine(froststrapTemp, "info.json");
-                object? colorInfo;
-                if (solidColor.HasValue)
-                {
-                    colorInfo = new
-                    {
-                        SolidColor = $"#{solidColor.Value.R:X2}{solidColor.Value.G:X2}{solidColor.Value.B:X2}"
-                    };
-                }
-                else if (gradient != null && gradient.Count > 0)
-                {
-                    colorInfo = gradient.Select(g => new
-                    {
-                        Stop = g.Stop,
-                        Color = $"#{g.Color.R:X2}{g.Color.G:X2}{g.Color.B:X2}"
-                    }).ToArray();
-                }
-                else
-                {
-                    colorInfo = null;
-                }
-
                 var infoData = new
                 {
                     FroststrapVersion = App.Version,
@@ -315,9 +258,11 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                         ColorShiftlock = colorShiftlock,
                         ColorVoicechat = colorVoiceChat,
                         ColorEmoteWheel = colorEmoteWheel,
-                        GradientAngle = Math.Round(_gradientAngle, 2)
                     },
-                    ColorsUsed = colorInfo
+                    ColorsUsed = new
+                    {
+                        SolidColor = $"#{_solidColor.R:X2}{_solidColor.G:X2}{_solidColor.B:X2}"
+                    }
                 };
 
                 string infoJson = JsonSerializer.Serialize(infoData, new JsonSerializerOptions { WriteIndented = true });
@@ -377,59 +322,46 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             finally
             {
                 GenerateModButton.IsEnabled = true;
-                AddStopButton.IsEnabled = true;
             }
         }
 
-        private void OnSelectCustomLogo_Click(object sender, RoutedEventArgs e)
+        private void OnSolidColorChanged(object sender, TextChangedEventArgs e)
         {
-            var dlg = new OpenFileDialog
+            try
             {
-                Filter = "Image Files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg",
-                Title = "Select Custom Roblox Logo"
+                string colorHex = SolidColorTextBox.Text.Trim();
+                if (!colorHex.StartsWith("#"))
+                    colorHex = "#" + colorHex;
+
+                _solidColor = ColorTranslator.FromHtml(colorHex);
+                _ = UpdatePreviewAsync();
+            }
+            catch
+            {
+                // Invalid color format, ignore
+            }
+        }
+
+        private void OnChangeSolidColor_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new System.Windows.Forms.ColorDialog
+            {
+                AllowFullOpen = true,
+                FullOpen = true,
+                Color = _solidColor
             };
 
-            if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                CustomLogoPath = dlg.FileName;
-                SelectedLogoText.Text = $"Selected: {Path.GetFileName(dlg.FileName)}";
-
+                _solidColor = dlg.Color;
+                SolidColorTextBox.Text = $"#{_solidColor.R:X2}{_solidColor.G:X2}{_solidColor.B:X2}";
                 _ = UpdatePreviewAsync();
             }
         }
 
-        private void OnClearCustomLogo_Click(object sender, RoutedEventArgs e)
-        {
-            CustomLogoPath = null;
-            SelectedLogoText.Text = "No custom logo selected";
-
-            _ = UpdatePreviewAsync();
-        }
-
-        private void OnSelectCustomSpinner_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new OpenFileDialog
-            {
-                Filter = "Image Files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg",
-                Title = "Select Custom Spinner"
-            };
-
-            if (dlg.ShowDialog() == true)
-            {
-                CustomSpinnerPath = dlg.FileName;
-                SelectedSpinnerText.Text = $"Selected: {Path.GetFileName(dlg.FileName)}";
-            }
-        }
-
-        private void OnClearCustomSpinner_Click(object sender, RoutedEventArgs e)
-        {
-            CustomSpinnerPath = null;
-            SelectedSpinnerText.Text = "No custom spinner selected";
-        }
-
         private Bitmap? _sheetOriginalBitmap = null;
         private CancellationTokenSource? _previewCts;
-        private readonly List<ModGenerator.SpriteDef> _previewSprites = ParseHardcodedSpriteList();
+        private readonly List<SpriteDef> _previewSprites = ParseHardcodedSpriteList();
 
         private void InitializePreview()
         {
@@ -461,7 +393,9 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             }
         }
 
-        private static List<ModGenerator.SpriteDef> ParseHardcodedSpriteList()
+        public record SpriteDef(string Name, int X, int Y, int W, int H);
+
+        private static List<SpriteDef> ParseHardcodedSpriteList()
         {
             string[] lines = new[]
             {
@@ -473,7 +407,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 "picture 0x370 72x72","enlarge 74x370 72x72","headset_locked 148x370 72x72","friends_off 222x370 72x72","friends_on 296x370 72x72","person_camera 370x370 72x72"
             };
 
-            var list = new List<ModGenerator.SpriteDef>();
+            var list = new List<SpriteDef>();
             foreach (var l in lines)
             {
                 var parts = l.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -485,7 +419,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 var size = parts[2].Split('x');
                 int w = int.Parse(size[0]);
                 int h = int.Parse(size[1]);
-                list.Add(new ModGenerator.SpriteDef(name, x, y, w, h));
+                list.Add(new SpriteDef(name, x, y, w, h));
             }
             return list;
         }
@@ -504,15 +438,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
             try
             {
-                Color? solidColor = null;
-                List<ModGenerator.GradientStop>? gradient = null;
-                if (ViewModel.GradientStops.Count == 1)
-                    solidColor = ViewModel.GradientStops[0].Color;
-                else
-                    gradient = ViewModel.GradientStops.Select(s => new ModGenerator.GradientStop(s.Offset, s.Color)).ToList();
-
-                string? customRobloxPath = string.IsNullOrEmpty(CustomLogoPath) ? null : CustomLogoPath;
-
                 if (_sheetOriginalBitmap == null) return;
                 byte[] sheetBytes;
                 using (var ms = new MemoryStream())
@@ -529,9 +454,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     {
                         using var ms2 = new MemoryStream(sheetBytes);
                         using var sheetCopy = new Bitmap(ms2);
-                        float angleDeg = (float)_gradientAngle;
-                        var result = RenderPreviewSheet(sheetCopy, solidColor, gradient, customRobloxPath, angleDeg);
-
+                        var result = RenderPreviewSheet(sheetCopy, _solidColor);
                         return result;
                     }
                     catch (Exception ex)
@@ -553,7 +476,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             }
             catch (OperationCanceledException)
             {
-
+                // Ignore cancellation
             }
             catch (Exception ex)
             {
@@ -561,7 +484,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             }
         }
 
-        private Bitmap RenderPreviewSheet(Bitmap sheetBmp, Color? solidColor, List<ModGenerator.GradientStop>? gradient, string? customRobloxPath, float gradientAngleDeg)
+        private Bitmap RenderPreviewSheet(Bitmap sheetBmp, Color solidColor)
         {
             if (sheetBmp == null) throw new InvalidOperationException("sheetBmp is null.");
 
@@ -574,15 +497,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 g.DrawImage(sheetBmp, 0, 0);
             }
 
-            Bitmap? customRoblox = null;
-            if (!string.IsNullOrEmpty(customRobloxPath) && File.Exists(customRobloxPath))
-            {
-                using var fs = new FileStream(customRobloxPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                using var tmp = new Bitmap(fs);
-                customRoblox = new Bitmap(tmp.Width, tmp.Height, PixelFormat.Format32bppArgb);
-                using (var g = Graphics.FromImage(customRoblox)) g.DrawImage(tmp, 0, 0, tmp.Width, tmp.Height);
-            }
-
             try
             {
                 foreach (var def in _previewSprites)
@@ -590,37 +504,8 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                     if (def.W <= 0 || def.H <= 0) continue;
                     var rect = new Rectangle(def.X, def.Y, def.W, def.H);
 
-                    if (string.Equals(def.Name, "roblox", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (customRoblox != null)
-                        {
-                            using (var g = Graphics.FromImage(output))
-                            {
-                                g.CompositingMode = CompositingMode.SourceCopy;
-                                using (var clearBrush = new SolidBrush(Color.FromArgb(0, 0, 0, 0)))
-                                    g.FillRectangle(clearBrush, rect);
-
-                                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                                g.CompositingMode = CompositingMode.SourceOver;
-                                g.DrawImage(customRoblox, rect);
-                            }
-                        }
-                        else
-                        {
-                            using (var cropped = sheetBmp.Clone(rect, PixelFormat.Format32bppArgb))
-                            using (var recolored = ApplyMaskPreview(cropped, solidColor, gradient, gradientAngleDeg))
-                            using (var g = Graphics.FromImage(output))
-                            {
-                                g.CompositingMode = CompositingMode.SourceOver;
-                                g.DrawImage(recolored, rect);
-                            }
-                        }
-
-                        continue;
-                    }
-
                     using (var cropped = sheetBmp.Clone(rect, PixelFormat.Format32bppArgb))
-                    using (var recolored = ApplyMaskPreview(cropped, solidColor, gradient, gradientAngleDeg))
+                    using (var recolored = ApplyMaskPreview(cropped, solidColor))
                     using (var g = Graphics.FromImage(output))
                     {
                         g.CompositingMode = CompositingMode.SourceOver;
@@ -630,13 +515,13 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             }
             finally
             {
-                customRoblox?.Dispose();
+                // Clean up if needed
             }
 
             return output;
         }
 
-        private Bitmap ApplyMaskPreview(Bitmap original, Color? solidColor, List<ModGenerator.GradientStop>? gradient, float gradientAngleDeg)
+        private Bitmap ApplyMaskPreview(Bitmap original, Color solidColor)
         {
             if (original.Width == 0 || original.Height == 0)
                 return new Bitmap(original);
@@ -645,24 +530,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             var rect = new Rectangle(0, 0, original.Width, original.Height);
             BitmapData srcData = original.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             BitmapData dstData = recolored.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-
-            double theta = gradientAngleDeg * Math.PI / 180.0;
-            double cos = Math.Cos(theta);
-            double sin = Math.Sin(theta);
-
-            double w = original.Width - 1;
-            double h = original.Height - 1;
-            double[] projs = new double[]
-            {
-                0 * cos + 0 * sin,
-                w * cos + 0 * sin,
-                0 * cos + h * sin,
-                w * cos + h * sin
-            };
-            double minProj = projs.Min();
-            double maxProj = projs.Max();
-            double denom = maxProj - minProj;
-            if (Math.Abs(denom) < 1e-6) denom = 1.0;
 
             unsafe
             {
@@ -686,23 +553,10 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                             continue;
                         }
 
-                        Color applyColor;
-                        if (gradient != null && gradient.Count > 0)
-                        {
-                            double proj = x * cos + y * sin;
-                            float t = (float)((proj - minProj) / denom);
-                            t = Math.Clamp(t, 0f, 1f);
-                            applyColor = InterpolateGradientPreview(gradient, t);
-                        }
-                        else
-                        {
-                            applyColor = solidColor ?? Color.White;
-                        }
-
                         float alphaFactor = a / 255f;
-                        dstPtr[idx] = (byte)(applyColor.B * alphaFactor);
-                        dstPtr[idx + 1] = (byte)(applyColor.G * alphaFactor);
-                        dstPtr[idx + 2] = (byte)(applyColor.R * alphaFactor);
+                        dstPtr[idx] = (byte)(solidColor.B * alphaFactor);
+                        dstPtr[idx + 1] = (byte)(solidColor.G * alphaFactor);
+                        dstPtr[idx + 2] = (byte)(solidColor.R * alphaFactor);
                         dstPtr[idx + 3] = a;
                     }
                 }
@@ -711,43 +565,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             original.UnlockBits(srcData);
             recolored.UnlockBits(dstData);
             return recolored;
-        }
-
-        private static Color InterpolateGradientPreview(List<ModGenerator.GradientStop> gradient, float t)
-        {
-            if (gradient == null || gradient.Count == 0)
-                return Color.White;
-
-            var stops = gradient.OrderBy(s => s.Stop).ToList();
-
-            if (t <= stops[0].Stop) return stops[0].Color;
-            if (t >= stops[^1].Stop) return stops[^1].Color;
-
-            ModGenerator.GradientStop left = stops[0];
-            ModGenerator.GradientStop right = stops[^1];
-            for (int i = 0; i < stops.Count - 1; i++)
-            {
-                if (t >= stops[i].Stop && t <= stops[i + 1].Stop)
-                {
-                    left = stops[i];
-                    right = stops[i + 1];
-                    break;
-                }
-            }
-
-            float span = right.Stop - left.Stop;
-            float localT = span > 0 ? (t - left.Stop) / span : 0f;
-            localT = Math.Clamp(localT, 0f, 1f);
-
-            int r = (int)Math.Round(left.Color.R + (right.Color.R - left.Color.R) * localT);
-            int g = (int)Math.Round(left.Color.G + (right.Color.G - left.Color.G) * localT);
-            int b = (int)Math.Round(left.Color.B + (right.Color.B - left.Color.B) * localT);
-
-            r = Math.Clamp(r, 0, 255);
-            g = Math.Clamp(g, 0, 255);
-            b = Math.Clamp(b, 0, 255);
-
-            return Color.FromArgb(r, g, b);
         }
 
         private void UpdateSpritePreviewFromBitmap(Bitmap sheetBmp)
@@ -794,177 +611,5 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 _ = UpdatePreviewAsync();
             }
         }
-
-        private double _gradientAngle = 0.0;
-
-        private void ApplyGradientAngleFromTextBox()
-        {
-            if (GradientAngleTextBox == null) return;
-
-            string txt = GradientAngleTextBox.Text?.Trim() ?? string.Empty;
-            if (string.IsNullOrEmpty(txt))
-            {
-                _gradientAngle = 0.0;
-            }
-            else
-            {
-                if (!double.TryParse(txt, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double val))
-                {
-                    GradientAngleTextBox.Text = Math.Round(_gradientAngle).ToString(CultureInfo.InvariantCulture);
-                    return;
-                }
-
-                val = Math.Max(0.0, Math.Min(360.0, val));
-                _gradientAngle = val;
-            }
-
-            GradientAngleTextBox.Text = Math.Round(_gradientAngle).ToString(CultureInfo.InvariantCulture);
-
-            _ = UpdatePreviewAsync();
-        }
-
-        private static readonly Regex _angleInputRegex = new Regex("^[0-9]*\\.?[0-9]*$");
-
-        private void GradientAngleTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            var tb = sender as TextBox;
-            if (tb == null) { e.Handled = true; return; }
-
-            string full = tb.Text.Remove(tb.SelectionStart, tb.SelectionLength)
-                .Insert(tb.SelectionStart, e.Text);
-
-            e.Handled = !_angleInputRegex.IsMatch(full);
-        }
-
-        private void GradientAngleTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            if (e.DataObject.GetDataPresent(DataFormats.Text))
-            {
-                string paste = e.DataObject.GetData(DataFormats.Text) as string ?? string.Empty;
-                if (!_angleInputRegex.IsMatch(paste))
-                    e.CancelCommand();
-            }
-            else
-            {
-                e.CancelCommand();
-            }
-        }
-
-        private void GradientAngleTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                ApplyGradientAngleFromTextBox();
-                Keyboard.ClearFocus();
-                e.Handled = true;
-            }
-        }
-
-        private void GradientAngleTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ApplyGradientAngleFromTextBox();
-        }
-
-        #region Gradient Color Stuff
-        public class GradientStopViewModel : INotifyPropertyChanged
-        {
-            private float offset;
-            private string colorHex = "#FFFFFF";
-
-            public float Offset
-            {
-                get => offset;
-                set { offset = value; OnPropertyChanged(); }
-            }
-
-            public string ColorHex
-            {
-                get => colorHex;
-                set { colorHex = value; OnPropertyChanged(); }
-            }
-
-            public Color Color
-            {
-                get
-                {
-                    try { return ColorTranslator.FromHtml(colorHex); }
-                    catch { return Color.White; }
-                }
-                set { ColorHex = $"#{value.R:X2}{value.G:X2}{value.B:X2}"; }
-            }
-
-            public event PropertyChangedEventHandler? PropertyChanged;
-            protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        private void OnAddGradientStop_Click(object sender, RoutedEventArgs e)
-        {
-            ViewModel.GradientStops.Add(new GradientStopViewModel { Offset = 1f, ColorHex = "#FFFFFF" });
-            _ = UpdatePreviewAsync();
-        }
-
-        private void OnRemoveGradientStop_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.Tag is GradientStopViewModel stop)
-            {
-                ViewModel.GradientStops.Remove(stop);
-                _ = UpdatePreviewAsync();
-            }
-        }
-
-        private void OnMoveUpGradientStop_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.Tag is GradientStopViewModel stop)
-            {
-                int idx = ViewModel.GradientStops.IndexOf(stop);
-                if (idx > 0)
-                    ViewModel.GradientStops.Move(idx, idx - 1);
-                _ = UpdatePreviewAsync();
-            }
-        }
-
-        private void OnMoveDownGradientStop_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.Tag is GradientStopViewModel stop)
-            {
-                int idx = ViewModel.GradientStops.IndexOf(stop);
-                if (idx < ViewModel.GradientStops.Count - 1)
-                    ViewModel.GradientStops.Move(idx, idx + 1);
-                _ = UpdatePreviewAsync();
-            }
-        }
-
-        private void OnGradientOffsetChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            // Two-way binding handles the value change; refresh preview so it updates immediately.
-            _ = UpdatePreviewAsync();
-        }
-
-        private void OnGradientColorHexChanged(object sender, TextChangedEventArgs e)
-        {
-            // Two-way binding updates the ColorHex; refresh preview so it updates immediately.
-            _ = UpdatePreviewAsync();
-        }
-
-        private void OnChangeGradientColor_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.Tag is GradientStopViewModel stop)
-            {
-                var dlg = new System.Windows.Forms.ColorDialog
-                {
-                    AllowFullOpen = true,
-                    FullOpen = true,
-                    Color = ColorTranslator.FromHtml(stop.ColorHex)
-                };
-
-                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    stop.ColorHex = $"#{dlg.Color.R:X2}{dlg.Color.G:X2}{dlg.Color.B:X2}";
-                    _ = UpdatePreviewAsync();
-                }
-            }
-        }
-        #endregion
     }
 }

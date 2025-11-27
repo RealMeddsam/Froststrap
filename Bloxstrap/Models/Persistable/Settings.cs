@@ -5,11 +5,16 @@ namespace Bloxstrap.Models.Persistable
 {
     public class Settings
     {
+        // uh
+        public bool AllowCookieAccess { get; set; } = false;
+
         // Integration Page
         public bool EnableActivityTracking { get; set; } = true;
         public bool ShowServerDetails { get; set; } = true;
         public bool ShowServerUptime { get; set; } = false;
+        public bool AutoRejoinEnabled { get; set; } = false;
         public bool ShowGameHistoryMenu { get; set; } = true;
+        public List<ActivityData> ServerHistory { get; set; } = new List<ActivityData>();
         public bool PlaytimeCounter { get; set; } = true;
         public TrayDoubleClickAction DoubleClickAction { get; set; } = TrayDoubleClickAction.ServerInfo;
         public bool UseDisableAppPatch { get; set; } = false;
@@ -25,11 +30,16 @@ namespace Bloxstrap.Models.Persistable
         // Bootstrapper Page
         public bool ConfirmLaunches { get; set; } = true;
         public bool AutoCloseCrashHandler { get; set; } = false;
+        public MemoryCleanerInterval MemoryCleanerInterval { get; set; } = MemoryCleanerInterval.Never;
+        public ObservableCollection<string> UserExcludedProcesses { get; set; } = new ObservableCollection<string> { "robloxplayerbeta" };
         public string Locale { get; set; } = "nil";
         public CleanerOptions CleanerOptions { get; set; } = CleanerOptions.Never;
         public List<string> CleanerDirectories { get; set; } = new List<string>();
         public bool BackgroundUpdatesEnabled { get; set; } = false;
         public bool MultiInstanceLaunching { get; set; } = false;
+        public bool Error773Fix { get; set; } = false;
+        public int MultibloxInstanceCount { get; set; } = 2;
+        public int MultibloxDelayMs { get; set; } = 1500;
         public RobloxIcon SelectedRobloxIcon { get; set; } = RobloxIcon.Default;
         public ProcessPriorityOption SelectedProcessPriority { get; set; } = ProcessPriorityOption.Normal;
 
@@ -45,7 +55,6 @@ namespace Bloxstrap.Models.Persistable
         public bool CtrlCJsonFormat { get; set; } = false;
         public bool ShowPresetColumn { get; set; } = false;
         public bool ShowFlagCount { get; set; } = true;
-        public bool ShowAddWithID { get; set; } = false;
         public bool UseAltManually { get; set; } = true;
 
         // Appearance Page
@@ -73,13 +82,8 @@ namespace Bloxstrap.Models.Persistable
         public List<string> NavigationOrder { get; set; } = new List<string>();
         public bool IsNavigationOrderLocked { get; set; } = true;
 
-        // No pc tweaks since it checks registry values directly
-
         // Shortcuts Page
         public string GameShortcutsJson { get; set; } = "[]";
-
-        // Community Page
-        public string UserId { get; set; } = string.Empty;
 
         // Settings Page
         public bool CheckForUpdates { get; set; } = true;
@@ -93,32 +97,12 @@ namespace Bloxstrap.Models.Persistable
 
         // Misc Stuff
         public bool IsNavigationSidebarExpanded { get; set; } = true;
+        public string SelectedRegion { get; set; } = string.Empty;
         public bool EnableAnalytics { get; set; } = false;
         public bool DebugDisableVersionPackageCleanup { get; set; } = false;
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool ForceLocalData { get; set; } = false;
         public bool DeveloperMode { get; set; } = false;
         public WebEnvironment WebEnvironment { get; set; } = WebEnvironment.Production;
-
-        // Clicker Game Configuration
-        public string Points { get; set; } = "0";
-        public string PointsPerClick { get; set; } = "1";
-        public bool AutoClickerEnabled { get; set; } = false;
-        public decimal BonusMultiplier { get; set; } = 1.0m;
-        public int BonusMultiplierLevel { get; set; } = 0;
-        public int CriticalClickChancePercent { get; set; } = 0;
-        public int CriticalClickMultiplier { get; set; } = 2;
-        public int UpgradeDiscountPercent { get; set; } = 0;
-        public string TotalPointsSpent { get; set; } = "0";
-        public string TotalPointsEarned { get; set; } = "0";
-        public long TotalPlaytimeTicks { get; set; } = 0;
-
-        // Clicker Game Prices
-        public string DoubleClickPowerPrice { get; set; } = "50";
-        public string AutoClickerPrice { get; set; } = "50";
-        public string BonusMultiplierPrice { get; set; } = "250";
-        public string CriticalClickChancePrice { get; set; } = "2000";
-        public string CriticalClickMultiplierPrice { get; set; } = "4000";
-        public string UpgradeDiscountPrice { get; set; } = "3000";
     }
 }

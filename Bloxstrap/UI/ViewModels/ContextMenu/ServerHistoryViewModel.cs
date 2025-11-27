@@ -15,7 +15,7 @@ namespace Bloxstrap.UI.ViewModels.ContextMenu
         public string Error { get; private set; } = String.Empty;
 
         public ICommand CloseWindowCommand => new RelayCommand(RequestClose);
-        
+
         public EventHandler? RequestCloseEvent;
 
         public ServerHistoryViewModel(ActivityWatcher activityWatcher)
@@ -23,6 +23,7 @@ namespace Bloxstrap.UI.ViewModels.ContextMenu
             _activityWatcher = activityWatcher;
 
             _activityWatcher.OnGameLeave += (_, _) => LoadData();
+            _activityWatcher.OnHistoryUpdated += (_, _) => LoadData();
 
             LoadData();
         }
@@ -32,7 +33,7 @@ namespace Bloxstrap.UI.ViewModels.ContextMenu
             LoadState = GenericTriState.Unknown;
             OnPropertyChanged(nameof(LoadState));
 
-            var entries = _activityWatcher.History.Where(x => x.UniverseDetails is null);
+            var entries = _activityWatcher.History.Where(x => x.UniverseId != 0 && x.UniverseDetails is null).ToList();
 
             if (entries.Any())
             {
@@ -45,7 +46,7 @@ namespace Bloxstrap.UI.ViewModels.ContextMenu
                 catch (Exception ex)
                 {
                     App.Logger.WriteException("ServerHistoryViewModel::LoadData", ex);
-                    
+
                     Error = ex.Message;
                     OnPropertyChanged(nameof(Error));
 
@@ -56,10 +57,12 @@ namespace Bloxstrap.UI.ViewModels.ContextMenu
                 }
 
                 foreach (var entry in entries)
+                {
                     entry.UniverseDetails = UniverseDetails.LoadFromCache(entry.UniverseId);
+                }
             }
 
-            GameHistory = new(_activityWatcher.History);
+            GameHistory = new List<ActivityData>(_activityWatcher.History);
 
             var consolidatedJobIds = new List<ActivityData>();
 

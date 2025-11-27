@@ -29,6 +29,6 @@
         public string Format { get; set; } = "Png";
 
         [JsonPropertyName("isCircular")]
-        public bool IsCircular { get; set; } = true;
+        public bool IsCircular { get; set; } = false;
     }
 }

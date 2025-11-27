@@ -41,7 +41,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="Froststrap" Margin="0,0,4,0" FontSize="24" FontWeight="Bold" />
                 </Grid>
-                <TextBlock Text="{x:Static resources:Strings.Menu_About_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" FontWeight="Medium" />
+                <TextBlock Text="{x:Static resources:Strings.Menu_About_Description}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"  />
             </StackPanel>
         </Grid>
 
@@ -67,20 +67,20 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,4,16,4" FontSize="14" FontWeight="Medium" Text="Timestamp" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,4,16,4" FontSize="14"  Text="Timestamp" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Margin="0,0,0,4" VerticalAlignment="Bottom" Text="{Binding BuildTimestamp, Mode=OneTime}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
-                
-                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,1,16,-21" FontSize="14" FontWeight="Medium" Text="Version" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,1,16,-21" FontSize="14"  Text="Version" />
                 <TextBlock Grid.Row="3" Margin="86,3,0,0" VerticalAlignment="Top" Text="{Binding Version, Mode=OneTime}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Grid.ColumnSpan="2" />
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,4,16,4" FontSize="14" FontWeight="Medium" Text="Commit Hash" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,4,16,4" FontSize="14"  Text="Commit Hash" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}" />
                 <TextBlock Grid.Row="2" Grid.Column="1" Margin="0,0,0,4" VerticalAlignment="Bottom" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}">
                   <Hyperlink Foreground="{DynamicResource TextFillColorTertiaryBrush}" Command="models:GlobalViewModel.OpenWebpageCommand" CommandParameter="{Binding BuildCommitHashUrl, Mode=OneTime}">
                     <TextBlock Text="{Binding BuildMetadata.CommitHash, Mode=OneTime}" />
                   </Hyperlink>
                 </TextBlock>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,4,16,4" FontSize="14" FontWeight="Medium" Text="Commit Ref" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,4,16,4" FontSize="14"  Text="Commit Ref" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}" />
                 <TextBlock Grid.Row="3" Grid.Column="1" Margin="0,0,0,4" VerticalAlignment="Bottom" Text="{Binding BuildMetadata.CommitRef, Mode=OneTime}" Foreground="{DynamicResource TextFillColorTertiaryBrush}" Visibility="{Binding BuildCommitVisibility, Mode=OneTime}" />
             </Grid>
         </StackPanel>
@@ -97,12 +97,14 @@
             <controls:Expander Grid.Column="0" Margin="0,0,4,0" HeaderIcon="Code24" HeaderText="{x:Static resources:Strings.Menu_About_Contributors_Code}" IsExpanded="True">
                 <StackPanel>
                     <controls:MarkdownTextBlock MarkdownText="[meddsam](https://discord.com/users/1051148571371647017)" />
+                    <controls:MarkdownTextBlock MarkdownText="[SquireDot](https://github.com/UltimatePlayer97)" />
+                    <controls:MarkdownTextBlock MarkdownText="[Invra](https://invra.net) ([GitLab](https://gitlab.com/invra), [GitHub](https://github.com/invra))" />
                 </StackPanel>
             </controls:Expander>
 
             <controls:Expander Grid.Column="1" Margin="4,0,4,0" HeaderIcon="AppsAddIn28" HeaderText="{x:Static resources:Strings.Menu_About_Contributors_Contributors}" IsExpanded="True">
                 <StackPanel>
-                    <controls:MarkdownTextBlock MarkdownText="[Alya](https://discord.com/users/1231516517296771144)" />
+                    <controls:MarkdownTextBlock MarkdownText="[jokoyanto987](https://github.com/jokoyanto987)" />
                     <controls:MarkdownTextBlock MarkdownText="[Scroom](https://discord.com/users/1254472513199673347)" />
                     <controls:MarkdownTextBlock MarkdownText="[MattDinio](https://discord.com/users/1353528667245903892)" />
                     <controls:MarkdownTextBlock MarkdownText="[Stoof](https://discord.com/users/1020107535589593138)" />
@@ -115,9 +117,8 @@
                     <controls:MarkdownTextBlock MarkdownText="[Flemish](https://discord.com/users/1286961047990702124)" />
                     <controls:MarkdownTextBlock MarkdownText="[Noby](https://discord.com/users/1304922060882972732)" />
                     <controls:MarkdownTextBlock MarkdownText="[Obsurd](https://discord.com/users/818680236963135498)" />
-                    <controls:MarkdownTextBlock MarkdownText="[Ghiram](https://discord.com/users/1208558834273095712)" />
-                    <controls:MarkdownTextBlock MarkdownText="[Alex](https://discord.com/users/1275186734367506523)" />
                     <controls:MarkdownTextBlock MarkdownText="[Valra](https://github.com/NotValra)" />
+                    <controls:MarkdownTextBlock MarkdownText="[SunGod (Polaris)](https://www.roblox.com/users/1484207733/profile)" />
                 </StackPanel>
             </controls:Expander>
 

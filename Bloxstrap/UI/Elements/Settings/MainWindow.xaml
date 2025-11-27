@@ -17,7 +17,7 @@
              Height="700"
              Background="{ui:ThemeResource ApplicationBackgroundBrush}"
              ExtendsContentIntoTitleBar="True"
-             WindowBackdropType="{Binding SelectedBackdrop}"
+             WindowBackdropType="Mica"
              WindowStartupLocation="CenterScreen"
              Closing="WpfUiWindow_Closing"
              Closed="WpfUiWindow_Closed">
@@ -39,13 +39,13 @@
             x:Name="AlreadyRunningSnackbar"
             Title="{x:Static resources:Strings.Menu_AlreadyRunning_Title}"
             Message="{x:Static resources:Strings.Menu_AlreadyRunning_Caption}"
-            Background="{DynamicResource NormalDarkAndLightBackground}" Icon="Info20" Timeout="10000" Margin="200,0,200,40" Grid.RowSpan="10" Panel.ZIndex="10" />
+            Background="{DynamicResource NormalDarkAndLightBackground}" Icon="Info20" Timeout="5000" Margin="200,0,200,40" Grid.RowSpan="10" Panel.ZIndex="10" />
 
         <ui:Snackbar
             x:Name="SettingsSavedSnackbar"
             Title="{x:Static resources:Strings.Menu_SettingsSaved_Title}"
             Message="{x:Static resources:Strings.Menu_SettingsSaved_Message}"
-            Appearance="Success" Icon="CheckmarkCircle32" Timeout="3000" Margin="200,0,200,40" Grid.RowSpan="10" Panel.ZIndex="9" />
+            Background="{DynamicResource NormalDarkAndLightBackground}" Icon="CheckmarkCircle24" Timeout="3000" Margin="200,0,200,40" Grid.RowSpan="10" Panel.ZIndex="9" />
 
         <ui:TitleBar Padding="8" x:Name="RootTitleBar" Grid.Row="0" ForceShutdown="False" MinimizeToTray="False" UseSnapLayout="True" Title="{x:Static resources:Strings.Menu_Title}" Icon="pack://application:,,,/Bloxstrap.ico" />
 
@@ -59,7 +59,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <ui:NavigationCompact x:Name="RootNavigation" Grid.Row="1" Grid.Column="0" Margin="0,0,12,0" Frame="{Binding ElementName=RootFrame}" IsExpanded="{Binding IsSidebarExpanded, Mode=TwoWay}" MaxWidth="215" SelectedPageIndex="0">
+            <ui:NavigationCompact x:Name="RootNavigation" Grid.Row="1" Grid.Column="0" Margin="0,0,12,0" Frame="{Binding ElementName=RootFrame}" IsExpanded="{Binding IsSidebarExpanded, Mode=TwoWay}" MaxWidth="215" SelectedPageIndex="0" FooterAlwaysVisible="True">
                 <ui:NavigationCompact.Items>
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Integrations_Title}" PageType="{x:Type pages:IntegrationsPage}" Icon="Add28" IconSize="20" Tag="integrations" FontWeight="Medium" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Behaviour_Title}" PageType="{x:Type pages:BehaviourPage}" Icon="PlaySettings20" IconSize="20" Tag="bootstrapper" FontWeight="Medium" />
@@ -67,16 +67,15 @@
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_FastFlags_Title}" PageType="{x:Type pages:FastFlagsPage}" Icon="Flag24" IconSize="20" Tag="fastflags" FontWeight="Medium" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_FastFlagEditor_Title}" PageType="{x:Type pages:FastFlagEditorPage}" Icon="EditSettings20" IconSize="20" Tag="fastflagEditor" FontWeight="Medium" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_Appearance_Title}" PageType="{x:Type pages:AppearancePage}" Icon="PaintBrush24" IconSize="20" Tag="appearance" FontWeight="Medium" />
-                    <ui:NavigationItem Content="PC Tweaks" PageType="{x:Type pages:PCTweaksPage}" Icon="DesktopCheckmark24" IconSize="20" Tag="pctweaks" FontWeight="Medium" />
-                    <ui:NavigationItem Content="Region Selector" PageType="{x:Type pages:RegionSelectorPage}" Icon="Earth24" IconSize="20" Tag="regionselector" FontWeight="Medium" />
+                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_RegionSelector_Title}" PageType="{x:Type pages:RegionSelectorPage}" Icon="Earth24" IconSize="20" Tag="regionselector" FontWeight="Medium" />
+                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_RobloxSettings_Title}" PageType="{x:Type pages:RobloxSettingsPage}" Icon="SquareHintApps24" IconSize="20" Tag="RobloxSettings" FontWeight="Medium" x:Name="gbs" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Common_Shortcuts}" PageType="{x:Type pages:ShortcutsPage}" Icon="Apps28" IconSize="20" Tag="shortcuts" FontWeight="Medium" />
                 </ui:NavigationCompact.Items>
                 <ui:NavigationCompact.Footer>
-                    <ui:NavigationItem Content="Roblox Settings" PageType="{x:Type pages:RobloxSettingsPage}" Icon="SquareHintApps24" IconSize="20" Tag="RobloxSettings" FontWeight="Medium" />
+                    <ui:NavigationItem Content="{x:Static resources:Strings.Menu_AccountManager_Title}" PageType="{x:Type pages:AccountManagerPage}" Icon="People24" IconSize="20" Tag="altmanager" FontWeight="Medium" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Common_Settings}" PageType="{x:Type pages:ChannelPage}" Icon="Settings20" IconSize="20" Tag="channel" FontWeight="Medium" />
                     <ui:NavigationItem Content="{x:Static resources:Strings.Menu_About_Title}" Icon="WeatherSnowflake48" IconSize="21" Margin="0,0,0,12" Command="{Binding OpenAboutCommand, Mode=OneTime}" FontWeight="Medium" />
                 </ui:NavigationCompact.Footer>
-
             </ui:NavigationCompact>
 
             <Grid Grid.Row="0" Grid.RowSpan="2" Grid.Column="1">
@@ -136,7 +135,7 @@
 
             <!-- Restart -->
             <StatusBarItem Grid.Column="3" VerticalAlignment="Center" Margin="0,0,4,0">
-                <ui:Button Content="Restart"
+                <ui:Button Content="{x:Static resources:Strings.Menu_Restart}"
                Height="32"
                Padding="14,0"
                FontWeight="Medium"
@@ -165,18 +164,18 @@
         </StatusBar>
 
         <Grid x:Name="LoadingOverlay"
-              Visibility="Collapsed"
-              Background="#80000000"
-              Panel.ZIndex="9999"
-              Grid.RowSpan="3"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
+            Visibility="Collapsed"
+            Background="#A0000000"
+            Panel.ZIndex="9999"
+            Grid.RowSpan="3"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
 
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border Background="{DynamicResource NormalDarkAndLightBackground}"
-                CornerRadius="16"
-                Padding="32"
-                Effect="{DynamicResource ControlShadow}">
+                    CornerRadius="16"
+                    Padding="32"
+                    Effect="{DynamicResource ControlShadow}">
                     <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Orientation="Vertical">
@@ -190,41 +189,14 @@
                            HorizontalAlignment="Center"
                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
 
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                            <Ellipse Width="12" Height="12" Fill="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,8,0">
-                                <Ellipse.Triggers>
-                                    <EventTrigger RoutedEvent="Loaded">
-                                        <BeginStoryboard>
-                                            <Storyboard RepeatBehavior="Forever" AutoReverse="True" >
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.3" To="1" Duration="0:0:0.6" BeginTime="0:0:0" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </Ellipse.Triggers>
-                            </Ellipse>
-                            <Ellipse Width="12" Height="12" Fill="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,8,0">
-                                <Ellipse.Triggers>
-                                    <EventTrigger RoutedEvent="Loaded">
-                                        <BeginStoryboard>
-                                            <Storyboard RepeatBehavior="Forever" AutoReverse="True" >
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.3" To="1" Duration="0:0:0.6" BeginTime="0:0:0.2" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </Ellipse.Triggers>
-                            </Ellipse>
-                            <Ellipse Width="12" Height="12" Fill="{DynamicResource TextFillColorPrimaryBrush}">
-                                <Ellipse.Triggers>
-                                    <EventTrigger RoutedEvent="Loaded">
-                                        <BeginStoryboard>
-                                            <Storyboard RepeatBehavior="Forever" AutoReverse="True" >
-                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.3" To="1" Duration="0:0:0.6" BeginTime="0:0:0.4" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </Ellipse.Triggers>
-                            </Ellipse>
-                        </StackPanel>
+                        <ui:ProgressRing
+                            IsIndeterminate="True"
+                            Width="60"
+                            Height="60"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="0,10,0,0" />
+
                     </StackPanel>
                 </Border>
             </Grid>

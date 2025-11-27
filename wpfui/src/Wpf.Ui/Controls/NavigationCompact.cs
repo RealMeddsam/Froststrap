@@ -26,6 +26,13 @@ public class NavigationCompact : Wpf.Ui.Controls.Navigation.NavigationBase
         new PropertyMetadata(false));
 
     /// <summary>
+    /// Property for <see cref="FooterAlwaysVisible"/>.
+    /// </summary>
+    public static readonly DependencyProperty FooterAlwaysVisibleProperty =
+        DependencyProperty.Register(nameof(FooterAlwaysVisible), typeof(bool), typeof(NavigationCompact),
+        new PropertyMetadata(false));
+
+    /// <summary>
     /// Property for <see cref="TemplateButtonCommand"/>.
     /// </summary>
     public static readonly DependencyProperty TemplateButtonCommandProperty =
@@ -39,6 +46,15 @@ public class NavigationCompact : Wpf.Ui.Controls.Navigation.NavigationBase
     {
         get => (bool)GetValue(IsExpandedProperty);
         set => SetValue(IsExpandedProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the footer should always be visible at the bottom.
+    /// </summary>
+    public bool FooterAlwaysVisible
+    {
+        get => (bool)GetValue(FooterAlwaysVisibleProperty);
+        set => SetValue(FooterAlwaysVisibleProperty, value);
     }
 
     /// <summary>

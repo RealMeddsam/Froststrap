@@ -1,6 +1,6 @@
 ﻿using Bloxstrap.Models.APIs.RoValra;
 
-namespace Bloxstrap.Models.APIs
+namespace Bloxstrap.Models.APIs.RoValra
 {
     public class RoValraTimeResponse
     {

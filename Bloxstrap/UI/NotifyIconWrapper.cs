@@ -49,10 +49,6 @@ namespace Bloxstrap.UI
                         );
                         break;
 
-                    case TrayDoubleClickAction.DebugMenu:
-                        ShowWindow(() => new DebugMenu());
-                        break;
-
                     case TrayDoubleClickAction.GameHistory:
                         if (!App.Settings.Prop.ShowGameHistoryMenu)
                         {
@@ -63,7 +59,7 @@ namespace Bloxstrap.UI
                             return;
                         }
 
-                        ShowWindow(() => new ServerHistory(_activityWatcher!));
+                        new ServerHistory(_activityWatcher!).Show();
                         break;
 
                     case TrayDoubleClickAction.ServerInfo:
@@ -79,7 +75,6 @@ namespace Bloxstrap.UI
                         if (_activityWatcher is not null && _activityWatcher.InGame)
                         {
                             _menuContainer!.ShowServerInformationWindow();
-                            ShowWindow(() => new ServerInformation(_watcher));
                         }
                         else
                         {
@@ -97,25 +92,6 @@ namespace Bloxstrap.UI
 
             _menuContainer = new(_watcher);
             _menuContainer.Show();
-        }
-
-        public static void ShowWindow<T>(Func<T> createWindow) where T : Window
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                var window = createWindow();
-                window.Topmost = true;
-                window.Show();
-                window.Activate();
-                window.Focus();
-
-                window.Loaded += (_, _) =>
-                {
-                    window.Topmost = false;
-                    window.Topmost = true;
-                    window.Activate();
-                };
-            });
         }
 
         #region Context menu

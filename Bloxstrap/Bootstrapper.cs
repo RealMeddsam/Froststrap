@@ -71,6 +71,9 @@ namespace Bloxstrap
 
         private AsyncMutex? _mutex;
 
+        private static Mutex? _multiInstanceMutex1;
+        private static Mutex? _multiInstanceMutex2;
+
         private int _appPid = 0;
 
         public IBootstrapperDialog? Dialog = null;
@@ -264,6 +267,11 @@ namespace Bloxstrap
 
             if (!_noConnection)
             {
+                if (App.RemoteData.LoadedState == GenericTriState.Unknown) // we dont want it to flicker
+                    SetStatus(Strings.Bootstrapper_Status_WaitingForData);
+
+                await SetupPackageDictionaries(); // mods also require it
+
                 // we are checking if eurotrucks2 exists in client directory
                 if (
                     File.Exists(Path.Combine(AppData.Directory, App.RobloxAnselAppName))
@@ -315,7 +323,7 @@ namespace Bloxstrap
             else
                 WindowsRegistry.RegisterPlayer();
 
-                        WindowsRegistry.RegisterClientLocation(IsStudioLaunch, _latestVersionDirectory); // if it for some reason doesnt exist
+            WindowsRegistry.RegisterClientLocation(IsStudioLaunch, _latestVersionDirectory); // if it for some reason doesnt exist
 
             if (_launchMode != LaunchMode.Player)
                 await mutex.ReleaseAsync();
@@ -333,66 +341,109 @@ namespace Bloxstrap
 
                 StartRoblox();
 
-                try
+                if (_launchMode == LaunchMode.Player)
                 {
-                    if (App.Settings.Prop.SelectedRobloxIcon != RobloxIcon.Default)
+                    _ = Task.Run(async () => await HandlePostLaunchOperations());
+                }
+            }
+
+
+            await mutex.ReleaseAsync();
+
+            Dialog?.CloseBootstrapper();
+        }
+
+        private async Task HandlePostLaunchOperations()
+        {
+            const string LOG_IDENT = "Bootstrapper::PostLaunch";
+
+            try
+            {
+                if (App.Settings.Prop.SelectedRobloxIcon != RobloxIcon.Default)
+                {
+                    var robloxProcess = Process.GetProcessById(_appPid);
+
+                    if (!robloxProcess.HasExited)
                     {
-                        SetStatus("Changing TaskBar/TopBar Icon...");
-                        await Task.Delay(500);
-
-                        var robloxProcess = Process.GetProcessById(_appPid);
-
-                        if (!robloxProcess.HasExited)
-                        {
-                            await SetRobloxWindowIcon(robloxProcess, App.Settings.Prop.SelectedRobloxIcon);
-                        }
+                        await SetRobloxWindowIcon(robloxProcess, App.Settings.Prop.SelectedRobloxIcon);
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    App.Logger.WriteLine("Bootstrapper", $"Failed to set Roblox icon: {ex}");
+                    await Task.Delay(20000);
                 }
 
                 if (App.Settings.Prop.AutoCloseCrashHandler)
                 {
-                    SetStatus("Closing Roblox Crash Handler...");
-
-                    if (App.Settings.Prop.SelectedRobloxIcon != RobloxIcon.Default)
-                    {
-                        await Task.Delay(500);
-                    }
-                    else
-                    {
-                        await Task.Delay(7000);
-                    }
-
                     try
                     {
                         var crashHandlerProcesses = Process.GetProcessesByName("RobloxCrashHandler");
-                        
+
                         foreach (var proc in crashHandlerProcesses)
                         {
                             try
                             {
                                 proc.Kill();
-                                App.Logger.WriteLine("Bootstrapper::Run", $"Killed RobloxCrashHandler process (PID {proc.Id})");
+                                App.Logger.WriteLine(LOG_IDENT, $"Killed RobloxCrashHandler process (PID {proc.Id})");
                             }
                             catch (Exception ex)
                             {
-                                App.Logger.WriteLine("Bootstrapper::Run", $"Failed to kill RobloxCrashHandler process (PID {proc.Id}): {ex.Message}");
+                                App.Logger.WriteLine(LOG_IDENT, $"Failed to kill RobloxCrashHandler process (PID {proc.Id}): {ex.Message}");
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        App.Logger.WriteLine("Bootstrapper::Run", $"Error killing RobloxCrashHandler: {ex.Message}");
+                        App.Logger.WriteLine(LOG_IDENT, $"Error killing RobloxCrashHandler: {ex.Message}");
+                    }
+                }
+
+                if (App.Settings.Prop.SelectedProcessPriority != ProcessPriorityOption.Normal)
+                {
+                    try
+                    {
+                        ProcessPriorityClass priorityClass = App.Settings.Prop.SelectedProcessPriority switch
+                        {
+                            ProcessPriorityOption.Low => ProcessPriorityClass.Idle,
+                            ProcessPriorityOption.BelowNormal => ProcessPriorityClass.BelowNormal,
+                            ProcessPriorityOption.Normal => ProcessPriorityClass.Normal,
+                            ProcessPriorityOption.AboveNormal => ProcessPriorityClass.AboveNormal,
+                            ProcessPriorityOption.High => ProcessPriorityClass.High,
+                            ProcessPriorityOption.RealTime => ProcessPriorityClass.RealTime,
+                            _ => ProcessPriorityClass.Normal
+                        };
+
+                        var robloxProcesses = Process.GetProcessesByName("RobloxPlayerBeta");
+
+                        if (robloxProcesses.Length == 0)
+                        {
+                            App.Logger.WriteLine(LOG_IDENT, "Roblox process not found for priority setting");
+                            return;
+                        }
+
+                        foreach (var proc in robloxProcesses)
+                        {
+                            try
+                            {
+                                proc.PriorityClass = priorityClass;
+                                App.Logger.WriteLine(LOG_IDENT, $"Set priority to {priorityClass} for process {proc.Id}");
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Logger.WriteLine(LOG_IDENT, $"Failed to set priority for process {proc.Id}: {ex}");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, $"Process priority setting failed: {ex}");
                     }
                 }
             }
-
-            await mutex.ReleaseAsync();
-
-            Dialog?.CloseBootstrapper();
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Post-launch operations failed: {ex}");
+            }
         }
 
         /// <summary>
@@ -404,9 +455,10 @@ namespace Bloxstrap
             const string LOG_IDENT = "Bootstrapper::GetLatestVersionInfo";
 
             // before we do anything, we need to query our channel
-            using var key = Registry.CurrentUser.CreateSubKey(
-                $"SOFTWARE\\ROBLOX Corporation\\Environments\\{AppData.RegistryName}\\Channel"
-            );
+            // if it's set in the launch uri, we need to use it and set the registry key for it
+            // else, check if the registry key for it exists, and use it
+
+            using var key = Registry.CurrentUser.CreateSubKey($"SOFTWARE\\ROBLOX Corporation\\Environments\\{AppData.RegistryName}\\Channel");
 
             var match = Regex.Match(
                 App.LaunchSettings.RobloxLaunchArgs,
@@ -417,21 +469,35 @@ namespace Bloxstrap
             bool ChannelFlag = App.LaunchSettings.ChannelFlag.Active && !string.IsNullOrEmpty(App.LaunchSettings.ChannelFlag.Data);
 
             // CHANNEL CHANGE MODE
-            void EnrollChannel(string Channel = "production")
-            {
-                Deployment.Channel = Channel;
-                App.Settings.Prop.Channel = Channel;
-                App.Settings.Save();
-            }
 
-            void RevertChannel()
-            {
-                Deployment.Channel = Deployment.DefaultChannel;
-                App.Settings.Prop.Channel = Deployment.DefaultChannel;
-                App.Settings.Save();
-            }
+            void EnrollChannel(string Channel = "production") => Deployment.Channel = Channel;
+            void RevertChannel() => Deployment.Channel = Deployment.DefaultChannel;
 
             string EnrolledChannel = match.Groups.Count == 2 ? match.Groups[1].Value.ToLowerInvariant() : Deployment.DefaultChannel;
+            bool behindProductionCheck = App.Settings.Prop.ChannelChangeMode == ChannelChangeMode.Prompt;
+
+            // Private channels
+            if (App.Cookies.Loaded)
+            {
+                UserChannel? userChannel = await App.Cookies.GetUserChannel(Deployment.BinaryType);
+
+                if (
+                    userChannel?.Token is not null &&
+                    userChannel.AssignmentType != 1 // might need a change in the future
+                    )
+                {
+                    // prevent roblox from thinking its a different channel
+                    // we have to do it to prevent issues with channel fflags
+                    if (!string.IsNullOrEmpty(EnrolledChannel))
+                        _launchCommandLine = _launchCommandLine.Replace(
+                            $"channel:{EnrolledChannel}",
+                            $"channel:{userChannel.Channel}",
+                            StringComparison.OrdinalIgnoreCase);
+
+                    Deployment.ChannelToken = userChannel.Token;
+                    EnrolledChannel = userChannel.Channel;
+                }
+            }
 
             if (!ChannelFlag)
             {
@@ -439,24 +505,30 @@ namespace Bloxstrap
                 {
                     case ChannelChangeMode.Automatic:
                         App.Logger.WriteLine(LOG_IDENT, "Enrolling into channel");
+
                         EnrollChannel(EnrolledChannel);
                         break;
                     case ChannelChangeMode.Prompt:
                         App.Logger.WriteLine(LOG_IDENT, "Prompting channel enrollment");
 
-                        if (!match.Success || match.Groups.Count != 2 || match.Groups[1].Value.ToLowerInvariant() == Deployment.Channel)
+                        if
+                        (
+                        !match.Success ||
+                        match.Groups.Count != 2 ||
+                        match.Groups[1].Value.ToLowerInvariant() == Deployment.Channel
+                        )
                         {
                             App.Logger.WriteLine(LOG_IDENT, "Channel is either equal or incorrectly formatted");
                             break;
                         }
 
-                        string DisplayChannel = !string.IsNullOrEmpty(match.Groups[1].Value) ? match.Groups[1].Value : Deployment.DefaultChannel;
+                        string DisplayChannel = !String.IsNullOrEmpty(match.Groups[1].Value) ? match.Groups[1].Value : Deployment.DefaultChannel;
 
                         var Result = Frontend.ShowMessageBox(
-                            String.Format(Strings.Bootstrapper_Bootstrapper_Dialog_PromptChannelChange,
-                            DisplayChannel, App.Settings.Prop.Channel),
-                            MessageBoxImage.Question,
-                            MessageBoxButton.YesNo
+                        String.Format(Strings.Bootstrapper_Bootstrapper_Dialog_PromptChannelChange,
+                        DisplayChannel, App.Settings.Prop.Channel),
+                        MessageBoxImage.Question,
+                        MessageBoxButton.YesNo
                         );
 
                         if (Result == MessageBoxResult.Yes)
@@ -470,7 +542,8 @@ namespace Bloxstrap
             else
             {
                 string ChannelFlagData = App.LaunchSettings.ChannelFlag.Data!;
-                if (!string.IsNullOrEmpty(ChannelFlagData))
+
+                if (!String.IsNullOrEmpty(ChannelFlagData))
                 {
                     App.Logger.WriteLine(LOG_IDENT, $"Forcing channel {ChannelFlagData}");
                     EnrollChannel(ChannelFlagData);
@@ -483,29 +556,32 @@ namespace Bloxstrap
 
                 try
                 {
-                    clientVersion = await Deployment.GetInfo(Deployment.Channel);
-                }
-                catch (InvalidChannelException ex) when (ex.StatusCode == HttpStatusCode.Forbidden)
-                {
-                    App.Logger.WriteLine(LOG_IDENT, $"403 Forbidden fetching channel {Deployment.Channel}, falling back to production");
-                    Deployment.Channel = "production";
-                    clientVersion = await Deployment.GetInfo(Deployment.Channel);
+                    clientVersion = await Deployment.GetInfo(Deployment.Channel, behindProductionCheck);
                 }
                 catch (InvalidChannelException ex)
                 {
+                    // copied from v2.5.4
+                    // we are keeping similar logic just updated for newer apis
+
+                    // If channel does not exist
                     if (ex.StatusCode == HttpStatusCode.NotFound)
                     {
                         App.Logger.WriteLine(LOG_IDENT, $"Reverting enrolled channel to {Deployment.DefaultChannel} because a WindowsPlayer build does not exist for {App.Settings.Prop.Channel}");
                     }
+                    // If channel is not available to the user (private/internal release channel)
                     else if (ex.StatusCode == HttpStatusCode.Unauthorized)
                     {
                         App.Logger.WriteLine(LOG_IDENT, $"Reverting enrolled channel to {Deployment.DefaultChannel} because {App.Settings.Prop.Channel} is restricted for public use.");
+
+                        // Only prompt if user has channel switching mode set to something other than Automatic.
                         if (App.Settings.Prop.ChannelChangeMode != ChannelChangeMode.Automatic)
                         {
                             Frontend.ShowMessageBox(
-                                String.Format(Strings.Boostrapper_Dialog_UnauthorizedChannel,
-                                Deployment.Channel,
-                                Deployment.DefaultChannel),
+                                String.Format(
+                                    Strings.Boostrapper_Dialog_UnauthorizedChannel,
+                                    Deployment.Channel,
+                                    Deployment.DefaultChannel
+                                ),
                                 MessageBoxImage.Information
                             );
                         }
@@ -516,37 +592,25 @@ namespace Bloxstrap
                     }
 
                     RevertChannel();
-                    clientVersion = await Deployment.GetInfo(Deployment.Channel);
+                    clientVersion = await Deployment.GetInfo(Deployment.DefaultChannel, behindProductionCheck);
                 }
 
-                if (clientVersion.IsBehindDefaultChannel)
+                if (clientVersion.IsBehindDefaultChannel && App.Settings.Prop.ChannelChangeMode == ChannelChangeMode.Prompt)
                 {
-                    MessageBoxResult action = App.Settings.Prop.ChannelChangeMode switch
-                    {
-                        ChannelChangeMode.Prompt => Frontend.ShowMessageBox(
+                    MessageBoxResult action = Frontend.ShowMessageBox(
                             String.Format(Strings.Bootstrapper_Dialog_ChannelOutOfDate, Deployment.Channel, Deployment.DefaultChannel),
                             MessageBoxImage.Warning,
                             MessageBoxButton.YesNo
-                        ),
-                        ChannelChangeMode.Automatic => MessageBoxResult.Yes,
-                        ChannelChangeMode.Ignore => MessageBoxResult.No,
-                        _ => MessageBoxResult.None
-                    };
+                        );
 
                     if (action == MessageBoxResult.Yes)
                     {
                         App.Logger.WriteLine("Bootstrapper::CheckLatestVersion", $"Changed Roblox channel from {App.Settings.Prop.Channel} to {Deployment.DefaultChannel}");
+
                         RevertChannel();
-                        clientVersion = await Deployment.GetInfo(Deployment.Channel);
+                        clientVersion = await Deployment.GetInfo(Deployment.DefaultChannel);
                     }
-
-                    RevertChannel();
-                    clientVersion = await Deployment.GetInfo(); // optional, keep as before
                 }
-
-                // Always write "production" if channel was live
-                if (Deployment.Channel == "live")
-                    Deployment.Channel = "production";
 
                 key.SetValueSafe("www.roblox.com", Deployment.IsDefaultChannel ? "" : Deployment.Channel);
 
@@ -557,6 +621,7 @@ namespace Bloxstrap
             {
                 App.Logger.WriteLine(LOG_IDENT, $"Version set to {App.LaunchSettings.VersionFlag.Data} from arguments");
                 _latestVersionGuid = App.LaunchSettings.VersionFlag.Data;
+                // we can't determine the version
             }
 
             _latestVersionDirectory = Path.Combine(Paths.Versions, _latestVersionGuid);
@@ -566,6 +631,7 @@ namespace Bloxstrap
 
             _versionPackageManifest = new(pkgManifestData);
 
+            // this can happen if version is set through arguments
             if (_launchMode == LaunchMode.Unknown)
             {
                 App.Logger.WriteLine(LOG_IDENT, "Identifying launch mode from package manifest");
@@ -574,7 +640,7 @@ namespace Bloxstrap
                 App.Logger.WriteLine(LOG_IDENT, $"isPlayer: {isPlayer}");
 
                 _launchMode = isPlayer ? LaunchMode.Player : LaunchMode.Studio;
-                SetupAppData();
+                SetupAppData(); // we need to set it up again
             }
         }
 
@@ -651,76 +717,141 @@ namespace Bloxstrap
             }
         }
 
+        private static void LaunchMultiInstanceWatcher()
+        {
+            const string LOG_IDENT = "Bootstrapper::LaunchMultiInstanceWatcher";
+
+            try
+            {
+                if (Utilities.DoesMutexExist("ROBLOX_singletonMutex"))
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "Mutex ROBLOX_singletonMutex already exists, skipping creation");
+                }
+                else
+                {
+                    _multiInstanceMutex1 = new Mutex(true, "ROBLOX_singletonMutex");
+                    App.Logger.WriteLine(LOG_IDENT, "Created multi-instance mutex: ROBLOX_singletonMutex");
+                }
+
+                if (Utilities.DoesMutexExist("ROBLOX_singletonEvent"))
+                {
+                    App.Logger.WriteLine(LOG_IDENT, "Mutex ROBLOX_singletonEvent already exists, skipping creation");
+                }
+                else
+                {                    
+                    _multiInstanceMutex2 = new Mutex(true, "ROBLOX_singletonEvent");
+                    App.Logger.WriteLine(LOG_IDENT, "Created multi-instance mutex: ROBLOX_singletonEvent");
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Failed to apply multi-instance setup: {ex.Message}");
+            }
+
+            if (App.Settings.Prop.Error773Fix)
+            {
+                try
+                {
+                    string cookiesPath = Path.Combine(Paths.Roblox, "LocalStorage", "RobloxCookies.dat");
+
+                    if (File.Exists(cookiesPath))
+                    {
+                        FileAttributes attributes = File.GetAttributes(cookiesPath);
+                        if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                        {
+                            attributes &= ~FileAttributes.ReadOnly;
+                            File.SetAttributes(cookiesPath, attributes);
+                        }
+
+                        File.SetAttributes(cookiesPath, FileAttributes.ReadOnly);
+
+                        App.Logger.WriteLine(LOG_IDENT, "Applied Error 773 fix");
+                    }
+                    else
+                    {
+                        App.Logger.WriteLine(LOG_IDENT, "773 fix not needed");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Failed to apply 773 fix: {ex.Message}");
+                }
+            }
+
+            using EventWaitHandle initEventHandle = new EventWaitHandle(false, EventResetMode.AutoReset, "Bloxstrap-MultiInstanceWatcherInitialisationFinished");
+            Process.Start(Paths.Process, "-multiinstancewatcher");
+
+            bool initSuccess = initEventHandle.WaitOne(TimeSpan.FromSeconds(2));
+            if (initSuccess)
+                App.Logger.WriteLine(LOG_IDENT, "Initialisation finished signalled, continuing.");
+            else
+                App.Logger.WriteLine(LOG_IDENT, "Did not receive the initialisation finished signal, continuing.");
+        }
+
+        // Cleanup starts in launch handler not here
+        public void CleanupMultiInstanceResources()
+        {
+            const string LOG_IDENT = "Bootstrapper::CleanupMultiInstanceResources";
+
+            try
+            {
+                if (_multiInstanceMutex1 != null)
+                {
+                    _multiInstanceMutex1.Dispose();
+                    _multiInstanceMutex1 = null;
+                    App.Logger.WriteLine(LOG_IDENT, "Disposed ROBLOX_singletonMutex");
+                }
+
+                if (_multiInstanceMutex2 != null)
+                {
+                    _multiInstanceMutex2.Dispose();
+                    _multiInstanceMutex2 = null;
+                    App.Logger.WriteLine(LOG_IDENT, "Disposed ROBLOX_singletonEvent");
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine(LOG_IDENT, $"Error disposing mutexes: {ex.Message}");
+            }
+
+            if (App.Settings.Prop.Error773Fix)
+            {
+                try
+                {
+                    string cookiesPath = Path.Combine(Paths.Roblox, "LocalStorage", "RobloxCookies.dat");
+
+                    if (File.Exists(cookiesPath))
+                    {
+                        FileAttributes attributes = File.GetAttributes(cookiesPath);
+                        if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                        {
+                            attributes &= ~FileAttributes.ReadOnly;
+                            File.SetAttributes(cookiesPath, attributes);
+                            App.Logger.WriteLine(LOG_IDENT, "Removed read-only attribute from RobloxCookies.dat");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Failed to remove read-only attribute: {ex.Message}");
+                }
+            }
+        }
+
         private const int WM_SETICON = 0x80;
-        private const int WM_GETICON = 0x7F;
         private const int ICON_SMALL = 0;
         private const int ICON_BIG = 1;
-        private const int GCL_HICON = -14;
 
-        private const uint RDW_FRAME = 0x0400;
-        private const uint RDW_INVALIDATE = 0x0001;
-        private const uint RDW_UPDATENOW = 0x0100;
-
-        [DllImport("user32.dll", SetLastError = true)]
+        [DllImport("user32.dll")]
         private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll", SetLastError = true, EntryPoint = "SetClassLongPtr")]
-        private static extern IntPtr SetClassLongPtr32(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-
-        [DllImport("user32.dll", SetLastError = true, EntryPoint = "SetClassLongPtrW")]
-        private static extern IntPtr SetClassLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-
-        [DllImport("user32.dll")]
-        private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        private static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, uint flags);
-
-        [DllImport("user32.dll")]
-        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
         [DllImport("user32.dll")]
         private static extern bool IsWindowVisible(IntPtr hWnd);
-
-        private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
-
-        private IntPtr SetClassIcon(IntPtr hwnd, Icon icon)
-        {
-            IntPtr hIcon = icon.Handle;
-            return IntPtr.Size == 8
-                ? SetClassLongPtr64(hwnd, GCL_HICON, hIcon)
-                : SetClassLongPtr32(hwnd, GCL_HICON, hIcon);
-        }
-
-        private bool IconAlreadySet(IntPtr hwnd, IntPtr hIcon)
-        {
-            var currentSmall = SendMessage(hwnd, WM_GETICON, (IntPtr)ICON_SMALL, IntPtr.Zero);
-            var currentBig = SendMessage(hwnd, WM_GETICON, (IntPtr)ICON_BIG, IntPtr.Zero);
-            return currentSmall == hIcon || currentBig == hIcon;
-        }
 
         private void ApplyIcon(IntPtr hwnd, Icon icon)
         {
             SendMessage(hwnd, WM_SETICON, (IntPtr)ICON_SMALL, icon.Handle);
             SendMessage(hwnd, WM_SETICON, (IntPtr)ICON_BIG, icon.Handle);
-            SetClassIcon(hwnd, icon);
-            RedrawWindow(hwnd, IntPtr.Zero, IntPtr.Zero, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW);
-        }
-
-        private IntPtr GetMainWindowHandle(int processId)
-        {
-            IntPtr mainWindowHandle = IntPtr.Zero;
-            EnumWindows((hWnd, lParam) =>
-            {
-                GetWindowThreadProcessId(hWnd, out uint pid);
-                if (pid == processId && IsWindowVisible(hWnd))
-                {
-                    mainWindowHandle = hWnd;
-                    return false; // Stop enumeration
-                }
-                return true;
-            }, IntPtr.Zero);
-            return mainWindowHandle;
         }
 
         private Icon? LoadIcon(RobloxIcon icon)
@@ -735,64 +866,41 @@ namespace Bloxstrap
             return stream != null ? new Icon(stream) : null;
         }
 
-        private Task SetRobloxWindowIcon(Process process, RobloxIcon icon)
+        private async Task SetRobloxWindowIcon(Process process, RobloxIcon icon)
         {
             const string LOG_IDENT = "Bootstrapper::SetRobloxWindowIcon";
 
             if (icon == RobloxIcon.Default)
-                return Task.CompletedTask;
+                return;
 
-            if (!process.WaitForInputIdle(3000))
-                App.Logger.WriteLine(LOG_IDENT, "WaitForInputIdle timed out, window might not be ready.");
-
-            var iconHandle = LoadIcon(icon);
+            using var iconHandle = LoadIcon(icon);
             if (iconHandle == null)
             {
                 App.Logger.WriteLine(LOG_IDENT, $"Icon resource '{icon}' not found.");
-                return Task.CompletedTask;
+                return;
             }
 
-            return Task.Run(async () =>
+            var startTime = DateTime.Now;
+
+            while ((DateTime.Now - startTime).TotalSeconds < 20 && !process.HasExited)
             {
-                IntPtr hwnd = IntPtr.Zero;
-                bool appliedOnce = false;
-
-                for (int attempt = 0; attempt < 400 && !process.HasExited; attempt++)
+                try
                 {
-                    try
-                    {
-                        hwnd = process.MainWindowHandle;
-                        if (hwnd == IntPtr.Zero || !IsWindowVisible(hwnd))
-                            hwnd = GetMainWindowHandle(process.Id);
+                    var hwnd = process.MainWindowHandle;
+                    if (hwnd == IntPtr.Zero || !IsWindowVisible(hwnd))
+                        continue;
 
-                        if (hwnd != IntPtr.Zero && IsWindowVisible(hwnd))
-                        {
-                            if (!IconAlreadySet(hwnd, iconHandle.Handle))
-                            {
-                                ApplyIcon(hwnd, iconHandle);
-
-                                if (!appliedOnce)
-                                {
-                                    appliedOnce = true;
-                                    App.Logger.WriteLine(LOG_IDENT, $"Custom icon '{icon}' applied.");
-                                }
-                                else
-                                {
-                                    App.Logger.WriteLine(LOG_IDENT, $"Icon reapplied after Roblox reset it.");
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, $"Failed to set icon: {ex}");
-                    }
-
-                    await Task.Delay(25); // aggressive retry loop
+                    ApplyIcon(hwnd, iconHandle);
+                }
+                catch (Exception ex)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"Failed to set icon: {ex}");
                 }
 
-                iconHandle.Dispose();
-            });
+                await Task.Delay(25);
+            }
+
+            App.Logger.WriteLine(LOG_IDENT, "Icon setting period completed.");
         }
 
         private async void StartRoblox()
@@ -800,6 +908,12 @@ namespace Bloxstrap
             const string LOG_IDENT = "Bootstrapper::StartRoblox";
 
             SetStatus(Strings.Bootstrapper_Status_Starting);
+
+            if (_launchMode == LaunchMode.Player)
+            {
+                if (App.Settings.Prop.MultiInstanceLaunching)
+                    LaunchMultiInstanceWatcher();
+            }
 
             string[] Names = { App.RobloxPlayerAppName, App.RobloxAnselAppName, App.RobloxStudioAppName };
             string ResolvedName = null!;
@@ -865,62 +979,6 @@ namespace Bloxstrap
             try
             {
                 using var process = Process.Start(startInfo)!;
-
-                if (_launchMode == LaunchMode.Player)
-                {
-                    try
-                    {
-                        var selectedPriority = App.Settings.Prop.SelectedProcessPriority;
-
-                        if (selectedPriority != ProcessPriorityOption.Normal)
-                        {
-                            ProcessPriorityClass priorityClass = selectedPriority switch
-                            {
-                                ProcessPriorityOption.Low => ProcessPriorityClass.Idle,
-                                ProcessPriorityOption.BelowNormal => ProcessPriorityClass.BelowNormal,
-                                ProcessPriorityOption.Normal => ProcessPriorityClass.Normal,
-                                ProcessPriorityOption.AboveNormal => ProcessPriorityClass.AboveNormal,
-                                ProcessPriorityOption.High => ProcessPriorityClass.High,
-                                ProcessPriorityOption.RealTime => ProcessPriorityClass.RealTime,
-                                _ => ProcessPriorityClass.Normal
-                            };
-
-                            var robloxProcesses = Process.GetProcessesByName("RobloxPlayerBeta");
-
-                            if (robloxProcesses.Length == 0)
-                            {
-                                Frontend.ShowMessageBox(
-                                    "Roblox process not found. Priority not applied.",
-                                    MessageBoxImage.Warning,
-                                    MessageBoxButton.OK
-                                );
-                            }
-                            else
-                            {
-                                foreach (var proc in robloxProcesses)
-                                {
-                                    try
-                                    {
-                                        proc.PriorityClass = priorityClass;
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        App.Logger.WriteLine(LOG_IDENT, $"Failed to set priority for process {proc.Id}: {ex}");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        App.Logger.WriteLine(LOG_IDENT, $"Failed to set process priority: {ex}");
-                        Frontend.ShowMessageBox(
-                            $"Failed to set CPU Priority:\n{ex.Message}",
-                            MessageBoxImage.Error,
-                            MessageBoxButton.OK
-                        );
-                    }
-                }
 
                 // Continue with the rest of your code like _appPid assignment, icon setting, etc.
                 _appPid = process.Id;
@@ -1179,11 +1237,15 @@ namespace Bloxstrap
                 var process = Process.Start(startInfo);
                 if (process == null)
                 {
-                        Frontend.ShowMessageBox(
-                            string.Format(Strings.Bootstrapper_AutoUpdateFailed, version),
-                            MessageBoxImage.Information);
+                    var result = Frontend.ShowMessageBox(
+                        string.Format(Strings.Bootstrapper_AutoUpdateFailed, version),
+                    MessageBoxImage.Information,
+                    MessageBoxButton.YesNo);
 
-                    Utilities.ShellExecute(App.ProjectDownloadLink);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        Utilities.ShellExecute(App.ProjectDownloadLink);
+                    }
                     return false;
                 }
 
@@ -1194,11 +1256,15 @@ namespace Bloxstrap
                 App.Logger.WriteLine(LOG_IDENT, "An exception occurred when running the auto-updater");
                 App.Logger.WriteException(LOG_IDENT, ex);
 
-                    Frontend.ShowMessageBox(
-                        string.Format(Strings.Bootstrapper_AutoUpdateFailed, version),
-                        MessageBoxImage.Information);
+                var result = Frontend.ShowMessageBox(
+                    string.Format(Strings.Bootstrapper_AutoUpdateFailed, version),
+                    MessageBoxImage.Information,
+                    MessageBoxButton.YesNo);
 
-                Utilities.ShellExecute(App.ProjectDownloadLink);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Utilities.ShellExecute(App.ProjectDownloadLink);
+                }
             }
 
             return false;
@@ -1332,11 +1398,6 @@ namespace Bloxstrap
             {
                 return;
             }
-
-            if (App.RemoteData.LoadedState == GenericTriState.Unknown) // we dont want it to flicker
-                SetStatus(Strings.Bootstrapper_Status_WaitingForData);
-
-            await SetupPackageDictionaries();
 
             if (String.IsNullOrEmpty(AppData.State.VersionGuid))
                 SetStatus(Strings.Bootstrapper_Status_Installing);
@@ -1622,7 +1683,7 @@ namespace Bloxstrap
 
                     App.Logger.WriteLine(LOG_IDENT, $"Setting font for {jsonFilename}");
 
-                    var fontFamilyData = JsonSerializer.Deserialize<Bloxstrap.Models.FontFamily>(File.ReadAllText(jsonFilePath));
+                    var fontFamilyData = JsonSerializer.Deserialize<Models.FontFamily>(File.ReadAllText(jsonFilePath));
 
                     if (fontFamilyData is null)
                         continue;
@@ -1709,23 +1770,19 @@ namespace Bloxstrap
                 if (modFolderFiles.Contains(fileLocation))
                     continue;
 
-                if (PackageDirectoryMap == null || PackageDirectoryMap.Count == 0)
-                {
-                    App.Logger.WriteLine(LOG_IDENT, "PackageDirectoryMap is null or empty, skipping package restoration check");
-                    continue;
-                }
-
-                var packageMapEntry = PackageDirectoryMap
-                    .SingleOrDefault(x => !String.IsNullOrEmpty(x.Value) && fileLocation.StartsWith(x.Value));
-
+                var packageMapEntry = PackageDirectoryMap.SingleOrDefault(x => !String.IsNullOrEmpty(x.Value) && fileLocation.StartsWith(x.Value));
                 string packageName = packageMapEntry.Key;
 
+                // package doesn't exist, likely mistakenly placed file
                 if (String.IsNullOrEmpty(packageName))
                 {
                     App.Logger.WriteLine(LOG_IDENT, $"{fileLocation} was removed as a mod but does not belong to a package");
+
                     string versionFileLocation = Path.Combine(_latestVersionDirectory, fileLocation);
+
                     if (File.Exists(versionFileLocation))
                         File.Delete(versionFileLocation);
+
                     continue;
                 }
 

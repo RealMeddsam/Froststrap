@@ -1,19 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Bloxstrap.UI.ViewModels.Settings;
+using Bloxstrap.UI.Elements.Dialogs;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Bloxstrap.UI.ViewModels.Settings;
 
 namespace Bloxstrap.UI.Elements.Settings.Pages
 {
@@ -26,7 +13,48 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
         {
             DataContext = new BehaviourViewModel();
             InitializeComponent();
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Bootstrapper");
+            App.FrostRPC?.SetPage("Bootstrapper");
+        }
+
+        private void RemoveSelectedProcessExclusion_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is BehaviourViewModel viewModel && viewModel.IsProcessSelected)
+            {
+                viewModel.RemoveProcessExclusion(viewModel.SelectedProcess);
+            }
+        }
+
+        private void AddProcessExclusion_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is BehaviourViewModel viewModel)
+            {
+                string processName = ProcessNameTextBox.Text;
+                if (!string.IsNullOrWhiteSpace(processName))
+                {
+                    viewModel.AddProcessExclusion(processName);
+                }
+            }
+        }
+
+        private void SaveProcessEdit_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is BehaviourViewModel viewModel && viewModel.IsProcessSelected)
+            {
+                string newName = viewModel.EditProcessName;
+                if (!string.IsNullOrWhiteSpace(newName))
+                {
+                    viewModel.UpdateProcessExclusion(viewModel.SelectedProcess, newName);
+                }
+            }
+        }
+
+        private void OpenMultiblox_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new MultibloxDialog
+            {
+                Owner = Window.GetWindow(this)
+            };
+            window.ShowDialog();
         }
     }
 }

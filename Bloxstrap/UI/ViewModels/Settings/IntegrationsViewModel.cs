@@ -1,9 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows.Input;
-
-using Microsoft.Win32;
-
+﻿using Bloxstrap.Integrations;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Input;
 
 namespace Bloxstrap.UI.ViewModels.Settings
 {
@@ -14,6 +14,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public ICommand DeleteIntegrationCommand => new RelayCommand(DeleteIntegration);
 
         public ICommand BrowseIntegrationLocationCommand => new RelayCommand(BrowseIntegrationLocation);
+
+        public ICommand OpenGameHistoryCommand => new RelayCommand(OpenGameHistory);
 
         private void AddIntegration()
         {
@@ -73,6 +75,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 {
                     ShowServerDetailsEnabled = false;
                     ShowGameHistoryEnabled = false;
+                    AutoRejoinEnabled = false;
                     PlaytimeCounterEnabled = false;
                     DisableAppPatchEnabled = false;
                     DiscordActivityEnabled = false;
@@ -80,6 +83,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
                     OnPropertyChanged(nameof(ShowServerDetailsEnabled));
                     OnPropertyChanged(nameof(ShowGameHistoryEnabled));
+                    OnPropertyChanged(nameof(AutoRejoinEnabled));
                     OnPropertyChanged(nameof(PlaytimeCounterEnabled));
                     OnPropertyChanged(nameof(DisableAppPatchEnabled));
                     OnPropertyChanged(nameof(DiscordActivityEnabled));
@@ -108,10 +112,44 @@ namespace Bloxstrap.UI.ViewModels.Settings
             set => App.Settings.Prop.PlaytimeCounter = value;
         }
 
+        public bool AutoRejoinEnabled
+        {
+            get => App.Settings.Prop.AutoRejoinEnabled;
+            set => App.Settings.Prop.AutoRejoinEnabled = value;
+        }
+
         public bool ShowGameHistoryEnabled
         {
             get => App.Settings.Prop.ShowGameHistoryMenu;
-            set => App.Settings.Prop.ShowGameHistoryMenu = value;
+            set 
+            {
+                App.Settings.Prop.ShowGameHistoryMenu = value;
+                OnPropertyChanged(nameof(ShowGameHistoryEnabled));
+            }
+        }
+
+        private void OpenGameHistory()
+        {
+            try
+            {
+                var activityWatcher = new ActivityWatcher();
+
+                var serverHistoryWindow = new Bloxstrap.UI.Elements.ContextMenu.ServerHistory(activityWatcher);
+                serverHistoryWindow.Show();
+
+                App.FrostRPC?.SetDialog("Game History");
+
+                serverHistoryWindow.Closed += (s, e) =>
+                {
+                    activityWatcher?.Dispose();
+                    App.FrostRPC?.ClearDialog();
+                };
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors
+                MessageBox.Show($"Failed to open Game History: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public ObservableCollection<TrayDoubleClickAction> TrayDoubleClickActions { get; } =
@@ -152,7 +190,24 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public bool ShowUsingFroststrapRPC
         {
             get => App.Settings.Prop.ShowUsingFroststrapRPC;
-            set => App.Settings.Prop.ShowUsingFroststrapRPC = value;
+            set
+            {
+                App.Settings.Prop.ShowUsingFroststrapRPC = value;
+
+                if (value)
+                {
+                    if (App.FrostRPC == null)
+                    {
+                        App.FrostRPC = new FroststrapRichPresence();
+                        App.FrostRPC.SetPage("Integration");
+                    }
+                }
+                else
+                {
+                    App.FrostRPC?.Dispose();
+                    App.FrostRPC = null;
+                }
+            }
         }
 
         public bool DiscordActivityJoinEnabled

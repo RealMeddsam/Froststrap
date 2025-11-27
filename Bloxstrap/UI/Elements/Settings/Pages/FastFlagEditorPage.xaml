@@ -84,7 +84,7 @@
                 Margin="0,0,8,12"
                 VerticalAlignment="Top"
                 Icon="Broom28"
-                Content="Clean FastFlag List"
+                Content="{x:Static resources:Strings.Menu_FastFlagEditor_CleanList}"
                 Click="CleanListButton_Click"/>
             <ToggleButton
                 x:Name="TogglePresetsButton"
@@ -106,9 +106,9 @@
                     <TextBlock.RenderTransform>
                         <TranslateTransform x:Name="SuggestionTranslateTransform" X="10" />
                     </TextBlock.RenderTransform>
-            <Run Text="Looking For" />
-            <Run x:Name="SuggestionKeywordRun" Text="" FontWeight="Bold" />
-            <Run Text="?" />
+                        <Run Text="{x:Static resources:Strings.Common_LookingFor}" />
+                        <Run x:Name="SuggestionKeywordRun" Text="" FontWeight="Bold" />
+                        <Run Text="?" />
                 </TextBlock>
             </Grid>
         </Grid>
@@ -199,7 +199,7 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <TextBlock Text="Wow this is so empty, how about adding a fastflag ?"
+            <TextBlock Text="{x:Static resources:Strings.Menu_FastFlagEditor_NoFlags}"
                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                FontWeight="Medium"
                FontSize="16"
@@ -223,8 +223,8 @@
 
         <Border x:Name="DragOverlay" Background="#80000000" Visibility="Collapsed" CornerRadius="4" Grid.RowSpan="5" BorderBrush="DodgerBlue" BorderThickness="3" Margin="0,0,0,-9" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="False">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="📂 Drop your JSON or TXT here" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
-                <TextBlock Text="Only .json and .txt files are supported" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="14" Margin="0,8,0,0" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <TextBlock Text="{x:Static resources:Strings.Menu_FastFlagEditor_DropJson_Title}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
+                <TextBlock Text="{x:Static resources:Strings.Menu_FastFlagEditor_DropJson_Description}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="14" Margin="0,8,0,0" HorizontalAlignment="Center" TextAlignment="Center"/>
             </StackPanel>
         </Border>
     </Grid>

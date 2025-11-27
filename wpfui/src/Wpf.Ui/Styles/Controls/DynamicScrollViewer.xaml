@@ -30,20 +30,18 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-
-                        <Border
+                        <ScrollContentPresenter 
                             Grid.Row="0"
-                            Grid.RowSpan="2"
                             Grid.Column="0"
-                            Grid.ColumnSpan="2"
-                            Padding="{TemplateBinding Padding}">
-                            <ScrollContentPresenter CanContentScroll="{TemplateBinding CanContentScroll}" />
-                        </Border>
+                            Margin="0"
+                            CanContentScroll="{TemplateBinding CanContentScroll}"
+                            ClipToBounds="True" />
 
                         <controls:DynamicScrollBar
                             x:Name="PART_VerticalScrollBar"
                             Grid.Row="0"
                             Grid.Column="1"
+                            Margin="0,0,-12,0"
                             IsScrolling="{TemplateBinding IsScrollingVertically}"
                             Maximum="{TemplateBinding ScrollableHeight}"
                             ViewportSize="{TemplateBinding ViewportHeight}"
@@ -54,6 +52,7 @@
                             x:Name="PART_HorizontalScrollBar"
                             Grid.Row="1"
                             Grid.Column="0"
+                            Margin="0,2,0,0"
                             IsScrolling="{TemplateBinding IsScrollingHorizontally}"
                             Maximum="{TemplateBinding ScrollableWidth}"
                             Orientation="Horizontal"

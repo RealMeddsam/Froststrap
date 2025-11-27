@@ -10,6 +10,8 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
             foreach (var entry in RobloxIconEx.Selections)
                 RobloxIcons.Add(new RobloxIconEntry { IconType = (RobloxIcon)entry });
+
+            App.Cookies.StateChanged += (object? _, CookieState state) => CookieLoadingFailed = state != CookieState.Success && state != CookieState.Unknown;
         }
 
         public ObservableCollection<ProcessPriorityOption> ProcessPriorityOptions { get; } =
@@ -31,7 +33,24 @@ namespace Bloxstrap.UI.ViewModels.Settings
         public bool MultiInstances
         {
             get => App.Settings.Prop.MultiInstanceLaunching;
-            set => App.Settings.Prop.MultiInstanceLaunching = value;
+            set
+            {
+                App.Settings.Prop.MultiInstanceLaunching = value;
+
+                if (!value)
+                {
+                    Error773Fix = false;
+                    OnPropertyChanged(nameof(Error773Fix));
+                }
+
+                OnPropertyChanged(nameof(MultiInstances));
+            }
+        }
+
+        public bool Error773Fix
+        {
+            get => App.Settings.Prop.Error773Fix;
+            set => App.Settings.Prop.Error773Fix = value;
         }
 
         public bool BackgroundUpdates
@@ -50,6 +69,141 @@ namespace Bloxstrap.UI.ViewModels.Settings
         {
             get => App.Settings.Prop.ConfirmLaunches;
             set => App.Settings.Prop.ConfirmLaunches = value;
+        }
+
+        private string _newProcessName = "";
+        public string NewProcessName
+        {
+            get => _newProcessName;
+            set
+            {
+                _newProcessName = value;
+                OnPropertyChanged(nameof(NewProcessName));
+            }
+        }
+
+        private string _selectedProcess = "";
+        public string SelectedProcess
+        {
+            get => _selectedProcess;
+            set
+            {
+                _selectedProcess = value;
+                EditProcessName = value;
+                OnPropertyChanged(nameof(SelectedProcess));
+                OnPropertyChanged(nameof(IsProcessSelected));
+            }
+        }
+
+        private string _editProcessName = "";
+        public string EditProcessName
+        {
+            get => _editProcessName;
+            set
+            {
+                _editProcessName = value;
+                OnPropertyChanged(nameof(EditProcessName));
+            }
+        }
+
+        public bool IsProcessSelected => !string.IsNullOrEmpty(SelectedProcess);
+
+        public IEnumerable<MemoryCleanerInterval> MemoryCleanerIntervals { get; } = Enum.GetValues(typeof(MemoryCleanerInterval)).Cast<MemoryCleanerInterval>();
+
+        public MemoryCleanerInterval MemoryCleanerInterval
+        {
+            get => App.Settings.Prop.MemoryCleanerInterval;
+            set
+            {
+                App.Settings.Prop.MemoryCleanerInterval = value;
+                OnPropertyChanged(nameof(MemoryCleanerInterval));
+                OnPropertyChanged(nameof(MemoryCleanerExclusionsExpanded));
+            }
+        }
+
+        public ObservableCollection<string> UserExcludedProcesses => App.Settings.Prop.UserExcludedProcesses;
+
+        public bool MemoryCleanerExclusionsExpanded => MemoryCleanerInterval != MemoryCleanerInterval.Never;
+
+        public void AddProcessExclusion(string processName)
+        {
+            if (string.IsNullOrWhiteSpace(processName))
+                return;
+
+            var cleanName = processName.Trim().ToLower();
+
+            if (!UserExcludedProcesses.Contains(cleanName, StringComparer.OrdinalIgnoreCase))
+            {
+                UserExcludedProcesses.Add(cleanName);
+                App.Settings.Save();
+                OnPropertyChanged(nameof(UserExcludedProcesses));
+                NewProcessName = "";
+            }
+        }
+
+        public void RemoveProcessExclusion(string processName)
+        {
+            var item = UserExcludedProcesses.FirstOrDefault(p => p.Equals(processName, StringComparison.OrdinalIgnoreCase));
+
+            if (item != null)
+            {
+                UserExcludedProcesses.Remove(item);
+                App.Settings.Save();
+                OnPropertyChanged(nameof(UserExcludedProcesses));
+                SelectedProcess = "";
+                EditProcessName = "";
+            }
+        }
+
+        public void UpdateProcessExclusion(string oldName, string newName)
+        {
+            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName))
+                return;
+
+            var cleanNewName = newName.Trim().ToLower();
+
+            if (UserExcludedProcesses.Any(p =>
+                p.Equals(cleanNewName, StringComparison.OrdinalIgnoreCase) && !p.Equals(oldName, StringComparison.OrdinalIgnoreCase)))
+            {
+                return;
+            }
+
+            var index = UserExcludedProcesses.IndexOf(oldName);
+
+            if (index >= 0)
+            {
+                UserExcludedProcesses[index] = cleanNewName;
+                App.Settings.Save();
+                OnPropertyChanged(nameof(UserExcludedProcesses));
+                SelectedProcess = cleanNewName;
+                EditProcessName = cleanNewName;
+            }
+        }
+
+        public bool CookieLoadingFinished => true;
+
+        public bool CookieAccess
+        {
+            get => App.Settings.Prop.AllowCookieAccess;
+            set
+            {
+                App.Settings.Prop.AllowCookieAccess = value;
+                if (value)
+                    Task.Run(App.Cookies.LoadCookies);
+
+                OnPropertyChanged(nameof(CookieAccess));
+            }
+        }
+
+        private bool _cookieLoadingFailed;
+        public bool CookieLoadingFailed
+        {
+            get => _cookieLoadingFailed;
+            set
+            {
+                _cookieLoadingFailed = value;
+                OnPropertyChanged(nameof(CookieLoadingFailed));
+            }
         }
 
         public IEnumerable<RobloxIcon> RobloxIcon { get; } = Enum.GetValues(typeof(RobloxIcon)).Cast<RobloxIcon>();

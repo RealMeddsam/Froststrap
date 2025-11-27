@@ -18,6 +18,8 @@ namespace Bloxstrap
 
         public readonly IntegrationWatcher? IntegrationWatcher;
 
+        public readonly MemoryCleaner? MemoryCleaner;
+
         public Watcher()
         {
             const string LOG_IDENT = "Watcher";
@@ -34,6 +36,9 @@ namespace Bloxstrap
             {
 #if DEBUG
                 string path = new RobloxPlayerData().ExecutablePath;
+                if (!File.Exists(path))
+                    throw new ApplicationException("Roblox player is not been installed");
+
                 using var gameClientProcess = Process.Start(path);
 
                 _watcherData = new() { ProcessId = gameClientProcess.Id };
@@ -48,6 +53,8 @@ namespace Bloxstrap
 
             if (_watcherData is null)
                 throw new Exception("Watcher data is invalid");
+
+            MemoryCleaner = new MemoryCleaner();
 
             if (App.Settings.Prop.EnableActivityTracking)
             {
@@ -125,8 +132,15 @@ namespace Bloxstrap
             App.Logger.WriteLine("Watcher::Dispose", "Disposing Watcher");
 
             IntegrationWatcher?.Dispose();
+            MemoryCleaner?.Dispose();
             _notifyIcon?.Dispose();
             RichPresence?.Dispose();
+
+            if (App.Settings.Prop.MultiInstanceLaunching)
+            {
+                App.Logger.WriteLine("Watcher::Dispose", "Performing multi-instance cleanup");
+                App.Bootstrapper?.CleanupMultiInstanceResources();
+            }
 
             GC.SuppressFinalize(this);
         }

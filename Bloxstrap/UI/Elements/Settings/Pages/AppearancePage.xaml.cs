@@ -14,7 +14,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
         {
             DataContext = new AppearanceViewModel(this);
             InitializeComponent();
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Appearance");
+            App.FrostRPC?.SetPage("Appearance");
 
             _mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
             ListBoxNavigationItems.ItemsSource = _mainWindow.NavigationItemsView;

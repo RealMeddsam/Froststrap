@@ -5,7 +5,16 @@ namespace Bloxstrap.UI.Utility
 {
     public static class WindowScaling
     {
-        public static double ScaleFactor => Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth;
+        public static double ScaleFactor
+        {
+            get
+            {
+                var screen = Screen.PrimaryScreen;
+                if (screen == null) return 1.0;
+                return screen.Bounds.Width / SystemParameters.PrimaryScreenWidth;
+            }
+        }
+
 
         public static int GetScaledNumber(int number)
         {

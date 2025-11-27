@@ -19,5 +19,16 @@
             
             return JsonSerializer.Deserialize<T>(json)!;
         }
+
+        public static async Task<T> SendJson<T>(HttpRequestMessage requestMessage)
+        {
+            var request = await App.HttpClient.SendAsync(requestMessage);
+
+            request.EnsureSuccessStatusCode();
+
+            string json = await request.Content.ReadAsStringAsync();
+
+            return JsonSerializer.Deserialize<T>(json)!;
+        }
     }
 }

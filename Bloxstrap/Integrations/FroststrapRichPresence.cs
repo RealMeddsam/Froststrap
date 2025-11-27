@@ -6,91 +6,162 @@ namespace Bloxstrap.Integrations
     {
         private readonly DiscordRpcClient _rpcClient;
         private readonly Timestamps _startTimestamps;
+        private readonly Stopwatch _uptimeStopwatch;
+        private bool _disposed = false;
+        private string _currentPage = "Idle";
+        private string? _currentDialog = null;
+        private string _lastState = "";
+
+        public bool IsConnected => _rpcClient?.IsInitialized == true;
 
         public FroststrapRichPresence()
         {
-            _rpcClient = new DiscordRpcClient("1399535282713399418");
+            _rpcClient = new DiscordRpcClient("1399535282713399418")
+            {
+                SkipIdenticalPresence = true
+            };
 
-            _rpcClient.OnReady += (_, e) =>
-                App.Logger.WriteLine("FroststrapRichPresence", $"Connected as {e.User.Username}");
+            _rpcClient.OnReady += OnReady;
 
-            _rpcClient.OnError += (_, e) =>
-                App.Logger.WriteLine("FroststrapRichPresence", $"RPC error: {e.Message}");
-
-            _rpcClient.Initialize();
+            Task.Run(InitializeAsync);
 
             _startTimestamps = new Timestamps
             {
                 Start = DateTime.UtcNow
             };
 
-            SetPresence();
+            _uptimeStopwatch = Stopwatch.StartNew();
         }
 
-        private void SetPresence()
+        private async Task InitializeAsync()
         {
-            UpdatePresence("Idle");
-        }
-
-        public void UpdatePresence(string context)
-        {
-            var presence = new DiscordRPC.RichPresence
+            try
             {
-                Details = "Customize Roblox to your liking!",
-                State = context,
-                Timestamps = _startTimestamps,
-                Assets = new Assets
-                {
-                    LargeImageKey = "Froststrap",
-                    LargeImageText = "Froststrap"
-                },
-                Buttons = new[]
-                {
-                    new Button { Label = "GitHub", Url = "https://github.com/RealMeddsam/Froststrap" },
-                    new Button { Label = "Discord", Url = "https://discord.gg/KdR9vpRcUN" }
-                }
-            };
+                if (!_rpcClient.Initialize())
+                    return;
 
-            _rpcClient.SetPresence(presence);
+                await Task.Delay(100);
+                SetPresence();
+            }
+            catch
+            {
+                // Silent fail
+            }
+        }
+
+        private void OnReady(object sender, DiscordRPC.Message.ReadyMessage args)
+        {
+            App.Logger.WriteLine("FroststrapRichPresence", $"Connected as {args.User.Username}");
+        }
+
+        public void SetPage(string pageName)
+        {
+            if (_disposed) return;
+
+            _currentPage = pageName;
+            _currentDialog = null;
+            UpdatePresence();
+        }
+
+        public void SetDialog(string dialogName)
+        {
+            if (_disposed) return;
+
+            _currentDialog = dialogName;
+            UpdatePresence();
+        }
+
+        public void ClearDialog()
+        {
+            if (_disposed) return;
+
+            _currentDialog = null;
+            UpdatePresence();
         }
 
         public void ResetPresence()
         {
-            UpdatePresence("Idle");
+            if (_disposed) return;
+
+            _currentPage = "Idle";
+            _currentDialog = null;
+            UpdatePresence();
+        }
+
+        private void SetPresence()
+        {
+            UpdatePresence();
+        }
+
+        private void UpdatePresence()
+        {
+            if (_disposed || !_rpcClient.IsInitialized)
+                return;
+
+            string state = !string.IsNullOrEmpty(_currentDialog)
+                ? $"Page: {_currentPage} | Dialog: {_currentDialog}"
+                : $"Page: {_currentPage}";
+
+            if (state == _lastState)
+                return;
+
+            _lastState = state;
+
+            try
+            {
+                var presence = new DiscordRPC.RichPresence
+                {
+                    Details = "Customize Roblox to your liking!",
+                    State = state,
+                    Timestamps = _startTimestamps,
+                    Assets = new Assets
+                    {
+                        LargeImageKey = "froststrap",
+                        LargeImageText = "Froststrap",
+                        SmallImageKey = "checkmark",
+                        SmallImageText = $"v{App.Version}"
+                    },
+                    Buttons = new[]
+                    {
+                        new Button { Label = "GitHub", Url = "https://github.com/RealMeddsam/Froststrap" },
+                        new Button { Label = "Discord", Url = "https://discord.gg/KdR9vpRcUN" }
+                    }
+                };
+
+                _rpcClient.SetPresence(presence);
+            }
+            catch
+            {
+                // Silent fail
+            }
         }
 
         public void Dispose()
         {
-            if (_rpcClient == null)
+            if (_disposed)
                 return;
 
-            App.Logger.WriteLine("FroststrapRichPresence::Dispose", "Clearing presence and disposing RPC client");
+            _disposed = true;
 
             try
             {
-                // Only attempt to clear if client is not already disposed
-                _rpcClient.ClearPresence();
-            }
-            catch (ObjectDisposedException)
-            {
-                // already disposed, ignore
-            }
-            catch (Exception ex)
-            {
-                App.Logger.WriteLine("FroststrapRichPresence::Dispose", $"Error clearing presence: {ex}");
-            }
+                _rpcClient.OnReady -= OnReady;
 
-            try
-            {
+                if (_rpcClient.IsInitialized)
+                {
+                    _rpcClient.ClearPresence();
+                }
+
                 _rpcClient.Dispose();
+                _uptimeStopwatch.Stop();
             }
             catch (ObjectDisposedException)
             {
-                // ignore double-dispose
+                // Already disposed
             }
-            catch (Exception ex)
+            catch
             {
-                App.Logger.WriteLine("FroststrapRichPresence::Dispose", $"Error disposing RPC client: {ex}");
+                // Silent fail
             }
 
             GC.SuppressFinalize(this);

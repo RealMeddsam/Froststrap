@@ -30,8 +30,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         private void PreviewBootstrapper()
         {
-            var app = (App.Current as App);
-            app?._froststrapRPC?.UpdatePresence("Dialog: Preview Launcher");
+            App.FrostRPC?.SetDialog("Preview Launcher");
 
             IBootstrapperDialog dialog = App.Settings.Prop.BootstrapperStyle.GetNew();
 
@@ -43,7 +42,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
             dialog.CancelEnabled = true;
             dialog.ShowBootstrapper();
 
-            app?._froststrapRPC?.UpdatePresence("Page: Appearance");
+            App.FrostRPC?.ClearDialog();
         }
 
 
@@ -138,6 +137,22 @@ namespace Bloxstrap.UI.ViewModels.Settings
             OnPropertyChanged(nameof(CustomIconLocation));
         }
 
+        public IEnumerable<UIBackgroundType> BackdropOptions => Enum.GetValues(typeof(UIBackgroundType)).Cast<UIBackgroundType>();
+
+        public UIBackgroundType SelectedBackdrop
+        {
+            get => App.Settings.Prop.SelectedBackdrop;
+            set
+            {
+                if (App.Settings.Prop.SelectedBackdrop != value)
+                {
+                    App.Settings.Prop.SelectedBackdrop = value;
+                    App.Settings.Save();
+                    OnPropertyChanged(nameof(SelectedBackdrop));
+                }
+            }
+        }
+
         private bool _hasInitializedCustomGradient = false;
 
         public AppearanceViewModel(Page page)
@@ -187,23 +202,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
         }
 
         public ObservableCollection<GradientStopData> GradientStops { get; } = new();
-
-        public IEnumerable<UIBackgroundType> BackdropOptions =>
-            Enum.GetValues(typeof(UIBackgroundType)).Cast<UIBackgroundType>();
-
-        public UIBackgroundType SelectedBackdrop
-        {
-            get => App.Settings.Prop.SelectedBackdrop;
-            set
-            {
-                if (App.Settings.Prop.SelectedBackdrop != value)
-                {
-                    App.Settings.Prop.SelectedBackdrop = value;
-                    App.Settings.Save();
-                    OnPropertyChanged(nameof(SelectedBackdrop));
-                }
-            }
-        }
 
         public IEnumerable<Theme> Themes { get; } = Enum.GetValues(typeof(Theme)).Cast<Theme>();
 
@@ -650,11 +648,11 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         private void AddCustomTheme()
         {
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Add Custom Launcher");
+            App.FrostRPC?.SetDialog("Add Custom Launcher");
             var dialog = new AddCustomThemeDialog();
             dialog.ShowDialog();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: Appearance");
+            App.FrostRPC?.ClearDialog();
 
             if (dialog.Created)
             {
@@ -762,12 +760,11 @@ namespace Bloxstrap.UI.ViewModels.Settings
             if (SelectedCustomTheme is null)
                 return;
 
-            var app = (App.Current as App);
-            app?._froststrapRPC?.UpdatePresence("Dialog: Edit Custom Theme");
+            App.FrostRPC?.SetDialog("Edit Custom Theme");
 
             new BootstrapperEditorWindow(SelectedCustomTheme).ShowDialog();
 
-            app?._froststrapRPC?.UpdatePresence("Page: Appearance");
+            App.FrostRPC?.ClearDialog();
         }
 
         private void ExportCustomTheme()

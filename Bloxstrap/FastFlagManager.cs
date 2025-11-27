@@ -57,7 +57,6 @@ namespace Bloxstrap
         public static IReadOnlyDictionary<RenderingMode, string> RenderingModes => new Dictionary<RenderingMode, string>
         {
             { RenderingMode.Default, "None" },
-            { RenderingMode.D3D11, "D3D11" },
             { RenderingMode.Vulkan, "Vulkan" },
             { RenderingMode.OpenGL, "OpenGL" },
 

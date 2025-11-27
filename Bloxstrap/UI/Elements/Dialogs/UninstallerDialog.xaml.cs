@@ -40,7 +40,7 @@ namespace Bloxstrap.UI.Elements.Dialogs
 
             InitializeComponent();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Uninstaller");
+            App.FrostRPC?.SetDialog("Uninstaller");
         }
     }
 }

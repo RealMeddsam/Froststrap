@@ -41,7 +41,7 @@
         <ui:TitleBar Grid.Row="0" Grid.ColumnSpan="2" Padding="8" Title="{x:Static resources:Strings.Dialog_AddFastFlag_Title}" ShowMinimize="False" ShowMaximize="False" CanMaximize="False" KeyboardNavigation.TabNavigation="None" />
 
         <TabControl x:Name="Tabs" Grid.Row="1" Margin="16">
-            <TabItem Header="{x:Static resources:Strings.Common_AddSingle}" FontWeight="Medium">
+            <TabItem Header="{x:Static resources:Strings.Common_AddSingle}" >
                 <Border Margin="16" Padding="16" Background="#0AFFFFFF" CornerRadius="12">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -87,7 +87,7 @@
                 </Border>
             </TabItem>
 
-            <TabItem Header="{x:Static resources:Strings.Common_ImportJson}" FontWeight="Medium">
+            <TabItem Header="{x:Static resources:Strings.Common_ImportJson}" >
                 <Border Margin="16" Padding="16" Background="#0AFFFFFF" CornerRadius="12">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -107,107 +107,7 @@
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <ui:Button Grid.Row="1" Margin="4,12,4,0" Icon="DocumentArrowUp16" Content="{x:Static resources:Strings.Common_ImportFromFile}" HorizontalAlignment="Stretch" Click="ImportButton_Click" FontWeight="Medium" />
-                    </Grid>
-                </Border>
-            </TabItem>
-            
-            <TabItem x:Name="AddWithIdTab" FontWeight="Medium" Header="{x:Static resources:Strings.Menu_FastFlagEditor_AdvancedSettings_SingleAddID}" Visibility="Collapsed">
-                <Border Margin="16" Padding="16" Background="#0AFFFFFF" CornerRadius="12">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,12" VerticalAlignment="Center">
-                            <TextBlock Text="{x:Static resources:Strings.Common_FilterType}" FontWeight="SemiBold" Width="120" VerticalAlignment="Center"/>
-                            <ComboBox x:Name="AddIdFilterTypeComboBox" Width="220" SelectedIndex="0">
-                                <ComboBoxItem Content="PlaceFilter"/>
-                                <ComboBoxItem Content="DataCenterFilter"/>
-                            </ComboBox>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12" VerticalAlignment="Center">
-                            <TextBlock Text="{x:Static resources:Strings.Common_Name}" FontWeight="SemiBold" Width="120" VerticalAlignment="Center"/>
-                            <TextBox x:Name="GameFlagNameTextBox" Width="220"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,12" VerticalAlignment="Center">
-                            <TextBlock Text="{x:Static resources:Strings.Common_Value}" FontWeight="SemiBold" Width="120" VerticalAlignment="Center"/>
-                            <ComboBox x:Name="GameFlagValueComboBox" Width="220" IsEditable="True" IsTextSearchEnabled="False" StaysOpenOnEdit="True" ItemsSource="{Binding CommonValuesView.View}" SelectedValuePath="Value" Loaded="GameFlagValueComboBox_Loaded" >
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" Margin="2">
-                                            <TextBlock Text="{Binding Value}" Width="160"/>
-                                            <TextBlock Text="{Binding Group}" Foreground="Gray" FontSize="10" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-
-                                <ComboBox.Resources>
-                                    <Style TargetType="{x:Type GroupItem}">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type GroupItem}">
-                                                    <StackPanel>
-                                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" Margin="4,6,0,2" Foreground="SlateGray" FontSize="12" />
-                                                        <ItemsPresenter/>
-                                                    </StackPanel>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </ComboBox.Resources>
-                            </ComboBox>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="ID:" FontWeight="SemiBold" Width="120" VerticalAlignment="Center"/>
-                            <TextBox x:Name="GameFlagIdTextBox" Width="220"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-            </TabItem>
-
-            <TabItem x:Name="ImportIdJsonTab" FontWeight="Medium" Header="{x:Static resources:Strings.Menu_FastFlagEditor_AdvancedSettings_ImportAddID}" Visibility="Collapsed">
-                <Border Margin="16" Padding="16" Background="#0AFFFFFF" CornerRadius="12">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" MinWidth="100" Text="{x:Static resources:Strings.Common_FilterType}" Margin="0,0,8,8" FontWeight="Medium" />
-                        <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ImportIdFilterTypeComboBox" Margin="0,0,0,8" SelectedIndex="0">
-                            <ComboBoxItem Content="PlaceFilter" />
-                            <ComboBoxItem Content="DataCenterFilter" />
-                        </ComboBox>
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" MinWidth="100" Text="ID:" Margin="3,10,5,0" FontWeight="Medium" />
-                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="ImportGameIdTextBox" Margin="0,0,0,8" />
-
-                        <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="GameIdJsonTextBox" Margin="5" AcceptsTab="True" AcceptsReturn="True" MinHeight="80" MaxHeight="480" />
-                        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsHitTestVisible="False" Margin="18,14,0,0" Foreground="DarkGray" Text="{}{&#10;    &quot;FFlagDebugDisplayFPS&quot;: &quot;True&quot;&#10;}" >
-                            <TextBlock.Style>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Text, ElementName=GameIdJsonTextBox}" Value="">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
+                        <ui:Button Grid.Row="1" Margin="4,12,4,0" Icon="DocumentArrowUp16" Content="{x:Static resources:Strings.Common_ImportFromFile}" HorizontalAlignment="Stretch" Click="ImportButton_Click"  />
                     </Grid>
                 </Border>
             </TabItem>
@@ -215,7 +115,7 @@
 
         <Border Grid.Row="2" Margin="0,10,0,0" Padding="15" Background="{DynamicResource PrimaryBackgroundColor}">
             <StackPanel Orientation="Horizontal" FlowDirection="LeftToRight" HorizontalAlignment="Right">
-                <Button MinWidth="100" Content="{x:Static resources:Strings.Common_OK}" Click="OKButton_Click" FontWeight="Medium">
+                <Button MinWidth="100" Content="{x:Static resources:Strings.Common_OK}" Click="OKButton_Click" >
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                             <Style.Triggers>
@@ -255,7 +155,7 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button MinWidth="100" Margin="12,0,0,0" Content="{x:Static resources:Strings.Common_Cancel}" IsCancel="True" FontWeight="Medium" />
+                <Button MinWidth="100" Margin="12,0,0,0" Content="{x:Static resources:Strings.Common_Cancel}" IsCancel="True"  />
             </StackPanel>
         </Border>
     </Grid>

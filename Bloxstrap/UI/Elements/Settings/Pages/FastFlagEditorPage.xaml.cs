@@ -186,7 +186,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             };
 
             SetDefaultStates();
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
+            App.FrostRPC?.SetPage("FastFlag Editor");
         }
 
         private void SetDefaultStates()
@@ -257,12 +257,12 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
         private void ShowAddDialog()
         {
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Add FastFlag");
+            App.FrostRPC?.SetDialog("Add FastFlag");
 
             var dialog = new AddFastFlagDialog();
             dialog.ShowDialog();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
+            App.FrostRPC?.ClearDialog();
 
             if (dialog.Result != MessageBoxResult.OK)
                 return;
@@ -271,24 +271,11 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
                 AddSingle(dialog.FlagNameTextBox.Text.Trim(), dialog.FlagValueComboBox.Text);
             else if (dialog.Tabs.SelectedIndex == 1)
                 ImportJSON(dialog.JsonTextBox.Text);
-            else if (dialog.Tabs.SelectedIndex == 2)
-                AddWithGameId(
-                    dialog.GameFlagNameTextBox.Text.Trim(),
-                    dialog.GameFlagValueComboBox.Text,
-                    dialog.GameFlagIdTextBox.Text,
-                    dialog.AddIdFilterType
-                );
-            else if (dialog.Tabs.SelectedIndex == 3)
-                ImportGameIdJson(
-                    dialog.ImportGameIdJson,
-                    dialog.ImportGameId,
-                    dialog.ImportIdFilterType
-                );
         }
 
         private void AdvancedSettings_Click(object sender, RoutedEventArgs e)
         {
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Advanced Settings");
+            App.FrostRPC?.SetDialog("Advanced Settings");
 
             var dialog = new AdvancedSettingsDialog();
             dialog.Owner = Window.GetWindow(this);
@@ -303,7 +290,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
             dialog.ShowDialog();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
+            App.FrostRPC?.ClearDialog();
         }
 
         private MainWindow GetMainWindow() => (MainWindow)Application.Current.MainWindow;
@@ -345,7 +332,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
         {
             var mainWindow = GetMainWindow();
             mainWindow?.ShowLoading("Cleaning List...");
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Cleaning List");
+            App.FrostRPC?.SetDialog("Dialog: Cleaning List");
 
             App.FastFlags.suspendUndoSnapshot = true;
             App.FastFlags.SaveUndoSnapshot();
@@ -404,17 +391,18 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
             {
                 App.FastFlags.suspendUndoSnapshot = false;
                 mainWindow?.HideLoading();
+                App.FrostRPC?.ClearDialog();
             }
         }
 
         private void ShowProfilesDialog()
         {
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Profiles");
+            App.FrostRPC?.SetDialog("Profiles");
 
             var dialog = new FlagProfilesDialog();
             dialog.ShowDialog();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlag Editor");
+            App.FrostRPC?.ClearDialog();
 
             if (dialog.Result != MessageBoxResult.OK)
                 return;
@@ -430,158 +418,6 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
 
             Thread.Sleep(1000);
             ReloadList();
-        }
-
-        private void AddWithGameId(string name, string value, string gameId, FastFlagFilterType filterType)
-        {
-            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(value) || string.IsNullOrWhiteSpace(gameId))
-            {
-                Frontend.ShowMessageBox("Please fill in all fields.", MessageBoxImage.Warning);
-                return;
-            }
-
-            string suffix = filterType == FastFlagFilterType.DataCenterFilter ? "_DataCenterFilter" : "_PlaceFilter";
-            string formattedName = $"{name}{suffix}";
-
-            // Try to parse value numeric part for bannable check
-            double? numericValue = null;
-            var valueParts = value.Split(';');
-            if (valueParts.Length > 0 && double.TryParse(valueParts[0], out double parsed))
-                numericValue = parsed;
-
-            App.FastFlags.suspendUndoSnapshot = true;
-            App.FastFlags.SaveUndoSnapshot();
-
-            string formattedValue = $"{value};{gameId}";
-            FastFlag? entry;
-
-            if (App.FastFlags.GetValue(formattedName) is null)
-            {
-                entry = new FastFlag
-                {
-                    Name = formattedName,
-                    Value = formattedValue
-                };
-
-                if (!formattedName.Contains(_searchFilter, StringComparison.OrdinalIgnoreCase))
-                    ClearSearch();
-
-                App.FastFlags.SetValue(entry.Name, entry.Value);
-                _fastFlagList.Add(entry);
-            }
-            else
-            {
-                Frontend.ShowMessageBox(Strings.Menu_FastFlagEditor_AlreadyExists, MessageBoxImage.Information);
-
-                bool refresh = false;
-
-                if (!_showPresets && FastFlagManager.PresetFlags.Values.Contains(formattedName))
-                {
-                    TogglePresetsButton.IsChecked = true;
-                    _showPresets = true;
-                    refresh = true;
-                }
-
-                if (!formattedName.Contains(_searchFilter, StringComparison.OrdinalIgnoreCase))
-                {
-                    ClearSearch(false);
-                    refresh = true;
-                }
-
-                if (refresh)
-                    ReloadList();
-
-                entry = _fastFlagList.FirstOrDefault(x => x.Name == formattedName);
-            }
-
-            DataGrid.SelectedItem = entry;
-            DataGrid.ScrollIntoView(entry);
-
-            App.FastFlags.suspendUndoSnapshot = false;
-
-            UpdateTotalFlagsCount();
-        }
-
-        private void ImportGameIdJson(string? json, string? gameId, FastFlagFilterType filterType)
-        {
-            if (string.IsNullOrWhiteSpace(json) || string.IsNullOrWhiteSpace(gameId))
-                return;
-
-            Dictionary<string, JsonElement>? list = null;
-
-            json = json.Trim();
-
-            if (!json.StartsWith('{'))
-                json = '{' + json;
-
-            if (!json.EndsWith('}'))
-            {
-                int lastIndex = json.LastIndexOf('}');
-                if (lastIndex == -1)
-                    json += '}';
-                else
-                    json = json.Substring(0, lastIndex + 1);
-            }
-
-            try
-            {
-                var options = new JsonSerializerOptions
-                {
-                    ReadCommentHandling = JsonCommentHandling.Skip,
-                    AllowTrailingCommas = true
-                };
-
-                list = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json, options);
-
-                if (list is null)
-                    throw new Exception("JSON deserialization returned null");
-            }
-            catch (Exception ex)
-            {
-                Frontend.ShowMessageBox($"Invalid JSON: {ex.Message}", MessageBoxImage.Error);
-                return;
-            }
-
-            string suffix = filterType == FastFlagFilterType.DataCenterFilter ? "_DataCenterFilter" : "_PlaceFilter";
-
-            App.FastFlags.suspendUndoSnapshot = true;
-            App.FastFlags.SaveUndoSnapshot();
-
-            // Prepare bannable flag pairs with values parsed as double?
-            var bannableFlagPairs = list
-                .Select(kvp =>
-                {
-                    double? val = null;
-                    if (kvp.Value.ValueKind == JsonValueKind.Number)
-                    {
-                        if (kvp.Value.TryGetDouble(out double d))
-                            val = d;
-                    }
-                    else if (kvp.Value.ValueKind == JsonValueKind.String)
-                    {
-                        if (double.TryParse(kvp.Value.GetString(), out double parsed))
-                            val = parsed;
-                    }
-
-                    string flagNameWithSuffix = $"{kvp.Key}{suffix}";
-                    return (Name: flagNameWithSuffix, Value: val, BaseKey: kvp.Key);
-                });
-
-            foreach (var pair in list)
-            {
-                string newName = $"{pair.Key}{suffix}";
-
-                string newValue = pair.Value.ValueKind == JsonValueKind.String
-                    ? $"{pair.Value.GetString()};{gameId}"
-                    : $"{pair.Value.ToString()};{gameId}";
-
-                AddSingle(newName, newValue);
-            }
-
-            App.FastFlags.suspendUndoSnapshot = false;
-
-            ReloadList();
-            ClearSearch();
         }
 
         private void AddSingle(string name, string value)

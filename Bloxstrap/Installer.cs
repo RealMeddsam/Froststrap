@@ -28,7 +28,7 @@ namespace Bloxstrap
 
         public bool CreateStartMenuShortcuts = true;
 
-        public bool ImportSettings = 
+        public bool ImportSettings =
             Directory.Exists(Path.Combine(Paths.LocalAppData, "Bloxstrap")) ||
             Directory.Exists(Path.Combine(Paths.LocalAppData, "Voidstrap")) ||
             Directory.Exists(Path.Combine(Paths.LocalAppData, "Lunastrap")) ||
@@ -146,12 +146,6 @@ namespace Bloxstrap
             App.State.Load(false);
             App.FastFlags.Load(false);
 
-            if (string.IsNullOrWhiteSpace(App.Settings.Prop.UserId))
-            {
-                App.Settings.Prop.UserId = Guid.NewGuid().ToString();
-                App.Logger.WriteLine(LOG_IDENT, $"Generated new UserId: {App.Settings.Prop.UserId}");
-            }
-
             if (App.IsStudioVisible)
                 WindowsRegistry.RegisterStudio();
 
@@ -162,29 +156,30 @@ namespace Bloxstrap
 
         private bool ValidateLocation()
         {
-            // prevent from installing to the root of a drive
-            if (InstallLocation.Length <= 3)
-                return false;
+            // 2025-11-12 - Invra - Disable this for now just because installing
+            // to a network path is a cool thing to be available.
+            //
+            // // unc path, just to be safe
+            // if (InstallLocation.StartsWith("\\\\"))
+            //     return false;
 
-            // unc path, just to be safe
-            if (InstallLocation.StartsWith("\\\\"))
-                return false;
-
-            if (InstallLocation.StartsWith(Path.GetTempPath(), StringComparison.InvariantCultureIgnoreCase)
-                || InstallLocation.Contains("\\Temp\\", StringComparison.InvariantCultureIgnoreCase))
+            // prevents from installing to a temp directory
+            if (InstallLocation.StartsWith(Path.GetTempPath(), StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
             // prevent from installing to a onedrive folder
             if (InstallLocation.Contains("OneDrive", StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
-            // prevent from installing to an essential user profile folder (e.g. Documents, Downloads, Contacts idk)
-            if (String.Compare(Directory.GetParent(InstallLocation)?.FullName, Paths.UserProfile, StringComparison.InvariantCultureIgnoreCase) == 0)
+            if (InstallLocation == "C:\\")
                 return false;
 
-            // prevent from installing into the program files folder
-            if (InstallLocation.Contains("Program Files"))
-                return false;
+            // 2025-11-12 - Invra - Disable this for now just because installing
+            // pretty much anywhere is better.
+            //
+            // // prevent from installing to an essential user profile folder (e.g. Documents, Downloads, Contacts idk)
+            // if (String.Compare(Directory.GetParent(InstallLocation)?.FullName, Paths.UserProfile, StringComparison.InvariantCultureIgnoreCase) == 0)
+            //     return false;
 
             // prevent issues with settings importing
             if (InstallLocation.Contains("Local\\Bloxstrap"))
@@ -205,7 +200,7 @@ namespace Bloxstrap
             }
             else
             {
-                if (!IsImplicitInstall 
+                if (!IsImplicitInstall
                     && !InstallLocation.EndsWith(App.ProjectName, StringComparison.InvariantCultureIgnoreCase)
                     && Directory.Exists(InstallLocation)
                     && Directory.EnumerateFileSystemEntries(InstallLocation).Any())
@@ -531,13 +526,9 @@ namespace Bloxstrap
                         App.RobloxState.Prop.ModManifest = App.State.Prop.GetDeprecatedModManifest()!;
                 }
 
-                if (!(Utilities.CompareVersions(existingVer, "1.2.0.0") == VersionComparison.GreaterThan || Utilities.CompareVersions(existingVer, "1.2.0.0") == VersionComparison.Equal))
+                if (Utilities.CompareVersions(existingVer, "1.2.5.0") == VersionComparison.LessThan)
                 {
-                    if (string.IsNullOrWhiteSpace(App.Settings.Prop.UserId))
-                    {
-                        App.Settings.Prop.UserId = Guid.NewGuid().ToString();
-                        App.Logger.WriteLine(LOG_IDENT, $"Generated new UserId: {App.Settings.Prop.UserId}");
-                    }
+                    App.Settings.Prop.ShowServerUptime = false;
                 }
 
                 App.Settings.Save();

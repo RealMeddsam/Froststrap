@@ -27,7 +27,7 @@ namespace Bloxstrap.UI.Elements.Dialogs
         public BloxshadeDialog()
         {
             InitializeComponent();
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Bloxshade");
+            App.FrostRPC?.SetPage("Bloxshade");
         }
 
         public void Close_Click(object sender, RoutedEventArgs e)

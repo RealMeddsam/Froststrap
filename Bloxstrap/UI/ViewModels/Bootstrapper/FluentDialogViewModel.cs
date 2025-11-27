@@ -1,4 +1,5 @@
 ﻿using Bloxstrap.AppData;
+using Bloxstrap.RobloxInterfaces;
 using System;
 using System.Windows.Media;
 using Wpf.Ui.Appearance;
@@ -9,9 +10,18 @@ namespace Bloxstrap.UI.ViewModels.Bootstrapper
     {
         public BackgroundType WindowBackdropType { get; set; } = BackgroundType.Mica;
         public SolidColorBrush BackgroundColourBrush { get; set; } = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
-        public string VersionText { get; init; } = "None";
-        public string ChannelText { get; init; } = "production";
-        public FluentDialogViewModel(IBootstrapperDialog dialog, bool aero, string version, string channel) : base(dialog)
+        public string VersionText { get; set; }
+        public string ChannelText
+        {
+            get => _channelText;
+            set
+            {
+                _channelText = value;
+                OnPropertyChanged(nameof(ChannelText));
+            }
+        }
+        private string _channelText = string.Empty;
+        public FluentDialogViewModel(IBootstrapperDialog dialog, bool aero, string version) : base(dialog)
         {
             const int alpha = 128;
 
@@ -25,7 +35,12 @@ namespace Bloxstrap.UI.ViewModels.Bootstrapper
             }
 
             VersionText = $"{Strings.Common_Version}: V{ExtractMajorVersion(version)}";
-            ChannelText = $"{Strings.Common_Channel}: {channel}";
+            ChannelText = $"{Strings.Common_Channel}: {Deployment.Channel}";
+
+            Deployment.ChannelChanged += (_, newChannel) =>
+            {
+                ChannelText = $"{Strings.Common_Channel}: {newChannel}";
+            };
         }
 
         private static string ExtractMajorVersion(string versionStr)

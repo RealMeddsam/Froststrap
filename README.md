@@ -6,8 +6,8 @@
 > This repository was created after losing access to a previous GitHub account.
 
 <p align="center">
-    <img src="https://github.com/RealMeddsam/Froststrap/raw/main/Images/Bloxstrap-full-dark.png#gh-dark-mode-only" width="700">
-    <img src="https://github.com/RealMeddsam/Froststrap/raw/main/Images/Bloxstrap-full-light.png#gh-light-mode-only" width="700">
+    <img src="./.resources/froststrap-full-dark.png#gh-dark-mode-only" width="700">
+    <img src="./.resources/froststrap-full-light.png#gh-light-mode-only" width="700">
 </p>
 
 <div align="center">
@@ -28,7 +28,7 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 
 ---
 
-# Key Improvements Over Bloxstrap
+## Key Improvements Over Bloxstrap
 
 ### Integrations
 - Player and message logs are now combined into **Logs Menu**
@@ -94,6 +94,13 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 ## Considering a switch?
 
 [**Download the latest version here**][repo-latest]
+
+---
+
+## Licensing
+
+THis project is under **dual licensing**.
+Everything **Nix related** (managed by Invra) is licensed by **Unlicense**, whilst all **other code** is **MIT**.
 
 ---
 

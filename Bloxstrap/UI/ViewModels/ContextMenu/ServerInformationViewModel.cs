@@ -47,26 +47,14 @@ namespace Bloxstrap.UI.ViewModels.ContextMenu
 
         public async void QueryServerUptime()
         {
-            try
-            {
-                DateTime? serverTime = await _activityWatcher.Data.QueryServerTime();
+            DateTime? serverTime = await _activityWatcher.Data.QueryServerTime();
+            TimeSpan _serverUptime = DateTime.UtcNow - serverTime.Value;
 
-                if (serverTime is null)
-                {
-                    ServerUptime = Strings.Common_NotAvailable;
-                }
-                else
-                {
-                    TimeSpan uptime = DateTime.UtcNow - serverTime.Value;
-                    ServerUptime = uptime.TotalSeconds > 60
-                        ? Time.FormatTimeSpan(uptime)
-                        : Strings.ContextMenu_ServerInformation_Notification_ServerNotTracked;
-                }
-            }
-            catch (Exception)
-            {
-                ServerUptime = Strings.Common_NotAvailable;
-            }
+            string? serverUptime = Strings.ContextMenu_ServerInformation_Notification_ServerNotTracked;
+            if (_serverUptime.TotalSeconds > 60)
+                serverUptime = Time.FormatTimeSpan(_serverUptime);
+
+            ServerUptime = serverUptime;
 
             OnPropertyChanged(nameof(ServerUptime));
         }

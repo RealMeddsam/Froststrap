@@ -1,13 +1,15 @@
+using Bloxstrap.Integrations;
+using Microsoft.Win32;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Windows;
-using System.Windows.Shell;
-using System.Windows.Threading;
-using Microsoft.Win32;
-using Wpf.Ui.Hardware;
-using Bloxstrap.Integrations;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Shell;
+using System.Windows.Threading;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Hardware;
 
 namespace Bloxstrap
 {
@@ -23,13 +25,16 @@ namespace Bloxstrap
 #endif
         public const string ProjectOwner = "RealMeddsam";
         public const string ProjectRepository = "RealMeddsam/Froststrap";
-        public const string ProjectDownloadLink = "https://github.com/RealMeddsam/Froststrap/releases";
         public const string ProjectHelpLink = "https://github.com/bloxstraplabs/bloxstrap/wiki";
         public const string ProjectSupportLink = "https://github.com/RealMeddsam/Froststrap/issues/new";
         public const string ProjectRemoteDataLink = "https://raw.githubusercontent.com/RealMeddsam/config/refs/heads/main/Data.json";
 
+        // Reason for making it a remote data is because we plan on moving to org, and this way we can change the link without telling ppl to manually update, will remove when we eventually move
+        public static string ProjectDownloadLink => RemoteData.Prop.ProjectDownloadLink ?? "https://github.com/RealMeddsam/Froststrap/releases";
+
         public const string RobloxPlayerAppName = "RobloxPlayerBeta.exe";
         public const string RobloxStudioAppName = "RobloxStudioBeta.exe";
+
         // one day ill add studio support
         public const string RobloxAnselAppName = "eurotrucks2.exe";
 
@@ -45,7 +50,8 @@ namespace Bloxstrap
 
         public static Bootstrapper? Bootstrapper { get; set; } = null!;
 
-        public FroststrapRichPresence? _froststrapRPC;
+        public FroststrapRichPresence RichPresence { get; private set; } = null!;
+
         public static bool IsActionBuild => !String.IsNullOrEmpty(BuildMetadata.CommitRef);
 
         public static bool IsProductionBuild => IsActionBuild && BuildMetadata.CommitRef.StartsWith("tag", StringComparison.Ordinal);
@@ -58,6 +64,8 @@ namespace Bloxstrap
 
         public static readonly Dictionary<string, BaseTask> PendingSettingTasks = new();
 
+        // Disambiguate Settings so we use the persistable Settings (Bloxstrap.Models.Persistable.Settings),
+        // not the auto-generated Properties.Settings which doesn't contain the clicker fields.
         public static readonly JsonManager<Settings> Settings = new();
 
         public static readonly JsonManager<State> State = new();
@@ -68,11 +76,11 @@ namespace Bloxstrap
 
         public static readonly FastFlagManager FastFlags = new();
 
-        public static readonly HttpClient HttpClient = new(
-            new HttpClientLoggingHandler(
-                new HttpClientHandler { AutomaticDecompression = DecompressionMethods.All }
-            )
-        );
+        public static readonly GBSEditor GlobalSettings = new();
+
+        public static readonly CookiesManager Cookies = new();
+
+        public static readonly HttpClient HttpClient = new(new HttpClientLoggingHandler(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.All }));
 
 
         private static bool _showingExceptionDialog = false;
@@ -80,7 +88,8 @@ namespace Bloxstrap
         private static string? _webUrl = null;
         public static string WebUrl
         {
-            get {
+            get 
+            {
                 if (_webUrl != null)
                     return _webUrl;
 
@@ -98,14 +107,6 @@ namespace Bloxstrap
             Logger.WriteLine("App::Terminate", $"Terminating with exit code {exitCodeNum} ({exitCode})");
 
             Environment.Exit(exitCodeNum);
-        }
-
-        public void CreateFroststrapRpcIfNeeded()
-        {
-            if (Settings.Prop.ShowUsingFroststrapRPC && _froststrapRPC == null)
-            {
-                _froststrapRPC = new FroststrapRichPresence();
-            }
         }
 
         public static void SoftTerminate(ErrorCode exitCode = ErrorCode.ERROR_SUCCESS)
@@ -157,6 +158,53 @@ namespace Bloxstrap
             Frontend.ShowExceptionDialog(ex);
 
             Terminate(ErrorCode.ERROR_INSTALL_FAILURE);
+        }
+
+        public static FroststrapRichPresence? FrostRPC
+        {
+            get => (Current as App)?.RichPresence;
+            set
+            {
+                if (Current is App app)
+                    app.RichPresence = value!;
+            }
+        }
+
+        public static void WindowsBackdrop()
+        {
+            Current.Dispatcher.Invoke(() =>
+            {
+                var backdropType = Settings.Prop.SelectedBackdrop;
+                ApplyBackdropToAllWindows(backdropType);
+            });
+        }
+
+        private static void ApplyBackdropToAllWindows(UIBackgroundType backdropType)
+        {
+            var wpfBackdrop = backdropType switch
+            {
+                UIBackgroundType.None => BackgroundType.None,
+                UIBackgroundType.Mica => BackgroundType.Mica,
+                UIBackgroundType.Acrylic => BackgroundType.Acrylic,
+                UIBackgroundType.Aero => BackgroundType.Aero,
+                _ => BackgroundType.None
+            };
+
+            foreach (Window window in Current.Windows)
+            {
+                if (window is UiWindow uiWindow)
+                {
+                    bool isTransparentBackdrop = (wpfBackdrop == BackgroundType.Acrylic || wpfBackdrop == BackgroundType.Aero);
+
+                    uiWindow.AllowsTransparency = isTransparentBackdrop;
+
+                    uiWindow.WindowStyle = isTransparentBackdrop
+                        ? WindowStyle.None
+                        : WindowStyle.SingleBorderWindow;
+
+                    uiWindow.WindowBackdropType = wpfBackdrop;
+                }
+            }
         }
 
         public void ApplyCustomFontToWindow(Window window)
@@ -324,7 +372,7 @@ namespace Bloxstrap
 
             ApplicationConfiguration.Initialize();
 
-            HttpClient.Timeout = TimeSpan.FromSeconds(30);
+            HttpClient.Timeout = TimeSpan.FromSeconds(60);
 
             if (!HttpClient.DefaultRequestHeaders.UserAgent.Any())
                 HttpClient.DefaultRequestHeaders.Add("User-Agent", userAgent.ToString());
@@ -411,11 +459,25 @@ namespace Bloxstrap
                     Terminate();
                 }
 
+                Task.Run(App.RemoteData.LoadData); // ok
+
                 Settings.Load();
                 State.Load();
                 RobloxState.Load();
                 FastFlags.Load();
-                Task.Run(App.RemoteData.LoadData); // ok
+                GlobalSettings.Load();
+
+                // to fix error System.IO.IOException: No se encuentra el recurso 'ui/style/.xaml'.
+                // when i put in installer dosent work
+                // if i try to fix in wpfuiwindow also dosent work
+                if (App.Settings.Prop.Theme > Enums.Theme.Custom)
+                {
+                    App.Settings.Prop.Theme = Enums.Theme.Dark;
+                    App.Settings.Save();
+                }
+
+                if (Settings.Prop.AllowCookieAccess)
+                    Task.Run(Cookies.LoadCookies);
 
                 if (!Locale.SupportedLocales.ContainsKey(Settings.Prop.Locale))
                 {
@@ -436,17 +498,11 @@ namespace Bloxstrap
                 LaunchHandler.ProcessLaunchArgs();
             }
 
-            if (string.IsNullOrWhiteSpace(Settings.Prop.UserId))
-            {
-                Settings.Prop.UserId = Guid.NewGuid().ToString();
-                Settings.Save();
-                Logger.WriteLine("Startup", $"Generated UserId: {Settings.Prop.UserId}");
-            }
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
-            _froststrapRPC?.Dispose();
+            FrostRPC?.Dispose();
             base.OnExit(e);
         }
     }

@@ -1,22 +1,15 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Animation;
+using System.Windows.Markup;
 
 namespace Bloxstrap.UI.Elements.Controls
 {
-    public partial class SquareCard : UserControl
+    [ContentProperty(nameof(InnerContent))]
+    public partial class SquareCard : UserControl, INotifyPropertyChanged
     {
-        public enum CategoryType
-        {
-            Network,
-            Privacy,
-            Cpu,
-            Gpu,
-            Performance
-        }
-
-        public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(nameof(Title), typeof(string), typeof(SquareCard));
+        public static readonly DependencyProperty HeaderProperty =
+            DependencyProperty.Register(nameof(Header), typeof(string), typeof(SquareCard));
 
         public static readonly DependencyProperty DescriptionProperty =
             DependencyProperty.Register(nameof(Description), typeof(string), typeof(SquareCard));
@@ -24,28 +17,10 @@ namespace Bloxstrap.UI.Elements.Controls
         public static readonly DependencyProperty InnerContentProperty =
             DependencyProperty.Register(nameof(InnerContent), typeof(object), typeof(SquareCard));
 
-        public static readonly DependencyProperty ButtonContentProperty =
-            DependencyProperty.Register(nameof(ButtonContent), typeof(object), typeof(SquareCard));
-
-        public static readonly DependencyProperty CategoryIconProperty =
-            DependencyProperty.Register(nameof(CategoryIcon), typeof(string), typeof(SquareCard));
-
-        public static readonly DependencyProperty CategoryProperty =
-            DependencyProperty.Register(nameof(Category), typeof(CategoryType), typeof(SquareCard), new PropertyMetadata(CategoryType.Performance, OnCategoryChanged));
-
-        public static readonly DependencyProperty SecondaryCategoryIconProperty =
-            DependencyProperty.Register(nameof(SecondaryCategoryIcon), typeof(string), typeof(SquareCard));
-
-        public static readonly DependencyProperty PrimaryIconToolTipProperty =
-            DependencyProperty.Register(nameof(PrimaryIconToolTip), typeof(string), typeof(SquareCard));
-
-        public static readonly DependencyProperty SecondaryIconToolTipProperty =
-            DependencyProperty.Register(nameof(SecondaryIconToolTip), typeof(string), typeof(SquareCard));
-
-        public string Title
+        public string Header
         {
-            get => (string)GetValue(TitleProperty);
-            set => SetValue(TitleProperty, value);
+            get => (string)GetValue(HeaderProperty);
+            set => SetValue(HeaderProperty, value);
         }
 
         public string Description
@@ -60,57 +35,13 @@ namespace Bloxstrap.UI.Elements.Controls
             set => SetValue(InnerContentProperty, value);
         }
 
-        public object ButtonContent
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            get => GetValue(ButtonContentProperty);
-            set => SetValue(ButtonContentProperty, value);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public string CategoryIcon
-        {
-            get => (string)GetValue(CategoryIconProperty);
-            set => SetValue(CategoryIconProperty, value);
-        }
-
-        public string SecondaryCategoryIcon
-        {
-            get => (string)GetValue(SecondaryCategoryIconProperty);
-            set => SetValue(SecondaryCategoryIconProperty, value);
-        }
-
-        public string PrimaryIconToolTip
-        {
-            get => (string)GetValue(PrimaryIconToolTipProperty);
-            set => SetValue(PrimaryIconToolTipProperty, value);
-        }
-
-        public string SecondaryIconToolTip
-        {
-            get => (string)GetValue(SecondaryIconToolTipProperty);
-            set => SetValue(SecondaryIconToolTipProperty, value);
-        }
-
-        public CategoryType Category
-        {
-            get => (CategoryType)GetValue(CategoryProperty);
-            set => SetValue(CategoryProperty, value);
-        }
-
-        private static void OnCategoryChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = (SquareCard)d;
-            var category = (CategoryType)e.NewValue;
-
-            control.CategoryIcon = category switch
-            {
-                CategoryType.Network => "🌐",
-                CategoryType.Privacy => "🔒",
-                CategoryType.Cpu => "🧠",
-                CategoryType.Gpu => "🖥️",
-                CategoryType.Performance => "⚡",
-                _ => "⚙️"
-            };
-        }
         public SquareCard()
         {
             InitializeComponent();

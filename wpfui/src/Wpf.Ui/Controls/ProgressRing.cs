@@ -48,7 +48,7 @@ public class ProgressRing : RangeBase
     /// Property for <see cref="CoverRingStroke"/>.
     /// </summary>
     public static readonly DependencyProperty CoverRingStrokeProperty =
-        DependencyProperty.RegisterAttached(
+        DependencyProperty.Register(
             nameof(CoverRingStroke),
             typeof(Brush),
             typeof(ProgressRing),
@@ -100,7 +100,7 @@ public class ProgressRing : RangeBase
     public Brush CoverRingStroke
     {
         get => (Brush)GetValue(CoverRingStrokeProperty);
-        internal set => SetValue(CoverRingStrokeProperty, value);
+        set => SetValue(CoverRingStrokeProperty, value);
     }
 
     /// <summary>

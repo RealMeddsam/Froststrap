@@ -20,7 +20,7 @@ namespace Bloxstrap.UI.Elements.Dialogs
         {
             InitializeComponent();
 
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Dialog: Connectivity");
+            App.FrostRPC?.SetDialog("Connectivity");
 
             string? iconFilename = null;
             SystemSound? sound = null;

@@ -13,7 +13,22 @@ namespace Bloxstrap.RobloxInterfaces
         private const string VersionStudioHash = "version-012732894899482c";
 
 
-        public static string Channel = App.Settings.Prop.Channel;
+        public static EventHandler<string>? ChannelChanged;
+        private static string _channel = App.Settings.Prop.Channel;
+        public static string Channel
+        {
+            get => _channel;
+            set
+            {
+                _channel = value;
+                App.Settings.Prop.Channel = Channel;
+                App.Settings.Save();
+
+                ChannelChanged?.Invoke(null, value);
+            }
+        }
+
+        public static string ChannelToken = string.Empty;
 
         public static string BinaryType = "WindowsPlayer";
 
@@ -133,7 +148,27 @@ namespace Bloxstrap.RobloxInterfaces
             return location;
         }
 
-        public static async Task<ClientVersion> GetInfo(string ? channel = null)
+        public static async Task<bool> IsChannelPrivate(string channel)
+        {
+
+            if (channel == "production")
+                channel = "live";
+
+            try
+            {
+                var response = await App.HttpClient.GetAsync($"https://clientsettingscdn.roblox.com/v2/client-version/WindowsPlayer/channel/{channel}");
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException ex)
+            {
+                if (BadChannelCodes.Contains(ex.StatusCode))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static async Task<ClientVersion> GetInfo(string? channel = null, bool behindProductionCheck = false)
         {
             const string LOG_IDENT = "Deployment::GetInfo";
 
@@ -145,6 +180,17 @@ namespace Bloxstrap.RobloxInterfaces
             App.Logger.WriteLine(LOG_IDENT, $"Getting deploy info for channel {channel}");
 
             string cacheKey = $"{channel}-{BinaryType}";
+
+            HttpRequestMessage request = new()
+            {
+                Method = HttpMethod.Get
+            };
+
+            if (!string.IsNullOrEmpty(ChannelToken))
+            {
+                App.Logger.WriteLine(LOG_IDENT, "Got Roblox-Channel-Token");
+                request.Headers.Add("Roblox-Channel-Token", ChannelToken);
+            }
 
             ClientVersion clientVersion;
 
@@ -162,7 +208,8 @@ namespace Bloxstrap.RobloxInterfaces
 
                 try
                 {
-                    clientVersion = await Http.GetJson<ClientVersion>("https://clientsettingscdn.roblox.com" + path);
+                    request.RequestUri = new Uri("https://clientsettingscdn.roblox.com" + path);
+                    clientVersion = await Http.SendJson<ClientVersion>(request);
                 }
                 catch (HttpRequestException httpEx) 
                 when (!isDefaultChannel && BadChannelCodes.Contains(httpEx.StatusCode))
@@ -176,7 +223,8 @@ namespace Bloxstrap.RobloxInterfaces
 
                     try
                     {
-                        clientVersion = await Http.GetJson<ClientVersion>("https://clientsettings.roblox.com" + path);
+                        request.RequestUri = new Uri("https://clientsettings.roblox.com" + path);
+                        clientVersion = await Http.SendJson<ClientVersion>(request);
                     }
                     catch (HttpRequestException httpEx)
                     when (!isDefaultChannel && BadChannelCodes.Contains(httpEx.StatusCode))
@@ -187,14 +235,15 @@ namespace Bloxstrap.RobloxInterfaces
 
                 // check if channel is behind LIVE
 
-
-                if (!isDefaultChannel)
+                if (!isDefaultChannel && behindProductionCheck)
                 {
                     var defaultClientVersion = await GetInfo(DefaultChannel);
 
                     if ((Utilities.CompareVersions(clientVersion.Version, defaultClientVersion.Version) == VersionComparison.LessThan))
                         clientVersion.IsBehindDefaultChannel = true;
                 }
+                else
+                    clientVersion.IsBehindDefaultChannel = false;
 
                 ClientVersionCache[cacheKey] = clientVersion;
             }

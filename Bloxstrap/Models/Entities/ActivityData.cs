@@ -1,9 +1,7 @@
-﻿using Bloxstrap.AppData;
-using Bloxstrap.Models.APIs;
-using Bloxstrap.Models.APIs.RoValra;
+﻿using Bloxstrap.Models.APIs;
 using CommunityToolkit.Mvvm.Input;
-using System.DirectoryServices.ActiveDirectory;
-using System.Runtime.InteropServices;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Web;
 using System.Windows;
 using System.Windows.Input;
@@ -12,23 +10,18 @@ namespace Bloxstrap.Models.Entities
 {
     public class ActivityData
     {
-
         private long _universeId = 0;
 
         /// <summary>
         /// If the current activity stems from an in-universe teleport, then this will be
         /// set to the activity that corresponds to the initial game join
         /// </summary>
-        public ActivityData? RootActivity;
+        public ActivityData? RootActivity { get; set; }
 
         public long UniverseId
         {
             get => _universeId;
-            set
-            {
-                _universeId = value;
-                UniverseDetails.LoadFromCache(value);
-            }
+            set => _universeId = value;
         }
 
         public long PlaceId { get; set; } = 0;
@@ -39,7 +32,7 @@ namespace Bloxstrap.Models.Entities
         /// This will be empty unless the server joined is a private server
         /// </summary>
         public string AccessCode { get; set; } = string.Empty;
-        
+
         public long UserId { get; set; } = 0;
 
         public string MachineAddress { get; set; } = string.Empty;
@@ -53,6 +46,14 @@ namespace Bloxstrap.Models.Entities
         public DateTime TimeJoined { get; set; }
 
         public DateTime? TimeLeft { get; set; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
 
         // everything below here is optional strictly for bloxstraprpc, discord rich presence, or game history
 
@@ -68,11 +69,11 @@ namespace Bloxstrap.Models.Entities
             get
             {
                 string desc = string.Format(
-                    "{0} • {1} {2} {3}", 
-                    UniverseDetails?.Data.Creator.Name,
-                    TimeJoined.ToString("t"), 
+                    "{0} • {1} {2} {3}",
+                    UniverseDetails?.Data.Creator.Name ?? "Unknown",
+                    TimeJoined.ToString("t"),
                     Locale.CurrentCulture.Name.StartsWith("ja") ? '~' : '-',
-                    TimeLeft?.ToString("t")
+                    TimeLeft?.ToString("t") ?? "?"
                 );
 
                 if (ServerType != ServerType.Public)
@@ -83,23 +84,40 @@ namespace Bloxstrap.Models.Entities
         }
 
         public ICommand RejoinServerCommand => new RelayCommand(RejoinServer);
+        public ICommand CopyDeeplinkCommand => new RelayCommand(CopyDeeplink);
+        public ICommand CopyServerIdCommand => new RelayCommand(CopyServerId);
 
         private SemaphoreSlim serverQuerySemaphore = new(1, 1);
         private SemaphoreSlim serverTimeSemaphore = new(1, 1);
 
         public string GetInviteDeeplink(bool launchData = true)
         {
-            string deeplink = $"https://www.roblox.com/games/start?placeId={PlaceId}";
+            const string baseUrl = "https://realmeddsam.github.io/Froststrap-Website/invite";
 
-            if (ServerType == ServerType.Private) // thats not going to work
-                deeplink += "&accessCode=" + AccessCode;
+            var queryParts = new List<string>
+            {
+                $"placeId={PlaceId}"
+            };
+
+            if (ServerType == ServerType.Private && !string.IsNullOrEmpty(AccessCode))
+            {
+                queryParts.Add("accessCode=" + HttpUtility.UrlEncode(AccessCode));
+            }
             else
-                deeplink += "&gameInstanceId=" + JobId;
+            {
+                if (!string.IsNullOrEmpty(JobId))
+                    queryParts.Add("gameInstanceId=" + HttpUtility.UrlEncode(JobId));
+                else
+                    queryParts.Add("gameInstanceId=");
+            }
 
             if (launchData && !string.IsNullOrEmpty(RPCLaunchData))
-                deeplink += "&launchData=" + HttpUtility.UrlEncode(RPCLaunchData);
+            {
+                queryParts.Add("launchData=" + HttpUtility.UrlEncode(RPCLaunchData));
+            }
 
-            return deeplink;
+            string query = string.Join("&", queryParts);
+            return $"{baseUrl}?{query}";
         }
 
         public async Task<DateTime?> QueryServerTime()
@@ -188,6 +206,33 @@ namespace Bloxstrap.Models.Entities
 
             try
             {
+                // Try RoValra API first
+                try
+                {
+                    var response = await Http.GetJson<RoValraGeolocation>($"https://apis.rovalra.com/v1/geolocation?ip={MachineAddress}");
+                    var geolocation = response.Location;
+
+                    if (geolocation is not null)
+                    {
+                        if (geolocation.City == geolocation.Region && geolocation.City == geolocation.Country)
+                            location = geolocation.Country;
+                        else if (geolocation.City == geolocation.Region)
+                            location = $"{geolocation.Region}, {geolocation.Country}";
+                        else
+                            location = $"{geolocation.City}, {geolocation.Region}, {geolocation.Country}";
+
+                        App.Logger.WriteLine(LOG_IDENT, $"Got location from RoValra: {location}");
+                        GlobalCache.ServerLocation[MachineAddress] = location;
+                        serverQuerySemaphore.Release();
+                        return location;
+                    }
+                }
+                catch (Exception rovalraEx)
+                {
+                    App.Logger.WriteLine(LOG_IDENT, $"RoValra API failed, falling back to ipinfo.io: {rovalraEx.Message}");
+                }
+
+                // Fallback to ipinfo.io
                 var ipInfo = await Http.GetJson<IPInfoResponse>($"https://ipinfo.io/{MachineAddress}/json");
 
                 if (string.IsNullOrEmpty(ipInfo.City))
@@ -198,8 +243,10 @@ namespace Bloxstrap.Models.Entities
                 else
                     location = $"{ipInfo.City}, {ipInfo.Region}, {ipInfo.Country}";
 
+                App.Logger.WriteLine(LOG_IDENT, $"Got location from ipinfo.io: {location}");
                 GlobalCache.ServerLocation[MachineAddress] = location;
                 serverQuerySemaphore.Release();
+                return location;
             }
             catch (Exception ex)
             {
@@ -210,23 +257,124 @@ namespace Bloxstrap.Models.Entities
                 serverQuerySemaphore.Release();
 
                 Frontend.ShowConnectivityDialog(
-                    string.Format(Strings.Dialog_Connectivity_UnableToConnect, "ipinfo.io"),
+                    string.Format(Strings.Dialog_Connectivity_UnableToConnect, "rovalra.com/ipinfo.io"),
                     Strings.ActivityWatcher_LocationQueryFailed,
                     MessageBoxImage.Warning,
                     ex
                 );
-            }
 
-            return location;
+                return location;
+            }
         }
 
         public override string ToString() => $"{PlaceId}/{JobId}";
 
-        private void RejoinServer()
+        public void RejoinServer()
         {
-            string playerPath = new RobloxPlayerData().ExecutablePath;
+            try
+            {
+                App.Logger.WriteLine("ActivityData::RejoinServer", $"Rejoining server: {PlaceId}/{JobId}");
 
-            Process.Start(playerPath, GetInviteDeeplink(false));
+                string robloxUri = $"roblox://experiences/start?placeId={PlaceId}&gameInstanceId={JobId}";
+
+                if (ServerType == ServerType.Private && !string.IsNullOrEmpty(AccessCode))
+                {
+                    robloxUri += $"&accessCode={AccessCode}";
+                }
+
+                if (!string.IsNullOrEmpty(RPCLaunchData))
+                {
+                    robloxUri += $"&launchData={HttpUtility.UrlEncode(RPCLaunchData)}";
+                }
+
+                App.Logger.WriteLine("ActivityData::RejoinServer", $"Launching Roblox URI: {robloxUri}");
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = robloxUri,
+                    UseShellExecute = true
+                });
+
+                App.Logger.WriteLine("ActivityData::RejoinServer", "Successfully launched new Roblox instance");
+
+                CloseExistingRobloxInstances();
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("ActivityData::RejoinServer", ex);
+                Frontend.ShowMessageBox($"Failed to rejoin server: {ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
+        private void CloseExistingRobloxInstances()
+        {
+            try
+            {
+                var processes = Process.GetProcessesByName("RobloxPlayerBeta");
+                int closedCount = 0;
+
+                foreach (var process in processes)
+                {
+                    try
+                    {
+                        if ((DateTime.Now - process.StartTime).TotalSeconds < 3)
+                        {
+                            App.Logger.WriteLine("ActivityData::CloseExistingRobloxInstances", $"Skipping new process (PID: {process.Id})");
+                            continue;
+                        }
+
+                        App.Logger.WriteLine("ActivityData::CloseExistingRobloxInstances", $"Instantly closing old Roblox process (PID: {process.Id})");
+                        process.Kill(); // Kill instantly, don't wait for exit
+                        closedCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        App.Logger.WriteLine("ActivityData::CloseExistingRobloxInstances", $"Failed to close process {process.Id}: {ex.Message}");
+                    }
+                }
+
+                App.Logger.WriteLine("ActivityData::CloseExistingRobloxInstances", $"Instantly closed {closedCount} old Roblox instances");
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteLine("ActivityData::CloseExistingRobloxInstances", $"Error closing processes: {ex.Message}");
+            }
+        }
+
+        private async void CopyDeeplink()
+        {
+            try
+            {
+                string deeplink = GetInviteDeeplink();
+                Clipboard.SetText(deeplink);
+
+                App.Logger.WriteLine("ActivityData::CopyDeeplink", $"Copied deeplink to clipboard: {deeplink}");
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("ActivityData::CopyDeeplink", ex);
+                Frontend.ShowMessageBox($"Failed to copy deeplink: {ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
+        private async void CopyServerId()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(JobId))
+                {
+                    Frontend.ShowMessageBox("No server ID available to copy", MessageBoxImage.Information);
+                    return;
+                }
+
+                Clipboard.SetText(JobId);
+                App.Logger.WriteLine("ActivityData::CopyServerId", $"Copied server ID to clipboard: {JobId}");
+            }
+            catch (Exception ex)
+            {
+                App.Logger.WriteException("ActivityData::CopyServerId", ex);
+                Frontend.ShowMessageBox($"Failed to copy server ID: {ex.Message}", MessageBoxImage.Error);
+            }
         }
     }
 }

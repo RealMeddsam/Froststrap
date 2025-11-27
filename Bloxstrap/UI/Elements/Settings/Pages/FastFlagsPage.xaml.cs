@@ -9,7 +9,7 @@ namespace Bloxstrap.UI.Elements.Settings.Pages
         {
             InitializeComponent();
             DataContext = new FastFlagsViewModel();
-            (App.Current as App)?._froststrapRPC?.UpdatePresence("Page: FastFlags Settings");
+            App.FrostRPC?.SetPage("FastFlags Settings");
         }
     }
 }

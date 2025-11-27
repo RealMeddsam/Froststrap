@@ -1,4 +1,4 @@
-﻿using Bloxstrap.Models;
+﻿using Bloxstrap.UI.Elements.Settings.Pages;
 using Bloxstrap.UI.ViewModels.Settings;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -41,6 +41,9 @@ namespace Bloxstrap.UI.Elements.Settings
             if (showAlreadyRunningWarning)
                 ShowAlreadyRunningSnackbar();
 
+            gbs.Opacity = viewModel.GBSEnabled ? 1 : 0.5;
+            gbs.IsEnabled = viewModel.GBSEnabled; // binding doesnt work as expected so we are setting it in here instead
+
             LoadState();
 
             string? lastPageName = App.State.Prop.LastPage;
@@ -54,7 +57,7 @@ namespace Bloxstrap.UI.Elements.Settings
                 AlertBar.Severity = Data.AlertSeverity;
             });
 
-            viewModel.ApplyBackdrop(App.Settings.Prop.SelectedBackdrop);
+            App.WindowsBackdrop();
 
             var allItems = RootNavigation.Items.OfType<NavigationItem>().ToList();
             var allFooters = RootNavigation.Footer?.OfType<NavigationItem>().ToList() ?? new List<NavigationItem>();
@@ -88,6 +91,10 @@ namespace Bloxstrap.UI.Elements.Settings
         private async void SafeNavigate(Type page)
         {
             await Task.Delay(500); // ensure page service is ready
+
+            if (page == typeof(RobloxSettingsPage) && !App.GlobalSettings.Loaded)
+                return; // prevent from navigating onto disabled page
+
             Navigate(page);
         }
 

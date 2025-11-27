@@ -308,9 +308,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 });
         }
 
-        public ObservableCollection<GradientStopViewModel> GradientStops { get; set; } = new();
-
-
         #region Custom Cursor Set Related Code
         public ObservableCollection<CustomCursorSet> CustomCursorSets { get; } = new();
 

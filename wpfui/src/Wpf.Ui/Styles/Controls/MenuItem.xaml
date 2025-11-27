@@ -246,9 +246,9 @@
 
                 <ContentPresenter
                     Grid.Column="2"
+                    VerticalAlignment="Center"
                     ContentSource="Header"
                     RecognizesAccessKey="True"
-                    VerticalAlignment="Center"
                     TextElement.Foreground="{TemplateBinding Foreground}" />
 
                 <TextBlock

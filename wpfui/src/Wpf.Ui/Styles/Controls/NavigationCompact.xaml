@@ -304,7 +304,6 @@
     </Style>
 
     <Style TargetType="{x:Type controls:NavigationCompact}">
-        <!--<Setter Property="ItemStyle" Value="{StaticResource UiNavigationCompactItemStyle}" />-->
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Margin" Value="4" />
         <Setter Property="Width" Value="40" />
@@ -314,71 +313,78 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:NavigationCompact}">
-                    <controls:DynamicScrollViewer
-                        Margin="0"
-                        Padding="0"
-                        HorizontalScrollBarVisibility="Disabled">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                            <Border
-                                x:Name="ButtonBorder"
-                                HorizontalAlignment="Left"
-                                Focusable="False"
+                        <Border
+                               x:Name="ButtonBorder"
+                               HorizontalAlignment="Left"
+                               Focusable="False"
                                 KeyboardNavigation.IsTabStop="False">
-                                <controls:Button
+                            <controls:Button
                                     x:Name="HamburgerButton"
                                     Command="{Binding Path=TemplateButtonCommand, RelativeSource={RelativeSource TemplatedParent}}"
                                     CommandParameter="hamburger"
                                     Style="{StaticResource HamburgerButton}" />
-                            </Border>
+                        </Border>
 
+                        <controls:DynamicScrollViewer
+                               x:Name="MainItemsScrollViewer"
+                               Grid.Row="1"
+                               Margin="0"
+                               Padding="0"
+                               HorizontalScrollBarVisibility="Disabled"
+                               VerticalScrollBarVisibility="Auto">
                             <ItemsControl
-                                x:Name="ItemsItemsControl"
-                                Grid.Row="1"
-                                Focusable="False"
-                                ItemsSource="{TemplateBinding Items}"
-                                KeyboardNavigation.DirectionalNavigation="Contained"
-                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                 x:Name="ItemsItemsControl"
+                                 Focusable="False"
+                                 ItemsSource="{TemplateBinding Items}"
+                                 KeyboardNavigation.DirectionalNavigation="Contained"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 ScrollViewer.VerticalScrollBarVisibility="Disabled">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel Margin="0" IsItemsHost="True" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>
+                        </controls:DynamicScrollViewer>
 
-                            <ItemsControl
-                                x:Name="FooterItemsControl"
-                                Grid.Row="2"
-                                Focusable="False"
-                                ItemsSource="{TemplateBinding Footer}"
-                                KeyboardNavigation.DirectionalNavigation="Contained"
-                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Margin="0" IsItemsHost="True" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
-                        </Grid>
-                    </controls:DynamicScrollViewer>
+                        <ItemsControl
+                             x:Name="FooterItemsControl"
+                             Grid.Row="2"
+                             Focusable="False"
+                             ItemsSource="{TemplateBinding Footer}"
+                             KeyboardNavigation.DirectionalNavigation="Contained"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Margin="0" IsItemsHost="True" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="FooterAlwaysVisible" Value="False">
+                            <Setter TargetName="FooterItemsControl" Property="Grid.Row" Value="1" />
+                            <Setter TargetName="MainItemsScrollViewer" Property="Grid.RowSpan" Value="2" />
+                        </Trigger>
+
                         <Trigger Property="IsExpanded" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation
-                                            AccelerationRatio="0.4"
-                                            Storyboard.TargetProperty="Width"
-                                            From="40"
-                                            To="250"
-                                            Duration="0:0:.16" />
+                                               AccelerationRatio="0.4"
+                                               Storyboard.TargetProperty="Width"
+                                               From="40"
+                                               To="250"
+                                               Duration="0:0:.16" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
@@ -386,11 +392,11 @@
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation
-                                            AccelerationRatio="0.4"
-                                            Storyboard.TargetProperty="Width"
-                                            From="250"
-                                            To="40"
-                                            Duration="0:0:.16" />
+                                                AccelerationRatio="0.4"
+                                                Storyboard.TargetProperty="Width"
+                                                From="250"
+                                                To="40"
+                                                Duration="0:0:.16" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>

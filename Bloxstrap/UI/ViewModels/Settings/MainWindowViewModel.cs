@@ -12,6 +12,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
     public class MainWindowViewModel : NotifyPropertyChangedViewModel
     {
         public ICommand OpenAboutCommand => new RelayCommand(OpenAbout);
+        public ICommand OpenAccountManagerCommand => new RelayCommand(OpenAccountManager);
         public ICommand SaveSettingsCommand => new RelayCommand(SaveSettings);
         public ICommand SaveAndLaunchSettingsCommand => new RelayCommand(SaveAndLaunchSettings);
         public ICommand RestartAppCommand => new RelayCommand(RestartApp);
@@ -19,6 +20,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         public EventHandler? RequestSaveNoticeEvent;
         public EventHandler? RequestCloseWindowEvent;
+        public bool GBSEnabled = App.GlobalSettings.Loaded;
         public event EventHandler? SettingsSaved;
 
         public bool TestModeEnabled
@@ -37,33 +39,6 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 App.LaunchSettings.TestModeFlag.Active = value;
             }
         }
-        public void ApplyBackdrop(UIBackgroundType value)
-        {
-            var wpfBackdrop = value switch
-            {
-                UIBackgroundType.None => BackgroundType.None,
-                UIBackgroundType.Mica => BackgroundType.Mica,
-                UIBackgroundType.Acrylic => BackgroundType.Acrylic,
-                UIBackgroundType.Aero => BackgroundType.Aero,
-                _ => BackgroundType.None
-            };
-
-            foreach (Window window in Application.Current.Windows)
-            {
-                if (window is UiWindow uiWindow)
-                {
-                    bool isTransparentBackdrop = (wpfBackdrop == BackgroundType.Acrylic || wpfBackdrop == BackgroundType.Aero);
-
-                    uiWindow.AllowsTransparency = isTransparentBackdrop;
-
-                    uiWindow.WindowStyle = isTransparentBackdrop
-                        ? WindowStyle.None
-                        : WindowStyle.SingleBorderWindow;
-
-                    uiWindow.WindowBackdropType = wpfBackdrop;
-                }
-            }
-        }
 
         public bool IsSidebarExpanded
         {
@@ -73,12 +48,20 @@ namespace Bloxstrap.UI.ViewModels.Settings
 
         private void OpenAbout()
         {
-            var app = (App.Current as App);
-            app?._froststrapRPC?.UpdatePresence("Dialog: About");
+            App.FrostRPC?.SetDialog("About");
 
             new Elements.About.MainWindow().ShowDialog();
 
-            app?._froststrapRPC?.UpdatePresence("Page: Unknown");
+            App.FrostRPC?.ClearDialog();
+        }
+
+        private void OpenAccountManager()
+        {
+            App.FrostRPC?.SetDialog("Account Manager");
+
+            new Elements.AccountManagers.MainWindow().ShowDialog();
+
+            App.FrostRPC?.ClearDialog();
         }
 
         private void CloseWindow() => RequestCloseWindowEvent?.Invoke(this, EventArgs.Empty);
@@ -90,6 +73,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
             App.Settings.Save();
             App.State.Save();
             App.FastFlags.Save();
+            App.GlobalSettings.Save();
 
             foreach (var pair in App.PendingSettingTasks)
             {
@@ -116,6 +100,7 @@ namespace Bloxstrap.UI.ViewModels.Settings
                 else if (App.Settings.Prop.SaveAndLaunchMode == SaveAndLaunch.RobloxPlayer)
                     LaunchHandler.LaunchRoblox(LaunchMode.Player);
 
+            App.FrostRPC?.Dispose();
             CloseWindow();
         }
 
