@@ -99,8 +99,8 @@ Encountered a bug or issue? [Submit an issue](https://github.com/RealMeddsam/Fro
 
 ## Licensing
 
-THis project is under **dual licensing**.
-Everything **Nix related** (managed by Invra) is licensed by **Unlicense**, whilst all **other code** is **MIT**.
+This project is under **dual licensing**.
+Everything **Nix related** (managed by Invra) is licensed by **Unlicense**, whilst all **other code** is **AGPLv3**.
 
 ---
 

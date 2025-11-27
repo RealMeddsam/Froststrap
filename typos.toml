@@ -1,0 +1,19 @@
+[default]
+extend-ignore-re = [
+  'cl\[ist]',
+  '\[lan\]guage',
+  '"ba"',
+  "doas",
+  # macOS version
+  "Big Sur",
+]
+check-filename = true
+
+[files]
+ignore-files = true
+ignore-hidden = false
+extend-exclude = [
+  ".git/",
+  # Contributor names aren't typos.
+  ".mailmap",
+]

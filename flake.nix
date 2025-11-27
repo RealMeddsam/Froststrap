@@ -1,5 +1,3 @@
-#   SPDX-License-Identifier: Unlicense
-
 {
   description = "Flake for Froststrap";
 
@@ -7,7 +5,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     treefmt-nix.url = "github:numtide/treefmt-nix";
-    csharp-ls.url = "github:invra/csharp-language-server";
+    naersk.url = "github:nix-community/naersk";
+    rust-overlay.url = "github:oxalica/rust-overlay";
   };
 
   outputs =
@@ -15,7 +14,9 @@
       nixpkgs,
       flake-utils,
       treefmt-nix,
-      csharp-ls,
+      rust-overlay,
+      naersk,
+      self,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -23,8 +24,12 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ csharp-ls.overlays.default ];
+          overlays = [
+            (import rust-overlay)
+          ];
         };
+
+        naersk' = pkgs.callPackage naersk { };
 
         formatters =
           (treefmt-nix.lib.evalModule pkgs (_: {
@@ -32,28 +37,78 @@
             programs = {
               nixfmt.enable = true;
               nixf-diagnose.enable = true;
-              toml-sort.enable = true;
+              taplo.enable = true;
               rustfmt.enable = true;
             };
             settings.formatter = {
-              dotnet-format = {
-                command = "${pkgs.dotnetCorePackages.sdk_10_0-bin}/bin/dotnet";
+              rustfmt = {
                 options = [
-                  "format"
+                  "--config"
+                  "condense_wildcard_suffixes=true,tab_spaces=2,imports_layout=vertical"
+                  "--style-edition"
+                  "2024"
                 ];
-                includes = [ "*.csproj" ];
               };
             };
           })).config.build;
+
+        buildInputs =
+          with pkgs;
+          [
+            bacon
+            typos
+            rust-bin.nightly.latest.default
+            cargo-udeps
+            clippy
+            pkg-config
+            rust-analyzer
+          ]
+          ++ nixpkgs.lib.optionals pkgs.stdenv.isLinux [
+            xorg.libxcb
+            xorg.xcbutil
+            libxkbcommon
+            libxkbcommon_8
+          ]
+          ++ nixpkgs.lib.optionals pkgs.stdenv.isDarwin [
+            apple-sdk_15
+          ];
+
+        nativeBuildInputs =
+          with pkgs;
+          lib.optionals pkgs.stdenv.isLinux [
+            pkg-config
+            xorg.libxcb
+            xorg.xcbutil
+            libxkbcommon
+            libxkbcommon_8
+          ];
+
+        runtimeLibs =
+          with pkgs;
+          lib.optionals pkgs.stdenv.isLinux [
+            expat
+            fontconfig
+            freetype
+            freetype.dev
+            libGL
+            vulkan-loader
+            wayland
+            xorg.libXi
+            xorg.libX11
+            xorg.xcbutil
+            xorg.libXrandr
+            xorg.libXcursor
+            xorg.libxcb
+            xorg.xcbutil
+            libxkbcommon
+          ];
+
+        LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath runtimeLibs;
       in
       {
         devShells.default = pkgs.mkShell {
-          meta.license = pkgs.lib.licenses.unlicense;
-          buildInputs = with pkgs; [
-            dotnetCorePackages.sdk_10_0-bin
-            csharp-language-server
-            just
-          ];
+          meta.license = pkgs.lib.licenses.agpl3Plus;
+          inherit nativeBuildInputs buildInputs LD_LIBRARY_PATH;
 
           shellHook =
             if !pkgs.stdenv.isDarwin then
@@ -75,7 +130,16 @@
                 fi
               '';
         };
+
+        packages.default = naersk'.buildPackage {
+          name = "froststrap";
+          src = ./.;
+
+          inherit nativeBuildInputs buildInputs LD_LIBRARY_PATH;
+        };
+
+        formatter = formatters.wrapper;
+        checks.formatting = formatters.check self;
       }
     );
 }
-

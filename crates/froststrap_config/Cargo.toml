@@ -1,0 +1,11 @@
+[dependencies]
+logger.workspace = true
+iced.workspace = true
+toml.workspace = true
+serde.workspace = true
+
+[package]
+name = "froststrap-config"
+version = "1.2.1"
+description = "Wrap around froststrap.toml"
+edition = "2024"

@@ -1,0 +1,20 @@
+[[bin]]
+name = "froststrap"
+path = "src/main.rs"
+
+[dependencies]
+froststrap-config.workspace = true
+rpcdiscord.workspace = true
+logger.workspace = true
+chrono.workspace = true
+serde.workspace = true
+tokio.workspace = true
+iced.workspace = true
+json.workspace = true
+toml.workspace = true
+
+[package]
+name = "froststrap"
+version = "2.0.0"
+description = "A roblox bootstrapper written in Rust"
+edition = "2024"

@@ -1,0 +1,35 @@
+[workspace]
+resolver = "3"
+members = [
+  "crates/froststrap",
+  "crates/roblox_settings"
+]
+default-members = ["crates/froststrap"]
+
+[workspace.dependencies]
+chrono = "0.4.42"
+tokio = "1.48.0"
+iced = "0.13.1"
+json = "0.12.4"
+toml = "0.9.8"
+wmi = "0.18.0"
+
+[workspace.dependencies.rpcdiscord]
+path = "crates/rpcdiscord"
+
+[workspace.dependencies.serde]
+version = "1.0.228"
+features = ["derive", "std"]
+
+[workspace.dependencies.roblox-settings]
+path = "crates/roblox_settings"
+
+[workspace.dependencies.froststrap-config]
+path = "crates/froststrap_config"
+
+[workspace.dependencies.logger]
+path = "crates/logger"
+
+[workspace.package]
+publish = false
+edition = "2024"

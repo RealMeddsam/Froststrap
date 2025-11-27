@@ -1,0 +1,7 @@
+unstable_features = true
+style_edition = "2024"
+tab_spaces = 2
+trailing_semicolon = false
+use_try_shorthand = true
+wrap_comments = true
+imports_layout = "vertical"

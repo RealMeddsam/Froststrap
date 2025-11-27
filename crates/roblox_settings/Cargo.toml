@@ -1,0 +1,13 @@
+[dependencies]
+chrono.workspace = true
+serde.workspace = true
+tokio.workspace = true
+iced.workspace = true
+json.workspace = true
+toml.workspace = true
+
+[package]
+name = "roblox-settings"
+version = "1.0.0"
+description = "Wrapper around clientSettings.json"
+edition = "2024"
