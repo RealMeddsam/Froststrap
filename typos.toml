@@ -13,6 +13,7 @@ check-filename = true
 ignore-files = true
 ignore-hidden = false
 extend-exclude = [
+  # Git stuff doesnt need to be checked.
   ".git/",
   # Contributor names aren't typos.
   ".mailmap",
