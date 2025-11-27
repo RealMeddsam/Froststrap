@@ -1,3 +1,16 @@
+/*
+ *  Froststrap (config)
+ *  Copyright (c) Froststrap Team
+ *
+ *  This file is part of Froststrap and is distributed under the terms of the
+ *  GNU Affero General Public License, version 3 or later.
+ *
+ *  SPDX-License-Identifier: AGPL-3.0-or-later
+ *
+ *  Description: Main entry point for the configuration crate, including the
+ *               structs for the config.
+ */
+
 const FROSTSTRAP_STAGING: bool = true;
 
 use {
