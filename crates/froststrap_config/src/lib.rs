@@ -199,7 +199,8 @@ impl Config {
     );
 
     if !config_path.exists() {
-      log::warning!("Config missing, loading defaults");
+      log::warning!("Config missing, creating file, but loading defaults");
+      _ = fs::write(config_path, "");
       return Ok(Config::default());
     }
 
