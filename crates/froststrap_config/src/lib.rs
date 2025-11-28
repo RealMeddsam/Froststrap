@@ -79,6 +79,7 @@ pub struct Theming {
   pub color_scheme: Theme,
   #[serde(default, deserialize_with = "deserialize_font")]
   pub font: font::Font,
+  #[serde(default)]
   pub roundness: Roundness,
 }
 
@@ -153,6 +154,7 @@ impl Default for Theming {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct General {
+  #[serde(default)]
   pub discord_rpc_id: u64,
 }
 
@@ -166,7 +168,9 @@ impl Default for General {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
+  #[serde(default)]
   pub theme: Theming,
+  #[serde(default)]
   pub general: General,
 }
 
