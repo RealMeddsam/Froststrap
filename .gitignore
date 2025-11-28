@@ -27,3 +27,6 @@ target
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
+
+# Avoid cross contam between main branch
+wpfui
