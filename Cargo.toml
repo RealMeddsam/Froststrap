@@ -11,8 +11,8 @@ json = "0.12.4"
 toml = "0.9.8"
 wmi = "0.18.0"
 
-[workspace.dependencies.rpcdiscord]
-path = "crates/rpcdiscord"
+[workspace.dependencies.discordrpc]
+path = "crates/discordrpc"
 
 [workspace.dependencies.serde]
 version = "1.0.228"

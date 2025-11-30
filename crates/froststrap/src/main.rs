@@ -31,7 +31,7 @@ use {
     },
   },
   logger::log,
-  rpcdiscord::{
+  discordrpc::{
     DiscordIpc,
     DiscordIpcClient,
     activity::{

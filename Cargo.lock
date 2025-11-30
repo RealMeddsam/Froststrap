@@ -819,6 +819,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "discordrpc"
+version = "1.2.0"
+dependencies = [
+ "libc",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "serde_repr",
+ "uuid",
+]
+
+[[package]]
 name = "dispatch"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1086,11 +1098,11 @@ name = "froststrap"
 version = "2.0.0"
 dependencies = [
  "chrono",
+ "discordrpc",
  "froststrap-config",
  "iced",
  "json",
  "logger",
- "rpcdiscord",
  "serde",
  "tokio",
  "toml",
@@ -2656,18 +2668,6 @@ name = "roxmltree"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c20b6793b5c2fa6553b250154b78d6d0db37e72700ae35fad9387a46f487c97"
-
-[[package]]
-name = "rpcdiscord"
-version = "1.1.1"
-dependencies = [
- "libc",
- "serde",
- "serde_derive",
- "serde_json",
- "serde_repr",
- "uuid",
-]
 
 [[package]]
 name = "rust-ini"
