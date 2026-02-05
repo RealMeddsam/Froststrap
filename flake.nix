@@ -49,31 +49,28 @@
       {
         devShells.default = pkgs.mkShell {
           meta.license = pkgs.lib.licenses.unlicense;
+
+          LD_LIBRARY_PATH = with pkgs; lib.makeLibraryPath [
+    fontconfig
+    freetype
+    mesa
+    libdrm
+    wayland
+
+    xorg.libX11
+    xorg.libICE
+    xorg.libSM
+    xorg.libXcursor
+    xorg.libXrandr
+    xorg.libXinerama
+    xorg.libXi           
+          ];
           buildInputs = with pkgs; [
             dotnetCorePackages.sdk_10_0-bin
             csharp-language-server
             just
+            glib
           ];
-
-          shellHook =
-            if !pkgs.stdenv.isDarwin then
-              ''
-                #!/bin/bash
-                COMMAND=$(awk -F: -v user=$USER 'user == $1 {print $NF}' /etc/passwd)
-                if [ "$COMMAND" != *bash* ]; then
-                  $COMMAND
-                  exit
-                fi
-              ''
-            else
-              ''
-                #!/bin/bash
-                COMMAND=$(dscl . -read $HOME 'UserShell' | grep --only-matching '/.*')
-                if [ "$COMMAND" != *bash* ]; then
-                  $COMMAND
-                  exit
-                fi
-              '';
         };
       }
     );
